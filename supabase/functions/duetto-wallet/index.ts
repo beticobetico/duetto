@@ -2,6 +2,9 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import nacl from "npm:tweetnacl@1.0.3";
 import bs58 from "npm:bs58@6.0.0";
+import { Keypair, PublicKey, Transaction, TransactionInstruction } from "npm:@solana/web3.js@1.99.0";
+
+const MEMO = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -26,6 +29,35 @@ async function rpc(method: string, params: unknown[]) {
 const b64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 const eq = (a: Uint8Array, b: Uint8Array) => a.length === b.length && a.every((v, i) => v === b[i]);
 
+// Duetto pays the fee: the server wallet writes "duetto:v1:<hash>" as a Memo on Solana mainnet.
+async function anchorAgreement(admin: any, ag: { id: string; hash: string }) {
+  const { data: key } = await admin.from("duetto_server_keys").select("secret").eq("name", "anchor").single();
+  const kp = Keypair.fromSecretKey(bs58.decode(key.secret));
+  const bal = await rpc("getBalance", [kp.publicKey.toBase58(), { commitment: "confirmed" }]);
+  if ((bal?.value ?? 0) < 20000) throw new Error("La wallet de Duetto no tiene fondos / Duetto wallet has no funds");
+  const { value: bh } = await rpc("getLatestBlockhash", [{ commitment: "confirmed" }]);
+  const tx = new Transaction({ feePayer: kp.publicKey, blockhash: bh.blockhash, lastValidBlockHeight: bh.lastValidBlockHeight })
+    .add(new TransactionInstruction({ programId: MEMO, keys: [], data: new TextEncoder().encode("duetto:v1:" + ag.hash) }));
+  tx.sign(kp);
+  const raw = btoa(String.fromCharCode(...tx.serialize()));
+  const sig: string = await rpc("sendTransaction", [raw, { encoding: "base64", preflightCommitment: "confirmed" }]);
+  for (let i = 0; i < 12; i++) {
+    const st = await rpc("getSignatureStatuses", [[sig]]).catch(() => null);
+    const v = st?.value?.[0];
+    if (v?.err) throw new Error("transaction failed");
+    if (v && (v.confirmationStatus === "confirmed" || v.confirmationStatus === "finalized")) {
+      await admin.from("duetto_agreements").update({ anchor_tx: sig, anchored_at: new Date().toISOString() }).eq("id", ag.id).is("anchor_tx", null);
+      return sig;
+    }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  throw new Error("Solana is slow, try again in a minute / Solana va lenta, intenta en un minuto");
+}
+const allWallet = async (admin: any, ag: { id: string; parties: { id: string }[] }) => {
+  const { data: sigs } = await admin.from("duetto_signatures").select("user_id, method").eq("agreement_id", ag.id);
+  return ag.parties.every((p) => (sigs ?? []).some((s: any) => s.user_id === p.id && s.method === "wallet"));
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method" }, 405);
@@ -36,10 +68,6 @@ Deno.serve(async (req) => {
     if (uerr || !user) return json({ error: "unauthorized" }, 401);
 
     const body = await req.json();
-    if (body.action === "blockhash") {
-      const r = await rpc("getLatestBlockhash", [{ commitment: "confirmed" }]);
-      return json(r.value);
-    }
     const { data: ag } = await admin.from("duetto_agreements").select("id, parties, hash, message, anchor_tx").eq("id", body.agreement_id).maybeSingle();
     if (!ag) return json({ error: "agreement not found" }, 404);
     const parties = ag.parties as { id: string }[];
@@ -67,31 +95,17 @@ Deno.serve(async (req) => {
         { agreement_id: ag.id, user_id: user.id, method: "wallet", wallet, sig: bs58.encode(sig), signed_at: new Date().toISOString() },
         { onConflict: "agreement_id,user_id" });
       if (error) return json({ error: error.message }, 500);
+      if (await allWallet(admin, { id: ag.id, parties })) {
+        try { return json({ ok: true, anchored: await anchorAgreement(admin, ag) }); }
+        catch (e) { return json({ ok: true, anchorError: String((e as Error).message) }); }
+      }
       return json({ ok: true });
     }
 
     if (body.action === "anchor") {
       if (ag.anchor_tx) return json({ ok: true, tx: ag.anchor_tx });
-      const { data: sigs } = await admin.from("duetto_signatures").select("user_id, wallet, method").eq("agreement_id", ag.id);
-      const wallets = (sigs ?? []).filter((s) => s.method === "wallet").map((s) => s.wallet);
-      if (!parties.every((p) => (sigs ?? []).some((s) => s.user_id === p.id && s.method === "wallet")))
-        return json({ error: "all parties must sign with a wallet first" }, 400);
-      let tx = String(body.tx ?? "");
-      if (body.signedTx) tx = await rpc("sendTransaction", [String(body.signedTx), { encoding: "base64", preflightCommitment: "confirmed" }]);
-      let info: any = null;
-      for (let i = 0; i < 12 && !info; i++) {
-        info = await rpc("getTransaction", [tx, { encoding: "json", commitment: "confirmed", maxSupportedTransactionVersion: 0 }]).catch(() => null);
-        if (!info) await new Promise((res) => setTimeout(res, 2500));
-      }
-      if (!info) return json({ error: "transaction not found yet", tx }, 404);
-      if (info.meta?.err) return json({ error: "transaction failed" }, 400);
-      const logs: string[] = info.meta?.logMessages ?? [];
-      if (!logs.some((l) => l.includes("duetto:v1:" + ag.hash))) return json({ error: "memo does not match" }, 400);
-      const payer = info.transaction?.message?.accountKeys?.[0];
-      if (!wallets.includes(payer)) return json({ error: "payer is not a signing party" }, 400);
-      const { error } = await admin.from("duetto_agreements").update({ anchor_tx: tx, anchored_at: new Date().toISOString() }).eq("id", ag.id);
-      if (error) return json({ error: error.message }, 500);
-      return json({ ok: true, tx });
+      if (!(await allWallet(admin, { id: ag.id, parties }))) return json({ error: "all parties must sign with a wallet first" }, 400);
+      return json({ ok: true, tx: await anchorAgreement(admin, ag) });
     }
     return json({ error: "unknown action" }, 400);
   } catch (e) {

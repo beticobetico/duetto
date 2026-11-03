@@ -191,8 +191,8 @@ const T = {
     authErr:"No se pudo iniciar sesión. Revisa tu conexión e intenta de nuevo.", noAudio:"No se pudo cargar el audio",
     wSign:"Firmar con wallet", wSignAcct:"Firmar sin wallet", wAdd:"Añadir firma con wallet", wSigned:"Firmado con wallet", wSignedAcct:"Firmado",
     wPick:"Escoge tu wallet", wWillSign:"Vas a firmar este texto. Firmar es gratis, no mueve fondos:", wNone:"No encontré ninguna wallet de Solana en este navegador.",
-    wOpenIn:"Abre Duetto dentro de tu wallet:", wAnchor:"Registrar en Solana", wAnchorCost:"Guarda la huella del acuerdo en la blockchain como prueba pública. Cuesta la comisión mínima de la red (≈0.000005 SOL).",
-    wAnchored:"Registrado en Solana", wView:"Ver en Solscan", wWorking:"Esperando a la wallet…", wNeedAllWallet:"Cuando todos firmen con wallet, se puede registrar en Solana.",
+    wOpenIn:"Abre Duetto dentro de tu wallet:", wAnchor:"Registrar en Solana", wAnchorCost:"Guarda la huella del acuerdo en Solana como prueba pública. Duetto paga la comisión; no necesitas SOL.", wWorking2:"Registrando en Solana…",
+    wAnchored:"Registrado en Solana", wView:"Ver en Solscan", wWorking:"Esperando a la wallet…", wNeedAllWallet:"Cuando todos firmen con wallet, Duetto lo registra en Solana automáticamente.",
     wDone:"Firma verificada ✓", wAnchorDone:"¡Registrado en Solana!", wLoading:"Cargando wallets…",
     genres:["Bachata","Balada","Merengue","Pop","Reguetón","Salsa","R&B","Rock","Otro"]
   },
@@ -246,8 +246,8 @@ const T = {
     authErr:"Couldn't sign in. Check your connection and try again.", noAudio:"Couldn't load the audio",
     wSign:"Sign with wallet", wSignAcct:"Sign without wallet", wAdd:"Add wallet signature", wSigned:"Signed with wallet", wSignedAcct:"Signed",
     wPick:"Choose your wallet", wWillSign:"You're about to sign this text. Signing is free and moves no funds:", wNone:"I couldn't find a Solana wallet in this browser.",
-    wOpenIn:"Open Duetto inside your wallet:", wAnchor:"Record on Solana", wAnchorCost:"Stores the agreement fingerprint on the blockchain as public proof. Costs the minimum network fee (≈0.000005 SOL).",
-    wAnchored:"Recorded on Solana", wView:"View on Solscan", wWorking:"Waiting for the wallet…", wNeedAllWallet:"Once everyone signs with a wallet, it can be recorded on Solana.",
+    wOpenIn:"Open Duetto inside your wallet:", wAnchor:"Record on Solana", wAnchorCost:"Stores the agreement fingerprint on Solana as public proof. Duetto pays the fee; you don't need SOL.", wWorking2:"Recording on Solana…",
+    wAnchored:"Recorded on Solana", wView:"View on Solscan", wWorking:"Waiting for the wallet…", wNeedAllWallet:"Once everyone signs with a wallet, Duetto records it on Solana automatically.",
     wDone:"Signature verified ✓", wAnchorDone:"Recorded on Solana!", wLoading:"Loading wallets…",
     genres:["Bachata","Ballad","Merengue","Pop","Reggaeton","Salsa","R&B","Rock","Other"]
   }
@@ -544,12 +544,8 @@ async function runWallet(mode,agId,w){
   try{
     if(mode==="sign"){
       const r=await window.DuettoWallet.signMessage(w,detail.agreement.message);
-      await callWalletFn({action:"sign",agreement_id:agId,...r});
-      closeSheet();toast(t("wDone"));
-    }else{
-      const r=await window.DuettoWallet.anchor(w,detail.agreement.hash,()=>callWalletFn({action:"blockhash",agreement_id:agId}));
-      await callWalletFn({action:"anchor",agreement_id:agId,tx:r.tx,signedTx:r.signedTx});
-      closeSheet();toast(t("wAnchorDone"));
+      const res=await callWalletFn({action:"sign",agreement_id:agId,...r});
+      closeSheet();toast(res?.anchored?t("wAnchorDone"):t("wDone"));
     }
     await refreshDetail();
   }catch(err){busy(false);fail(err)}
@@ -686,7 +682,7 @@ document.addEventListener("click",async e=>{
   else if(d.choose){el.disabled=true;const {error}=await sb.from("duetto_agreements").insert({post_id:detail.id,proposal_id:d.choose});if(error){el.disabled=false;return fail(error)}toast(t("chosenToast"));await refreshDetail()}
   else if(d.signacct){el.disabled=true;const {error}=await sb.from("duetto_signatures").insert({agreement_id:d.signacct,user_id:me});if(error){el.disabled=false;return fail(error)}toast(t("signedToast"));await refreshDetail()}
   else if(d.wsign){walletSheet("sign",d.wsign)}
-  else if(d.anchor){walletSheet("anchor",d.anchor)}
+  else if(d.anchor){el.disabled=true;el.textContent=t("wWorking2");try{await callWalletFn({action:"anchor",agreement_id:d.anchor});toast(t("wAnchorDone"))}catch(err){fail(err)}await refreshDetail()}
   else if(d.type){draft.type=d.type;draft.fileName=null;draft.file=null;render()}
   else if(el.hasAttribute("data-editname")||el.id==="userBtn"){nameSheet(false)}
   else if(el.id==="langBtn"){lang=lang==="es"?"en":"es";save("duetto_lang",lang);render(true)}

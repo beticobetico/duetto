@@ -3,10 +3,8 @@ import { getWallets } from "https://esm.sh/@wallet-standard/app@1.1.1";
 import {
   registerMwa, createDefaultAuthorizationCache, createDefaultChainSelector, createDefaultWalletNotFoundHandler,
 } from "https://esm.sh/@solana-mobile/wallet-standard-mobile@0.7.0";
-import bs58 from "https://esm.sh/bs58@6.0.0";
 
 const CHAIN = "solana:mainnet";
-const MEMO = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 try {
   const base = location.origin + location.pathname.replace(/[^/]*$/, "");
@@ -42,29 +40,5 @@ async function signMessage(w, text) {
   return { wallet: account.address, signature: b64(out.signature), signedMessage: out.signedMessage ? b64(out.signedMessage) : null };
 }
 
-// getBlockhash comes from our edge function (public RPCs block browser requests)
-async function anchor(w, hash, getBlockhash) {
-  const account = await connect(w);
-  const web3 = await import("https://esm.sh/@solana/web3.js@1.99.0");
-  const payer = new web3.PublicKey(account.address);
-  const { blockhash, lastValidBlockHeight } = await getBlockhash();
-  const tx = new web3.Transaction({ feePayer: payer, blockhash, lastValidBlockHeight }).add(
-    new web3.TransactionInstruction({
-      programId: new web3.PublicKey(MEMO),
-      keys: [{ pubkey: payer, isSigner: true, isWritable: false }],
-      data: new TextEncoder().encode("duetto:v1:" + hash),
-    }));
-  const bytes = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
-  if (w.features["solana:signAndSendTransaction"]) {
-    const [r] = await w.features["solana:signAndSendTransaction"].signAndSendTransaction({ account, chain: CHAIN, transaction: bytes });
-    return { wallet: account.address, tx: bs58.encode(r.signature) };
-  }
-  if (w.features["solana:signTransaction"]) {
-    const [r] = await w.features["solana:signTransaction"].signTransaction({ account, chain: CHAIN, transaction: bytes });
-    return { wallet: account.address, signedTx: b64(r.signedTransaction) };
-  }
-  throw new Error("Wallet cannot send transactions");
-}
-
-window.DuettoWallet = { list, signMessage, anchor, onChange: (f) => listeners.add(f) };
+window.DuettoWallet = { list, signMessage, onChange: (f) => listeners.add(f) };
 window.dispatchEvent(new Event("duetto-wallet-ready"));
