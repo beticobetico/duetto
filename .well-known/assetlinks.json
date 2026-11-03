@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.duettosongs.app",
+    "sha256_cert_fingerprints": [
+      "49:8A:D4:AF:EC:A0:40:D5:A9:00:F8:06:41:21:79:A2:FD:5A:0D:43:4E:1E:E2:98:BA:C7:8E:30:74:1B:6F:34"
+    ]
+  }
+}]

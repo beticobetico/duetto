@@ -1,0 +1,55 @@
+name: Build Android app
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Restore signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.DUETTO_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "::error::Missing secret DUETTO_KEYSTORE_B64"; exit 1; fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/duetto-release.keystore"
+
+      - name: Build signed APK and AAB
+        env:
+          DUETTO_KEYSTORE: ${{ runner.temp }}/duetto-release.keystore
+          DUETTO_KEYSTORE_PASSWORD: ${{ secrets.DUETTO_KEYSTORE_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease bundleRelease
+          mkdir -p ../dist
+          cp app/build/outputs/apk/release/app-release.apk ../dist/duetto.apk
+          cp app/build/outputs/bundle/release/app-release.aab ../dist/duetto.aab
+          "$ANDROID_HOME"/build-tools/$(ls "$ANDROID_HOME"/build-tools | sort -V | tail -1)/apksigner verify --print-certs ../dist/duetto.apk | head -5
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: duetto-android
+          path: dist/*
+
+      - name: Publish release (tags only)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
