@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f0d17">
+<title>Duetto — lyrics meet music</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0d17; --card:#1a1726; --card2:#221e31; --line:#2e2943;
+  --text:#f2eff9; --muted:#a39cb8; --accent:#ff6b8b; --accent2:#ffb36b;
+  --lyr:#8b7bff; --mus:#3fd0b4; --ok:#5fd38d; --warn:#ffcf5c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:15px;line-height:1.45}
+button{font:inherit;cursor:pointer;border:0;color:inherit;background:none}
+input,textarea,select{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px 12px;width:100%}
+textarea{resize:vertical;min-height:120px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--lyr);border-color:transparent}
+label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:500}
+.app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:84px}
+header{position:sticky;top:0;z-index:5;background:rgba(15,13,23,.92);backdrop-filter:blur(10px);padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-family:"DM Serif Display",serif;font-size:26px;letter-spacing:.3px}
+.logo span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.userchip{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 5px;font-size:13px}
+.av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#140f1f;flex:none}
+.lang{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 9px}
+.tabs{display:flex;gap:8px;margin-top:12px}
+.tab{flex:1;padding:9px 6px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted)}
+.tab.on.l{background:rgba(139,123,255,.16);border-color:var(--lyr);color:var(--text)}
+.tab.on.m{background:rgba(63,208,180,.14);border-color:var(--mus);color:var(--text)}
+.tab.on.a{background:rgba(255,107,139,.14);border-color:var(--accent);color:var(--text)}
+main{padding:14px 16px}
+.demo{font-size:12px;color:var(--warn);background:rgba(255,207,92,.08);border:1px dashed rgba(255,207,92,.4);border-radius:10px;padding:8px 10px;margin-bottom:12px}
+.challenge{background:linear-gradient(135deg,#3a1f4f,#5a2440 60%,#6b3a22);border-radius:18px;padding:16px;margin-bottom:14px}
+.challenge small{text-transform:uppercase;letter-spacing:1px;font-size:11px;opacity:.8;font-weight:600}
+.challenge h3{font-family:"DM Serif Display",serif;font-weight:400;font-size:21px;margin:4px 0}
+.challenge p{font-size:13px;opacity:.9}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.card.click{cursor:pointer;transition:border-color .15s}
+.card.click:hover{border-color:#4a4366}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;text-transform:uppercase;letter-spacing:.5px}
+.badge.l{background:rgba(139,123,255,.18);color:#b9afff}
+.badge.m{background:rgba(63,208,180,.16);color:#7fe6d2}
+.badge.c{background:rgba(95,211,141,.16);color:var(--ok)}
+.badge.o{background:rgba(255,179,107,.15);color:var(--accent2)}
+.ptitle{font-family:"DM Serif Display",serif;font-size:21px;margin:8px 0 2px;font-weight:400}
+.meta{font-size:12.5px;color:var(--muted)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.lyrics{white-space:pre-wrap;font-family:"DM Serif Display",serif;font-size:17px;line-height:1.55;color:#e6e0f5;background:var(--card2);border-radius:12px;padding:12px 14px;margin-top:10px}
+.locked{position:relative;overflow:hidden;max-height:92px}
+.locked:after{content:"";position:absolute;inset:auto 0 0 0;height:60px;background:linear-gradient(transparent,var(--card2))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px}
+.btn.pri{background:linear-gradient(90deg,var(--accent),#ff8a6b);color:#1a0d12}
+.btn.sec{background:var(--card2);border:1px solid var(--line)}
+.btn.ghost{color:var(--muted);padding:8px 10px}
+.btn.full{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.stats{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-top:10px}
+audio{width:100%;margin-top:10px;height:40px}
+.empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:14px}
+.back{color:var(--muted);font-size:14px;margin-bottom:10px;display:inline-flex;gap:6px;align-items:center}
+.sect{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin:18px 0 10px}
+.split{display:flex;height:10px;border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.split div:first-child{background:var(--lyr)}.split div:last-child{background:var(--mus)}
+.prop{background:var(--card2);border-radius:14px;padding:12px;margin-top:10px;border:1px solid transparent}
+.prop.chosen{border-color:var(--ok)}
+.stars{display:flex;gap:2px}
+.star{font-size:18px;color:#4a4366;padding:0 1px}
+.star.on{color:var(--warn)}
+.rate{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;font-size:13px;margin-top:8px}
+.comment{font-size:13px;border-top:1px solid var(--line);padding-top:7px;margin-top:7px}
+.comment b{font-weight:600}
+.typepick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.tp{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px;text-align:left}
+.tp b{display:block;font-size:15px;margin-bottom:3px}
+.tp span{font-size:12.5px;color:var(--muted)}
+.tp.on.l{border-color:var(--lyr);background:rgba(139,123,255,.1)}
+.tp.on.m{border-color:var(--mus);background:rgba(63,208,180,.08)}
+.range{display:flex;align-items:center;gap:10px}
+.range input{padding:0;accent-color:var(--accent)}
+.hash{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);word-break:break-all;background:#120f1c;border-radius:8px;padding:7px 9px;margin-top:4px}
+.agree{border:1.5px solid var(--ok);background:rgba(95,211,141,.05)}
+.sig{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.ok{color:var(--ok);font-weight:600;font-size:13px}
+.pend{color:var(--warn);font-weight:600;font-size:13px}
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,17,31,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:6}
+nav .in{max-width:560px;margin:0 auto;display:flex}
+nav button{flex:1;padding:10px 0 12px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button.on{color:var(--text)}
+nav svg{width:22px;height:22px}
+nav .plus{background:linear-gradient(135deg,var(--accent),var(--accent2));width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:#1a0d12;margin-top:-4px}
+.overlay{position:fixed;inset:0;background:rgba(5,4,10,.7);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:18px 18px 26px;max-height:88vh;overflow:auto;border-top:1px solid var(--line)}
+.sheet h3{font-family:"DM Serif Display",serif;font-weight:400;font-size:22px;margin-bottom:8px}
+.sheet p{color:var(--muted);font-size:14px;margin-bottom:8px}
+.rules li{font-size:14px;margin:0 0 8px 18px;color:#dcd6ea}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#2b2540;border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:14px;z-index:30;box-shadow:0 8px 30px rgba(0,0,0,.4);max-width:90vw}
+.userlist button{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border-radius:12px;text-align:left}
+.userlist button:hover,.userlist button.on{background:var(--card2)}
+.file{border:1.5px dashed var(--line);border-radius:14px;padding:16px;text-align:center;color:var(--muted);font-size:13.5px;position:relative}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.studio{background:#15121f;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:14px}
+.kara{white-space:pre-wrap;font-family:"DM Serif Display",serif;font-size:16px;line-height:1.5;max-height:170px;overflow:auto;background:var(--card2);border-radius:12px;padding:10px 12px;margin-top:10px}
+.prog{height:6px;background:var(--card2);border-radius:9px;margin-top:12px;overflow:hidden}.prog div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.btn.rec{background:#3a1622;border:1px solid #6b2a3c;color:#ffd0da}.btn.rec.live{background:#e0405f;color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.75}}
+.nomic{font-size:13px;color:var(--warn);background:rgba(255,207,92,.08);border-radius:10px;padding:9px 10px;margin-top:10px}
+input[type=range]{padding:0;accent-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="top">
+      <div class="logo"><span>Duetto</span></div>
+      <div class="row">
+        <button class="lang" id="langBtn">EN</button>
+        <button class="userchip" id="userBtn"></button>
+      </div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+  </header>
+  <main id="main"></main>
+</div>
+<nav><div class="in" id="nav"></div></nav>
+<div id="modal"></div>
+
+<script>
+/* ======================= i18n ======================= */
+const T = {
+  es:{
+    needMusic:"Buscan música", needLyrics:"Buscan letra", all:"Todo",
+    explore:"Explorar", publish:"Publicar", mine:"Lo mío",
+    demo:"Prototipo: los datos se guardan solo en este teléfono y las firmas son simuladas. En la versión dApp se firma con la Seed Vault y se registra en Solana.",
+    chTag:"Reto de la semana", chTitle:"Un coro sobre el mar Caribe", chText:"Sube tu letra o tu melodía con la etiqueta #mar. La propuesta más votada gana 100 SKR.",
+    hasLyrics:"Tiene letra · busca música", hasMusic:"Tiene música · busca letra",
+    proposals:"propuestas", votes:"votos", open:"Abierta", closed:"Cerrada",
+    by:"por", split:"Reparto", lyricsW:"Letra", musicW:"Música",
+    unlockTitle:"Antes de ver la obra completa", unlockText:"Al aceptar te comprometes a estas reglas:",
+    r1:"Esta obra es de su autor. No la usas fuera de Duetto sin un acuerdo firmado.",
+    r2:"Si te escogen, el reparto será el que ves aquí.",
+    r3:"Lo que tú envíes queda registrado con tu nombre, huella digital y fecha.",
+    accept:"Acepto y quiero ver", cancel:"Cancelar",
+    seeFull:"Ver completa", sendProp:"Enviar propuesta", sendMelody:"Enviar mi melodía", sendLyrics:"Escribir mi letra",
+    propsTitle:"Propuestas", noProps:"Todavía no hay propuestas. ¡Sé el primero!",
+    choose:"Escoger esta", chosen:"Escogida", vote:"Votar", voted:"Votado",
+    rateL:"Letra", rateM:"Melodía", rateH:"Gancho", comment:"Comentar", commentPh:"Escribe una crítica constructiva…",
+    back:"Volver",
+    newPost:"¿Qué tienes?", iHaveL:"Tengo letra", iHaveLs:"Busco quien le ponga música", iHaveM:"Tengo música", iHaveMs:"Busco quien le escriba letra",
+    title:"Título", genre:"Género", mood:"Tema o idea", moodPh:"De qué trata o qué buscas…",
+    lyrics:"Letra", lyricsPh:"Pega o escribe tu letra aquí…",
+    audio:"Audio (instrumental, melodía o nota de voz)", audioPick:"Toca para escoger un audio", audioHint:"Puedes grabar con la grabadora del teléfono y subirlo aquí.",
+    splitL:"¿Qué porcentaje propones?", you:"Tú", collab:"Colaborador",
+    post:"Publicar y registrar huella", needFields:"Completa el título y la letra o el audio.",
+    posted:"Publicado. Huella registrada.",
+    propTitleL:"Tu melodía para esta letra", propTitleM:"Tu letra para esta música",
+    note:"Nota para el autor", notePh:"Cuéntale tu idea…",
+    optAudio:"Audio de ti cantándola (opcional)",
+    agreeSplit:"Acepto el reparto", sent:"Propuesta enviada y registrada.",
+    agreement:"Acuerdo de coautoría", signWith:"Firmar con mi wallet", signed:"Firmado", pending:"Pendiente",
+    switchTo:"Cambia al usuario para firmar", allSigned:"Acuerdo completo. Ya pueden registrarla juntos en ONDA como coautores.",
+    fp:"Huella digital (SHA-256)", date:"Fecha",
+    myPosts:"Mis publicaciones", myProps:"Mis propuestas", nothing:"Nada por aquí todavía.",
+    whoAreYou:"¿Quién eres? (demo)", whoText:"Cambia de usuario para probar los dos lados: el autor y el colaborador.",
+    newUser:"Nombre nuevo", add:"Agregar",
+    chosenToast:"¡Escogida! Ahora ambos firman el acuerdo.", signedToast:"Firma registrada.",
+    own:"Es tu publicación", alreadySent:"Ya enviaste una propuesta",
+    ratedAvg:"promedio", sigNote:"Firma simulada en el prototipo",
+    needRuleFirst:"Acepta las reglas arriba para escuchar y ver las propuestas.",
+    emptyList:"No hay publicaciones aquí todavía.",
+    stTitle:"Estudio: pruébalo antes de enviar", stSubBack:"Graba tu voz cantando tu letra mientras suena la música. Luego escucha la mezcla.", stSubMel:"Graba tu melodía cantando esta letra (o tarareando con tu instrumento). Luego escúchala.",
+    stWriteFirst:"Escribe tu letra arriba y aquí la verás mientras cantas.", stRecOver:"Grabar sobre la música", stRecMel:"Grabar mi melodía", stStopRec:"Parar", stAgain:"Grabar otra vez",
+    stListenMix:"Escuchar mezcla", stListen:"Escuchar", stStop:"Parar", stRecording:"Grabando…", stReady:"Lista", stDone:"Grabación lista. Escucha la mezcla.",
+    stNoMic:"El micrófono no está disponible en esta vista. En la app instalada sí funciona. Mientras tanto, graba con tu teléfono y súbela aquí abajo.", stUpload:"o sube una grabación tuya",
+    stVolM:"Volumen de la música", stVolV:"Volumen de tu voz", stSync:"Sincronía", stSyncHint:"Si tu voz se oye atrasada o adelantada, mueve esto hasta que cuadre.",
+    stPhones:"Usa audífonos para que la música no se grabe junto con tu voz.", stBadFile:"No pude leer ese audio.", stNeedRec:"Graba o sube tu melodía primero.", stMixedBadge:"Voz + música",
+    genres:["Bachata","Balada","Merengue","Pop","Reguetón","Salsa","R&B","Rock","Otro"]
+  },
+  en:{
+    needMusic:"Need music", needLyrics:"Need lyrics", all:"All",
+    explore:"Explore", publish:"Post", mine:"Mine",
+    demo:"Prototype: data is saved only on this phone and signatures are simulated. In the dApp version you sign with Seed Vault and it's recorded on Solana.",
+    chTag:"Weekly challenge", chTitle:"A chorus about the Caribbean Sea", chText:"Post your lyrics or melody tagged #sea. The most-voted proposal wins 100 SKR.",
+    hasLyrics:"Has lyrics · needs music", hasMusic:"Has music · needs lyrics",
+    proposals:"proposals", votes:"votes", open:"Open", closed:"Closed",
+    by:"by", split:"Split", lyricsW:"Lyrics", musicW:"Music",
+    unlockTitle:"Before you see the full work", unlockText:"By accepting you agree to these rules:",
+    r1:"This work belongs to its author. You don't use it outside Duetto without a signed agreement.",
+    r2:"If you're chosen, the split will be the one shown here.",
+    r3:"Whatever you send is recorded with your name, fingerprint and date.",
+    accept:"I accept, show me", cancel:"Cancel",
+    seeFull:"See full", sendProp:"Send proposal", sendMelody:"Send my melody", sendLyrics:"Write my lyrics",
+    propsTitle:"Proposals", noProps:"No proposals yet. Be the first!",
+    choose:"Choose this", chosen:"Chosen", vote:"Vote", voted:"Voted",
+    rateL:"Lyrics", rateM:"Melody", rateH:"Hook", comment:"Comment", commentPh:"Write constructive feedback…",
+    back:"Back",
+    newPost:"What do you have?", iHaveL:"I have lyrics", iHaveLs:"Looking for someone to write the music", iHaveM:"I have music", iHaveMs:"Looking for someone to write lyrics",
+    title:"Title", genre:"Genre", mood:"Theme or idea", moodPh:"What it's about or what you're looking for…",
+    lyrics:"Lyrics", lyricsPh:"Paste or write your lyrics here…",
+    audio:"Audio (instrumental, melody or voice memo)", audioPick:"Tap to choose an audio file", audioHint:"Record with your phone's voice recorder and upload it here.",
+    splitL:"What split do you propose?", you:"You", collab:"Collaborator",
+    post:"Post and record fingerprint", needFields:"Fill in the title and the lyrics or audio.",
+    posted:"Posted. Fingerprint recorded.",
+    propTitleL:"Your melody for these lyrics", propTitleM:"Your lyrics for this music",
+    note:"Note for the author", notePh:"Tell them your idea…",
+    optAudio:"Audio of you singing it (optional)",
+    agreeSplit:"I accept the split", sent:"Proposal sent and recorded.",
+    agreement:"Co-writing agreement", signWith:"Sign with my wallet", signed:"Signed", pending:"Pending",
+    switchTo:"Switch to this user to sign", allSigned:"Agreement complete. You can now register it together as co-writers.",
+    fp:"Fingerprint (SHA-256)", date:"Date",
+    myPosts:"My posts", myProps:"My proposals", nothing:"Nothing here yet.",
+    whoAreYou:"Who are you? (demo)", whoText:"Switch users to try both sides: the author and the collaborator.",
+    newUser:"New name", add:"Add",
+    chosenToast:"Chosen! Now both sign the agreement.", signedToast:"Signature recorded.",
+    own:"This is your post", alreadySent:"You already sent a proposal",
+    ratedAvg:"average", sigNote:"Simulated signature in the prototype",
+    needRuleFirst:"Accept the rules above to hear and see proposals.",
+    emptyList:"No posts here yet.",
+    stTitle:"Studio: try it before sending", stSubBack:"Record yourself singing your lyrics while the music plays. Then listen to the mix.", stSubMel:"Record your melody singing these lyrics (or humming with your instrument). Then listen back.",
+    stWriteFirst:"Write your lyrics above and you'll see them here while you sing.", stRecOver:"Record over the music", stRecMel:"Record my melody", stStopRec:"Stop", stAgain:"Record again",
+    stListenMix:"Listen to mix", stListen:"Listen", stStop:"Stop", stRecording:"Recording…", stReady:"Ready", stDone:"Recording ready. Listen to the mix.",
+    stNoMic:"The microphone isn't available in this view. It works in the installed app. Meanwhile, record with your phone and upload it below.", stUpload:"or upload your own recording",
+    stVolM:"Music volume", stVolV:"Your voice volume", stSync:"Sync", stSyncHint:"If your voice sounds late or early, move this until it lines up.",
+    stPhones:"Use headphones so the music doesn't get recorded with your voice.", stBadFile:"Couldn't read that audio.", stNeedRec:"Record or upload your melody first.", stMixedBadge:"Voice + music",
+    genres:["Bachata","Ballad","Merengue","Pop","Reggaeton","Salsa","R&B","Rock","Other"]
+  }
+};
+let lang = load("duetto_lang","es");
+const t = k => T[lang][k] ?? k;
+
+/* ======================= storage ======================= */
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const audioMem = new Map();
+let idb=null;
+function openDB(){return new Promise(res=>{try{const r=indexedDB.open("duetto",1);r.onupgradeneeded=()=>r.result.createObjectStore("audio");r.onsuccess=()=>{idb=r.result;res()};r.onerror=()=>res()}catch(e){res()}})}
+function putAudio(id,blob){audioMem.set(id,blob);if(!idb)return;try{idb.transaction("audio","readwrite").objectStore("audio").put(blob,id)}catch(e){}}
+function getAudio(id){return new Promise(res=>{if(audioMem.has(id))return res(audioMem.get(id));if(!idb)return res(null);try{const r=idb.transaction("audio").objectStore("audio").get(id);r.onsuccess=()=>{if(r.result)audioMem.set(id,r.result);res(r.result||null)};r.onerror=()=>res(null)}catch(e){res(null)}})}
+
+/* ======================= helpers ======================= */
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const COLORS=["#ff8fa8","#ffc38a","#9e91ff","#6fe0c6","#ffe08a","#8ad4ff","#d79bff","#a6e88a"];
+const color=n=>COLORS[[...n].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
+const ini=n=>n.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+const av=n=>`<span class="av" style="background:${color(n)}">${esc(ini(n))}</span>`;
+function ago(ts){const s=(Date.now()-ts)/1000;const L=lang==="es";if(s<60)return L?"ahora":"now";const m=s/60;if(m<60)return Math.floor(m)+(L?" min":"m");const h=m/60;if(h<24)return Math.floor(h)+" h";const d=h/24;return Math.floor(d)+(L?" d":"d")}
+function fdate(ts){return new Date(ts).toLocaleString(lang==="es"?"es-DO":"en-US",{dateStyle:"medium",timeStyle:"short"})}
+async function sha(data){try{const buf=typeof data==="string"?new TextEncoder().encode(data):await data.arrayBuffer();const h=await crypto.subtle.digest("SHA-256",buf);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("")}catch(e){return "no-disponible-"+uid()}}
+function toast(msg){const d=document.createElement("div");d.className="toast";d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+function sheet(html){const m=document.getElementById("modal");m.innerHTML=`<div class="overlay" id="ov"><div class="sheet">${html}</div></div>`;document.getElementById("ov").onclick=e=>{if(e.target.id==="ov")closeSheet()}}
+function closeSheet(){try{stopAll()}catch(e){}document.getElementById("modal").innerHTML=""}
+
+/* demo melody generator (so seed music posts have something to play) */
+function makeDemoAudio(notes,bpm){
+  const sr=22050, beat=60/bpm, dur=notes.length*beat+0.6, n=Math.floor(sr*dur);
+  const data=new Float32Array(n);
+  notes.forEach((f,i)=>{if(!f)return;const st=Math.floor(i*beat*sr),len=Math.floor(beat*1.6*sr);
+    for(let j=0;j<len&&st+j<n;j++){const tt=j/sr,env=Math.exp(-3*tt)*Math.min(1,tt*80);
+      data[st+j]+=0.28*env*(Math.sin(2*Math.PI*f*tt)+0.35*Math.sin(4*Math.PI*f*tt)+0.12*Math.sin(6*Math.PI*f*tt));}});
+  const buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
+  const w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+  w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,data[i]))*32767,true);
+  return new Blob([buf],{type:"audio/wav"});
+}
+
+/* ======================= state ======================= */
+let users = load("duetto_users",["Roberto","Marisol","DJ Kelvin","Andrés"]);
+let me = load("duetto_me","Roberto");
+let posts = load("duetto_posts",null);
+let view = {tab:"all", page:"explore", postId:null};
+
+async function seed(){
+  const now=Date.now(), H=3600e3;
+  const l1=`Se me olvidó tu nombre en la arena\ny el mar me lo devuelve cada tarde,\nte fuiste con la luna llena\ny yo aquí, aprendiendo a no esperarte.\n\nCoro:\nAy, marea, marea,\nllévate lo que duele, deja lo que quiera,\nque si vuelve en la ola primera\nyo la espero en la orilla entera.`;
+  const l2=`Café en la mesa, tu taza vacía,\nla radio canta lo que yo no diría,\nlas llaves cuelgan donde las dejaste,\ny el lunes sigue como si no te fuiste.\n\nCoro:\nY yo que pensé que era un día cualquiera,\nque ibas a volver por la escalera…`;
+  const aM1=makeDemoAudio([392,494,587,494,440,523,659,523,392,494,587,784,698,587,494,0],104);
+  const aM2=makeDemoAudio([330,392,494,392,349,440,523,440,294,349,440,349,330,0,330,0],92);
+  putAudio("seed-a1",aM1);putAudio("seed-a2",aM2);
+  const pA=makeDemoAudio([440,0,494,523,494,440,392,0,440,494,523,587,523,494,440,0],100);
+  putAudio("seed-p1",pA);
+  posts=[
+    {id:"s1",type:"lyrics",author:"Marisol",title:"Marea",genre:"Bachata",mood:"#mar — desamor frente al mar, quiero algo lento con requinto",text:l1,split:50,createdAt:now-5*H,hash:await sha(l1),status:"open",unlocked:["Marisol"],
+      proposals:[{id:"sp1",author:"DJ Kelvin",audioId:"seed-p1",note:"Le hice la melodía del coro subiendo en 'marea', imagínala con güira suave.",createdAt:now-2*H,hash:await sha(pA),votes:["Andrés","Roberto"],ratings:{"Andrés":{l:0,m:5,h:4}},comments:[{u:"Andrés",c:"El coro pega. La estrofa la bajaría medio tono.",ts:now-1*H}]}]},
+    {id:"s2",type:"music",author:"DJ Kelvin",title:"Instrumental Noche Azul",genre:"Pop",mood:"Algo romántico pero con energía, para bailar",audioId:"seed-a1",split:50,createdAt:now-9*H,hash:await sha(aM1),status:"open",unlocked:["DJ Kelvin"],proposals:[]},
+    {id:"s3",type:"lyrics",author:"Andrés",title:"Taza vacía",genre:"Balada",mood:"Balada de piano, la extraño pero sin drama",text:l2,split:50,createdAt:now-26*H,hash:await sha(l2),status:"open",unlocked:["Andrés"],proposals:[]},
+    {id:"s4",type:"music",author:"Marisol",title:"Bachata en Sol",genre:"Bachata",mood:"#mar — melodía de guitarra, busco letra alegre de verano",audioId:"seed-a2",split:40,createdAt:now-30*H,hash:await sha(aM2),status:"open",unlocked:["Marisol"],proposals:[]}
+  ];
+  persist();
+}
+function persist(){save("duetto_posts",posts);save("duetto_users",users);save("duetto_me",me);save("duetto_lang",lang)}
+const P=id=>posts.find(p=>p.id===id);
+
+/* ======================= render shell ======================= */
+const ICON={
+  explore:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>',
+  mine:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>'
+};
+function render(){
+  document.documentElement.lang=lang;
+  document.getElementById("langBtn").textContent=lang==="es"?"EN":"ES";
+  document.getElementById("userBtn").innerHTML=av(me)+esc(me);
+  const tabs=document.getElementById("tabs");
+  tabs.style.display=view.page==="explore"?"flex":"none";
+  tabs.innerHTML=[["all","a",t("all")],["lyrics","l",t("needMusic")],["music","m",t("needLyrics")]]
+    .map(([k,c,l])=>`<button class="tab ${c} ${view.tab===k?"on":""}" data-tab="${k}">${l}</button>`).join("");
+  document.getElementById("nav").innerHTML=`
+    <button data-nav="explore" class="${view.page==="explore"||view.page==="post"?"on":""}">${ICON.explore}${t("explore")}</button>
+    <button data-nav="new"><span class="plus">${ICON.plus}</span></button>
+    <button data-nav="mine" class="${view.page==="mine"?"on":""}">${ICON.mine}${t("mine")}</button>`;
+  const m=document.getElementById("main");
+  if(view.page==="explore")m.innerHTML=renderExplore();
+  else if(view.page==="post")m.innerHTML=renderPost(P(view.postId));
+  else if(view.page==="new")m.innerHTML=renderNew();
+  else if(view.page==="mine")m.innerHTML=renderMine();
+  hydrateAudio();
+  window.scrollTo?.(0,view.keepScroll?window.scrollY:0);view.keepScroll=false;
+}
+function go(page,extra={}){Object.assign(view,{page},extra);const h=page==="post"?"":page;try{if(location.hash.slice(1)!==h)history.replaceState(null,"",h?"#"+h:location.pathname)}catch(e){}render()}
+
+/* ======================= views ======================= */
+function postCard(p){
+  const isL=p.type==="lyrics";
+  const votes=p.proposals.reduce((a,x)=>a+x.votes.length,0);
+  return `<div class="card click" data-open="${p.id}">
+    <div class="row between"><span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>
+    ${p.status==="closed"?`<span class="badge c">✓ ${t("closed")}</span>`:""}</div>
+    <div class="ptitle">${esc(p.title)}</div>
+    <div class="meta">${t("by")} ${esc(p.author)} · ${esc(p.genre)} · ${ago(p.createdAt)}</div>
+    ${p.mood?`<div style="font-size:13.5px;margin-top:6px;color:#d8d2e8">${esc(p.mood)}</div>`:""}
+    ${isL?`<div class="lyrics locked">${esc(p.text.split("\n").slice(0,2).join("\n"))}</div>`:`<div data-audio="${p.audioId}"></div>`}
+    <div class="stats"><span>💬 ${p.proposals.length} ${t("proposals")}</span><span>▲ ${votes} ${t("votes")}</span><span>${t("split")} ${isL?p.split:100-p.split}/${isL?100-p.split:p.split}</span></div>
+  </div>`;
+}
+function renderExplore(){
+  const list=posts.filter(p=>view.tab==="all"||p.type===view.tab).sort((a,b)=>b.createdAt-a.createdAt);
+  return `<div class="demo">${t("demo")}</div>
+  <div class="challenge"><small>${t("chTag")}</small><h3>${t("chTitle")}</h3><p>${t("chText")}</p></div>
+  ${list.length?list.map(postCard).join(""):`<div class="empty">${t("emptyList")}</div>`}`;
+}
+function splitBar(p){
+  const lp=p.type==="lyrics"?p.split:100-p.split, mp=100-lp;
+  return `<div class="split"><div style="width:${lp}%"></div><div style="width:${mp}%"></div></div>
+  <div class="row between meta"><span>✎ ${t("lyricsW")} ${lp}%</span><span>♪ ${t("musicW")} ${mp}%</span></div>`;
+}
+function stars(val,attr){return `<div class="stars">${[1,2,3,4,5].map(i=>`<button class="star ${i<=val?"on":""}" ${attr} data-v="${i}">★</button>`).join("")}</div>`}
+function avg(r,k){const v=Object.values(r).map(x=>x[k]).filter(Boolean);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):"–"}
+function renderPost(p){
+  if(!p)return `<div class="empty">—</div>`;
+  const isL=p.type==="lyrics", owner=p.author===me, unlocked=p.unlocked.includes(me);
+  const mine=p.proposals.find(x=>x.author===me);
+  let html=`<button class="back" data-nav="explore">← ${t("back")}</button>
+  <div class="card">
+    <span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>
+    <div class="ptitle" style="font-size:26px">${esc(p.title)}</div>
+    <div class="row meta" style="margin-top:4px">${av(p.author)} ${esc(p.author)} · ${esc(p.genre)} · ${ago(p.createdAt)}</div>
+    ${p.mood?`<p style="margin-top:10px;font-size:14px">${esc(p.mood)}</p>`:""}
+    ${isL?`<div class="lyrics ${unlocked?"":"locked"}">${esc(unlocked?p.text:p.text.split("\n").slice(0,2).join("\n"))}</div>`
+         :(unlocked?`<div data-audio="${p.audioId}"></div>`:`<div class="lyrics locked" style="font-family:Inter;font-size:14px;color:var(--muted)">♪ ••• ••• ••• •••\n♪ ••• •••</div>`)}
+    <div style="margin-top:12px">${splitBar(p)}</div>
+    <div class="hash" title="${t("fp")}">${t("fp")}: ${p.hash.slice(0,32)}…<br>${t("date")}: ${fdate(p.createdAt)}</div>
+    <div style="margin-top:12px">
+    ${owner?`<div class="meta">${t("own")}</div>`
+      :!unlocked?`<button class="btn pri full" data-unlock="${p.id}">🔓 ${t("seeFull")}</button>`
+      :p.status==="closed"?""
+      :mine?`<div class="meta">✓ ${t("alreadySent")}</div>`
+      :`<button class="btn pri full" data-propose="${p.id}">${isL?"♪ "+t("sendMelody"):"✎ "+t("sendLyrics")}</button>`}
+    </div>
+  </div>`;
+  if(p.agreement)html+=renderAgreement(p);
+  html+=`<div class="sect">${t("propsTitle")} (${p.proposals.length})</div>`;
+  if(!p.proposals.length)html+=`<div class="empty" style="padding:16px">${t("noProps")}</div>`;
+  const canSee=owner||unlocked;
+  [...p.proposals].sort((a,b)=>b.votes.length-a.votes.length).forEach(x=>{
+    const seeX=canSee||x.author===me, myR=x.ratings[me]||{l:0,m:0,h:0}, voted=x.votes.includes(me), chosen=p.chosenId===x.id;
+    html+=`<div class="prop ${chosen?"chosen":""}">
+      <div class="row between"><div class="row">${av(x.author)}<b>${esc(x.author)}</b><span class="meta">· ${ago(x.createdAt)}</span></div>
+      ${chosen?`<span class="badge c">✓ ${t("chosen")}</span>`:""}</div>
+      ${x.mixed?`<span class="badge m" style="margin-top:8px">🎙 ${t("stMixedBadge")}</span>`:""}${x.note?`<p style="font-size:14px;margin-top:8px">${esc(x.note)}</p>`:""}
+      ${seeX?`${x.text?`<div class="lyrics" style="background:#15121f">${esc(x.text)}</div>`:""}${x.audioId?`<div data-audio="${x.audioId}"></div>`:""}`
+        :`<div class="meta" style="margin-top:8px">🔒 ${t("needRuleFirst")}</div>`}
+      <div class="hash">${t("fp")}: ${x.hash.slice(0,24)}… · ${fdate(x.createdAt)}</div>
+      <div class="row between" style="margin-top:10px">
+        <button class="btn sec" data-vote="${p.id}|${x.id}" ${x.author===me?"disabled":""}>▲ ${voted?t("voted"):t("vote")} · ${x.votes.length}</button>
+        ${owner&&p.status==="open"?`<button class="btn pri" data-choose="${p.id}|${x.id}">${t("choose")}</button>`:""}
+      </div>
+      ${canSee&&x.author!==me?`<div class="rate">
+        <span>${t("rateL")}</span>${stars(myR.l,`data-rate="${p.id}|${x.id}|l"`)}
+        <span>${t("rateM")}</span>${stars(myR.m,`data-rate="${p.id}|${x.id}|m"`)}
+        <span>${t("rateH")}</span>${stars(myR.h,`data-rate="${p.id}|${x.id}|h"`)}
+      </div>`:""}
+      <div class="meta" style="margin-top:6px">${t("ratedAvg")}: ${t("rateL")} ${avg(x.ratings,"l")} · ${t("rateM")} ${avg(x.ratings,"m")} · ${t("rateH")} ${avg(x.ratings,"h")}</div>
+      ${x.comments.map(c=>`<div class="comment"><b>${esc(c.u)}</b> <span class="meta">${ago(c.ts)}</span><br>${esc(c.c)}</div>`).join("")}
+      ${canSee?`<form class="row" style="margin-top:8px;flex-wrap:nowrap" data-comment="${p.id}|${x.id}"><input name="c" placeholder="${t("commentPh")}" style="padding:8px 10px"><button class="btn sec" style="padding:8px 12px">${t("comment")}</button></form>`:""}
+    </div>`;
+  });
+  return html;
+}
+function renderAgreement(p){
+  const a=p.agreement, done=a.parties.every(x=>a.sigs[x.name]);
+  return `<div class="card agree">
+    <div class="row between"><b style="font-size:16px">📜 ${t("agreement")}</b>${done?`<span class="badge c">✓</span>`:`<span class="badge o">${t("pending")}</span>`}</div>
+    <div class="meta" style="margin-top:4px">“${esc(p.title)}” · ${fdate(a.createdAt)}</div>
+    ${a.parties.map(x=>`<div class="sig"><span class="row">${av(x.name)} ${esc(x.name)} · ${x.role==="l"?"✎ "+t("lyricsW"):"♪ "+t("musicW")} <b>${x.pct}%</b></span>
+      ${a.sigs[x.name]?`<span class="ok">✓ ${t("signed")}</span>`:x.name===me?`<button class="btn pri" style="padding:7px 12px" data-sign="${p.id}">${t("signWith")}</button>`:`<button class="pend" data-switch="${esc(x.name)}" title="${t("switchTo")}">${t("pending")} ↺</button>`}
+    </div>`).join("")}
+    <div class="hash">${t("fp")}: ${a.hash}</div>
+    <div class="hint">${done?"✅ "+t("allSigned"):t("sigNote")}</div>
+  </div>`;
+}
+let draft={type:"lyrics",split:50,genre:0};
+function renderNew(){
+  const isL=draft.type==="lyrics";
+  return `<div class="sect" style="margin-top:4px">${t("newPost")}</div>
+  <div class="typepick">
+    <button class="tp l ${isL?"on":""}" data-type="lyrics"><b>✎ ${t("iHaveL")}</b><span>${t("iHaveLs")}</span></button>
+    <button class="tp m ${!isL?"on":""}" data-type="music"><b>♪ ${t("iHaveM")}</b><span>${t("iHaveMs")}</span></button>
+  </div>
+  <form id="newForm">
+    <label>${t("title")}</label><input name="title" maxlength="80" value="${esc(draft.title||"")}">
+    <label>${t("genre")}</label><select name="genre">${T[lang].genres.map((g,i)=>`<option value="${i}" ${+draft.genre===i?"selected":""}>${g}</option>`).join("")}</select>
+    <label>${t("mood")}</label><input name="mood" placeholder="${t("moodPh")}" maxlength="140" value="${esc(draft.mood||"")}">
+    ${isL?`<label>${t("lyrics")}</label><textarea name="text" placeholder="${t("lyricsPh")}" style="min-height:180px">${esc(draft.text||"")}</textarea>`
+      :`<label>${t("audio")}</label><div class="file" id="fileBox">${draft.fileName?"🎵 "+esc(draft.fileName):"⬆ "+t("audioPick")}<input type="file" accept="audio/*" id="fileIn"></div><div class="hint">${t("audioHint")}</div>`}
+    <label>${t("splitL")}</label>
+    <div class="range"><input type="range" min="10" max="90" step="5" value="${draft.split}" id="splitIn"></div>
+    <div class="row between meta" style="margin-top:4px"><span>${t("you")} (${isL?t("lyricsW"):t("musicW")}): <b id="sMe">${draft.split}%</b></span><span>${t("collab")}: <b id="sOt">${100-draft.split}%</b></span></div>
+    <button class="btn pri full" style="margin-top:20px">${t("post")}</button>
+  </form>`;
+}
+function renderMine(){
+  const mp=posts.filter(p=>p.author===me), pr=posts.filter(p=>p.proposals.some(x=>x.author===me));
+  return `<div class="row" style="margin:4px 0 6px">${av(me)}<b style="font-size:18px">${esc(me)}</b></div>
+  <div class="sect">${t("myPosts")}</div>${mp.length?mp.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}
+  <div class="sect">${t("myProps")}</div>${pr.length?pr.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}`;
+}
+async function hydrateAudio(){
+  for(const el of document.querySelectorAll("[data-audio]")){
+    const b=await getAudio(el.dataset.audio);
+    if(b){const a=document.createElement("audio");a.controls=true;a.preload="metadata";a.src=URL.createObjectURL(b);el.replaceWith(a)}
+    else el.innerHTML=`<div class="meta" style="margin-top:8px">♪ audio no disponible en este dispositivo</div>`;
+  }
+}
+
+/* ======================= actions ======================= */
+function unlockSheet(id){
+  sheet(`<h3>${t("unlockTitle")}</h3><p>${t("unlockText")}</p>
+  <ul class="rules"><li>${t("r1")}</li><li>${t("r2")}</li><li>${t("r3")}</li></ul>
+  ${splitBar(P(id))}
+  <div class="row" style="margin-top:18px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button><button class="btn pri" style="flex:2" data-doUnlock="${id}">${t("accept")}</button></div>`);
+}
+/* ======================= studio: grabar tu voz sobre la música ======================= */
+const S={ctx:null,back:null,voc:null,vocBlob:null,offset:0,gM:.8,gV:1,rec:null,nodes:[],t0:0,endAt:0,raf:0,mode:"idle"};
+function actx(){if(!S.ctx)S.ctx=new (window.AudioContext||window.webkitAudioContext)();return S.ctx}
+async function decodeBlob(b){const ab=await b.arrayBuffer();return await actx().decodeAudioData(ab)}
+function encodeWav(ch,sr){const n=ch.length,buf=new ArrayBuffer(44+n*2),v=new DataView(buf);const w=(o,x)=>[...x].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+  w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,ch[i]))*32767,true);return new Blob([buf],{type:"audio/wav"})}
+function sNode(buf,when,skip,gain){const c=actx(),src=c.createBufferSource(),g=c.createGain();src.buffer=buf;g.gain.value=gain;src.connect(g).connect(c.destination);src.start(when,skip||0);src._g=g;S.nodes.push(src);return src}
+function stopAll(){S.nodes.forEach(n=>{try{n.stop()}catch(e){}});S.nodes=[];S.sB=S.sV=null;cancelAnimationFrame(S.raf);if(S.rec&&S.rec.state!=="inactive")S.rec.stop();S.mode="idle";updStudio()}
+const fmt=x=>{x=Math.max(0,x|0);return Math.floor(x/60)+":"+String(x%60).padStart(2,"0")};
+function tick(){const el=document.getElementById("stTime");if(!el)return;const now=actx().currentTime-S.t0;const tot=S.endAt-S.t0;
+  el.textContent=fmt(now)+(tot>0?" / "+fmt(tot):"");const pr=document.getElementById("stProg");if(pr)pr.style.width=(tot>0?Math.min(100,now/tot*100):0)+"%";
+  if(S.mode==="play"&&actx().currentTime>S.endAt)return stopAll();S.raf=requestAnimationFrame(tick)}
+async function startRec(){
+  stopAll();let stream;
+  try{if(!navigator.mediaDevices?.getUserMedia)throw 0;stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}
+  catch(e){document.getElementById("stNoMic").hidden=false;return}
+  const c=actx();await c.resume();const chunks=[];const rec=new MediaRecorder(stream);
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  rec.onstop=async()=>{stream.getTracks().forEach(x=>x.stop());const blob=new Blob(chunks,{type:rec.mimeType||"audio/webm"});
+    try{S.vocBlob=blob;S.voc=await decodeBlob(blob);S.offset=-Math.round(60+((c.outputLatency||0)+(c.baseLatency||0))*1000);document.getElementById("stOff").value=S.offset;updStudio();updOff();toast(t("stDone"))}catch(err){toast("Error: "+err)}};
+  S.rec=rec;rec.start();S.mode="rec";S.t0=c.currentTime+.06;S.endAt=S.back?S.t0+S.back.duration:0;
+  if(S.back){const src=sNode(S.back,S.t0,0,S.gM);src.onended=()=>{if(S.mode==="rec")stopAll()}}
+  tick();updStudio();
+}
+async function preview(){
+  stopAll();if(!S.voc&&!S.back)return;const c=actx();await c.resume();const t0=c.currentTime+.08,off=S.offset/1000;let end=0;
+  if(S.back){S.sB=sNode(S.back,t0,0,S.gM);end=S.back.duration}
+  if(S.voc){S.sV=off>=0?sNode(S.voc,t0+off,0,S.gV):sNode(S.voc,t0,Math.min(-off,S.voc.duration),S.gV);end=Math.max(end,S.voc.duration+off)}
+  S.t0=t0;S.endAt=t0+end;S.mode="play";tick();updStudio();
+}
+async function renderMix(){
+  if(!S.back)return S.vocBlob;const sr=22050,off=S.offset/1000,dur=Math.max(S.back.duration,S.voc.duration+off);
+  const oc=new OfflineAudioContext(1,Math.ceil(dur*sr),sr);
+  const add=(b,w,sk,g)=>{const x=oc.createBufferSource(),gn=oc.createGain();x.buffer=b;gn.gain.value=g;x.connect(gn).connect(oc.destination);x.start(w,sk)};
+  add(S.back,0,0,S.gM);off>=0?add(S.voc,off,0,S.gV):add(S.voc,0,Math.min(-off,S.voc.duration),S.gV);
+  const out=await oc.startRendering();return encodeWav(out.getChannelData(0),sr);
+}
+function updStudio(){
+  const r=document.getElementById("stRec");if(!r)return;
+  r.textContent=S.mode==="rec"?"■ "+t("stStopRec"):(S.voc?"↺ "+t("stAgain"):"● "+(S.back?t("stRecOver"):t("stRecMel")));
+  r.classList.toggle("live",S.mode==="rec");
+  const pl=document.getElementById("stPlay");pl.disabled=!S.voc||S.mode==="rec";pl.textContent=S.mode==="play"?"■ "+t("stStop"):"▶ "+(S.back?t("stListenMix"):t("stListen"));
+  document.getElementById("stMix").hidden=!S.voc;
+  document.getElementById("stState").textContent=S.mode==="rec"?"🔴 "+t("stRecording"):S.voc?"✓ "+t("stReady"):"";
+}
+function studioHTML(lyr,hasBack){return `<div class="studio">
+  <div class="row between"><b>🎙 ${t("stTitle")}</b><span class="meta" id="stState"></span></div>
+  <div class="hint" style="margin-top:2px">${hasBack?t("stSubBack"):t("stSubMel")}</div>
+  ${lyr!==null?`<div class="kara" id="kara">${esc(lyr)||`<span class="meta">${t("stWriteFirst")}</span>`}</div>`:""}
+  <div class="prog"><div id="stProg"></div></div><div class="meta" id="stTime" style="text-align:right">0:00</div>
+  <div class="row" style="flex-wrap:nowrap;margin-top:6px"><button type="button" class="btn rec" id="stRec" style="flex:1"></button><button type="button" class="btn sec" id="stPlay" style="flex:1" disabled></button></div>
+  <div id="stNoMic" class="nomic" hidden>🎤 ${t("stNoMic")}</div>
+  <div class="file" style="margin-top:10px;padding:10px" id="stUpBox">⬆ ${t("stUpload")}<input type="file" accept="audio/*" id="stUp"></div>
+  <div id="stMix" hidden>
+    <label>${t("stVolM")}</label><input type="range" min="0" max="1.2" step=".05" value="${S.gM}" id="stVM" ${hasBack?"":"disabled"}>
+    <label>${t("stVolV")}</label><input type="range" min="0" max="2" step=".05" value="${S.gV}" id="stVV">
+    ${hasBack?`<label>${t("stSync")} <span id="stOffV"></span></label><input type="range" min="-800" max="800" step="10" value="${S.offset}" id="stOff"><div class="hint">${t("stSyncHint")}</div>`:`<input type="hidden" id="stOff" value="0">`}
+  </div>
+  <div class="hint" style="margin-top:10px">🎧 ${t("stPhones")}</div>
+</div>`}
+function wireStudio(){
+  document.getElementById("stRec").onclick=()=>S.mode==="rec"?stopAll():startRec();
+  document.getElementById("stPlay").onclick=()=>S.mode==="play"?stopAll():preview();
+  document.getElementById("stUp").onchange=async e=>{const f=e.target.files[0];if(!f)return;stopAll();
+    try{S.vocBlob=f;S.voc=await decodeBlob(f);S.offset=0;document.getElementById("stOff").value=0;document.getElementById("stUpBox").firstChild.textContent="🎵 "+f.name;updStudio();updOff()}catch(err){toast(t("stBadFile"))}};
+  const vm=document.getElementById("stVM"),vv=document.getElementById("stVV"),of=document.getElementById("stOff");
+  vm.oninput=()=>{S.gM=+vm.value;if(S.sB)S.sB._g.gain.value=S.gM};
+  vv.oninput=()=>{S.gV=+vv.value;if(S.sV)S.sV._g.gain.value=S.gV};
+  of.oninput=()=>{S.offset=+of.value;updOff()};of.onchange=()=>{if(S.mode==="play")preview()};
+  updStudio();updOff();
+}
+function updOff(){const e=document.getElementById("stOffV");if(e)e.textContent=(S.offset>0?"+":"")+S.offset+" ms"}
+
+function proposeSheet(id){
+  const p=P(id),isL=p.type==="lyrics";
+  Object.assign(S,{back:null,voc:null,vocBlob:null,offset:0,gM:.8,gV:1,mode:"idle"});
+  sheet(`<h3>${isL?t("propTitleL"):t("propTitleM")}</h3><p>“${esc(p.title)}” · ${esc(p.author)}</p>
+  <form id="propForm">
+    ${isL?"":`<label>${t("lyrics")}</label><textarea name="text" id="propText" placeholder="${t("lyricsPh")}" style="min-height:150px"></textarea>`}
+    <div id="studioWrap">${studioHTML(isL?p.text:"",!isL)}</div>
+    <label>${t("note")}</label><input name="note" placeholder="${t("notePh")}" maxlength="200">
+    <div style="margin-top:14px">${splitBar(p)}</div>
+    <label class="row" style="color:var(--text);font-size:14px;margin-top:12px;flex-wrap:nowrap"><input type="checkbox" name="ok" style="width:auto"> ${t("agreeSplit")}</label>
+    <button class="btn pri full" style="margin-top:14px">${t("sendProp")}</button>
+  </form>`);
+  wireStudio();
+  if(!isL){getAudio(p.audioId).then(async b=>{if(b){try{S.back=await decodeBlob(b);S.endAt=0;const tm=document.getElementById("stTime");if(tm)tm.textContent="0:00 / "+fmt(S.back.duration)}catch(e){}}});
+    const ta=document.getElementById("propText");ta.oninput=()=>{document.getElementById("kara").textContent=ta.value||""}}
+  document.getElementById("propForm").onsubmit=async e=>{
+    e.preventDefault();const f=new FormData(e.target);
+    const text=(f.get("text")||"").trim();
+    if(!isL&&!text)return toast(t("lyricsPh"));
+    if(isL&&!S.voc)return toast(t("stNeedRec"));
+    if(!f.get("ok"))return toast(t("agreeSplit")+" ✓");
+    stopAll();let audioId=null,mixed=false;
+    if(S.voc){const blob=await renderMix();audioId="a-"+uid();putAudio(audioId,blob);mixed=!!S.back}
+    const hash=await sha(audioId?audioMem.get(audioId):text);
+    p.proposals.push({id:uid(),author:me,text:text||null,audioId,mixed,note:(f.get("note")||"").trim(),createdAt:Date.now(),hash,votes:[],ratings:{},comments:[]});
+    persist();closeSheet();toast(t("sent"));render();
+  };
+}
+async function choose(pid,xid){
+  const p=P(pid),x=p.proposals.find(y=>y.id===xid);
+  const isL=p.type==="lyrics", lp=isL?p.split:100-p.split;
+  const parties=isL?[{name:p.author,role:"l",pct:lp},{name:x.author,role:"m",pct:100-lp}]:[{name:x.author,role:"l",pct:lp},{name:p.author,role:"m",pct:100-lp}];
+  const createdAt=Date.now();
+  const body=JSON.stringify({app:"duetto",work:p.title,parties,workHash:p.hash,proposalHash:x.hash,createdAt});
+  p.chosenId=xid;p.status="closed";p.agreement={parties,createdAt,hash:await sha(body),sigs:{}};
+  persist();toast(t("chosenToast"));render();
+}
+function userSheet(){
+  sheet(`<h3>${t("whoAreYou")}</h3><p>${t("whoText")}</p>
+  <div class="userlist">${users.map(u=>`<button class="${u===me?"on":""}" data-user="${esc(u)}">${av(u)} ${esc(u)} ${u===me?"✓":""}</button>`).join("")}</div>
+  <form id="uForm" class="row" style="margin-top:12px;flex-wrap:nowrap"><input name="n" placeholder="${t("newUser")}" maxlength="24"><button class="btn sec">${t("add")}</button></form>`);
+  document.getElementById("uForm").onsubmit=e=>{e.preventDefault();const n=new FormData(e.target).get("n").trim();if(n&&!users.includes(n)){users.push(n)}if(n){me=n;persist();closeSheet();render()}};
+}
+
+document.addEventListener("click",e=>{
+  if(e.target.closest("audio,input,textarea,select"))return;
+  const el=e.target.closest("button,[data-open]");if(!el)return;
+  const d=el.dataset;
+  if(d.tab){view.tab=d.tab;render()}
+  else if(d.nav){if(d.nav==="new")draft={type:"lyrics",split:50,genre:0};go(d.nav)}
+  else if(d.open){go("post",{postId:d.open})}
+  else if(d.unlock){unlockSheet(d.unlock)}
+  else if(d.dounlock!==undefined||el.hasAttribute("data-doUnlock")){const id=el.getAttribute("data-doUnlock");const p=P(id);if(!p.unlocked.includes(me))p.unlocked.push(me);persist();closeSheet();render()}
+  else if(el.hasAttribute("data-close")){closeSheet()}
+  else if(d.propose){proposeSheet(d.propose)}
+  else if(d.vote){const [pid,xid]=d.vote.split("|");const x=P(pid).proposals.find(y=>y.id===xid);const i=x.votes.indexOf(me);i<0?x.votes.push(me):x.votes.splice(i,1);persist();view.keepScroll=true;render()}
+  else if(d.rate){const [pid,xid,k]=d.rate.split("|");const x=P(pid).proposals.find(y=>y.id===xid);x.ratings[me]=x.ratings[me]||{l:0,m:0,h:0};x.ratings[me][k]=+d.v;persist();view.keepScroll=true;render()}
+  else if(d.choose){const [pid,xid]=d.choose.split("|");choose(pid,xid)}
+  else if(d.sign){const p=P(d.sign);p.agreement.sigs[me]=Date.now();persist();toast(t("signedToast"));view.keepScroll=true;render()}
+  else if(d.switch){me=d.switch;persist();toast("↺ "+me);view.keepScroll=true;render()}
+  else if(d.type){draft.type=d.type;draft.fileName=null;draft.file=null;render()}
+  else if(d.user){me=d.user;persist();closeSheet();render()}
+  else if(el.id==="userBtn"){userSheet()}
+  else if(el.id==="langBtn"){lang=lang==="es"?"en":"es";persist();render()}
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="splitIn"){draft.split=+e.target.value;document.getElementById("sMe").textContent=draft.split+"%";document.getElementById("sOt").textContent=(100-draft.split)+"%"}
+  const f=e.target.form;if(f&&f.id==="newForm"&&e.target.name){draft[e.target.name]=e.target.value}
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="fileIn"){const f=e.target.files[0];if(f){draft.file=f;draft.fileName=f.name;document.getElementById("fileBox").firstChild.textContent="🎵 "+f.name}}
+});
+document.addEventListener("submit",async e=>{
+  if(e.target.id==="newForm"){
+    e.preventDefault();const f=new FormData(e.target);
+    const title=f.get("title").trim(),isL=draft.type==="lyrics",text=(f.get("text")||"").trim();
+    if(!title||(isL&&!text)||(!isL&&!draft.file))return toast(t("needFields"));
+    let audioId=null;if(!isL){audioId="a-"+uid();putAudio(audioId,draft.file)}
+    const p={id:uid(),type:draft.type,author:me,title,genre:T[lang].genres[+f.get("genre")],mood:f.get("mood").trim(),text:isL?text:null,audioId,split:draft.split,createdAt:Date.now(),hash:await sha(isL?text:draft.file),status:"open",unlocked:[me],proposals:[]};
+    posts.unshift(p);persist();toast(t("posted"));go("post",{postId:p.id});
+  } else if(e.target.dataset.comment){
+    e.preventDefault();const [pid,xid]=e.target.dataset.comment.split("|");const c=new FormData(e.target).get("c").trim();if(!c)return;
+    P(pid).proposals.find(y=>y.id===xid).comments.push({u:me,c,ts:Date.now()});persist();view.keepScroll=true;render();
+  }
+});
+function fromHash(){const h=location.hash.slice(1);if(["explore","new","mine"].includes(h))view.page=h}
+window.addEventListener("hashchange",()=>{fromHash();render()});
+
+(async()=>{await openDB();if(!posts)await seed();else{
+  // regenerate seed audio if storage was lost
+  for(const [id,notes,bpm] of [["seed-a1",[392,494,587,494,440,523,659,523,392,494,587,784,698,587,494,0],104],["seed-a2",[330,392,494,392,349,440,523,440,294,349,440,349,330,0,330,0],92],["seed-p1",[440,0,494,523,494,440,392,0,440,494,523,587,523,494,440,0],100]])
+    if(!(await getAudio(id)))putAudio(id,makeDemoAudio(notes,bpm));
+}
+fromHash();render()})();
+try{if('serviceWorker' in navigator&&window.top===window.self&&location.protocol==='https:')navigator.serviceWorker.register('sw.js')}catch(e){}
+</script>
+</body>
+</html>
