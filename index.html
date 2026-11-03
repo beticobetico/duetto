@@ -9,6 +9,7 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script type="module" src="wallet.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -109,6 +110,8 @@ nav .plus{background:linear-gradient(135deg,var(--accent),var(--accent2));width:
 .file{border:1.5px dashed var(--line);border-radius:14px;padding:16px;text-align:center;color:var(--muted);font-size:13.5px;position:relative}
 .file input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .hint{font-size:12px;color:var(--muted);margin-top:5px}
+.anch{margin-top:10px;font-size:13.5px;color:var(--ok);font-weight:600}.anch a,.sig a{color:inherit}
+a.btn{text-decoration:none;color:var(--text)}
 .studio{background:#15121f;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:14px}
 .kara{white-space:pre-wrap;font-family:"DM Serif Display",serif;font-size:16px;line-height:1.5;max-height:170px;overflow:auto;background:var(--card2);border-radius:12px;padding:10px 12px;margin-top:10px}
 .prog{height:6px;background:var(--card2);border-radius:9px;margin-top:12px;overflow:hidden}.prog div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}
@@ -141,7 +144,7 @@ const T = {
   es:{
     needMusic:"Buscan música", needLyrics:"Buscan letra", all:"Todo",
     explore:"Explorar", publish:"Publicar", mine:"Lo mío",
-    demo:"Beta: tus publicaciones ya se comparten con todos. La firma con wallet de Solana llega en la versión dApp.",
+    demo:"Beta: tus publicaciones se comparten con todos y los acuerdos se firman con tu wallet de Solana.",
     chTag:"Reto de la semana", chTitle:"Un coro sobre el mar Caribe", chText:"Sube tu letra o tu melodía con la etiqueta #mar. La propuesta más votada gana 100 SKR.",
     hasLyrics:"Tiene letra · busca música", hasMusic:"Tiene música · busca letra",
     proposals:"propuestas", votes:"votos", open:"Abierta", closed:"Cerrada",
@@ -175,7 +178,7 @@ const T = {
     newUser:"Nombre nuevo", add:"Agregar",
     chosenToast:"¡Escogida! Ahora ambos firman el acuerdo.", signedToast:"Firma registrada.",
     own:"Es tu publicación", alreadySent:"Ya enviaste una propuesta",
-    ratedAvg:"promedio", sigNote:"Cada parte firma desde su cuenta. En la versión dApp se firmará con la wallet.",
+    ratedAvg:"promedio", sigNote:"Cada parte firma el texto del acuerdo con su wallet de Solana; el servidor verifica la firma.",
     needRuleFirst:"Acepta las reglas arriba para ver y escuchar las propuestas.",
     emptyList:"Todavía no hay publicaciones aquí. ¡Sé el primero!",
     stTitle:"Estudio: pruébalo antes de enviar", stSubBack:"Graba tu voz cantando tu letra mientras suena la música. Luego escucha la mezcla.", stSubMel:"Graba tu melodía cantando esta letra (o tarareando con tu instrumento). Luego escúchala.",
@@ -186,12 +189,17 @@ const T = {
     stPhones:"Usa audífonos para que la música no se grabe junto con tu voz.", stBadFile:"No pude leer ese audio.", stNeedRec:"Graba o sube tu melodía primero.", stMixedBadge:"Voz + música",
     err:"Algo falló: ", loading:"Cargando…", uploading:"Subiendo…", nameTitle:"¿Cómo te llamas?", nameText:"Así te verán los demás compositores.", namePh:"Tu nombre artístico", save:"Guardar", editName:"Cambiar nombre",
     authErr:"No se pudo iniciar sesión. Revisa tu conexión e intenta de nuevo.", noAudio:"No se pudo cargar el audio",
+    wSign:"Firmar con wallet", wSignAcct:"Firmar sin wallet", wAdd:"Añadir firma con wallet", wSigned:"Firmado con wallet", wSignedAcct:"Firmado",
+    wPick:"Escoge tu wallet", wWillSign:"Vas a firmar este texto. Firmar es gratis, no mueve fondos:", wNone:"No encontré ninguna wallet de Solana en este navegador.",
+    wOpenIn:"Abre Duetto dentro de tu wallet:", wAnchor:"Registrar en Solana", wAnchorCost:"Guarda la huella del acuerdo en la blockchain como prueba pública. Cuesta la comisión mínima de la red (≈0.000005 SOL).",
+    wAnchored:"Registrado en Solana", wView:"Ver en Solscan", wWorking:"Esperando a la wallet…", wNeedAllWallet:"Cuando todos firmen con wallet, se puede registrar en Solana.",
+    wDone:"Firma verificada ✓", wAnchorDone:"¡Registrado en Solana!", wLoading:"Cargando wallets…",
     genres:["Bachata","Balada","Merengue","Pop","Reguetón","Salsa","R&B","Rock","Otro"]
   },
   en:{
     needMusic:"Need music", needLyrics:"Need lyrics", all:"All",
     explore:"Explore", publish:"Post", mine:"Mine",
-    demo:"Beta: your posts are now shared with everyone. Solana wallet signing comes in the dApp version.",
+    demo:"Beta: posts are shared with everyone and agreements are signed with your Solana wallet.",
     chTag:"Weekly challenge", chTitle:"A chorus about the Caribbean Sea", chText:"Post your lyrics or melody tagged #sea. The most-voted proposal wins 100 SKR.",
     hasLyrics:"Has lyrics · needs music", hasMusic:"Has music · needs lyrics",
     proposals:"proposals", votes:"votes", open:"Open", closed:"Closed",
@@ -225,7 +233,7 @@ const T = {
     newUser:"New name", add:"Add",
     chosenToast:"Chosen! Now both sign the agreement.", signedToast:"Signature recorded.",
     own:"This is your post", alreadySent:"You already sent a proposal",
-    ratedAvg:"average", sigNote:"Each party signs from their account. In the dApp version it will be signed with the wallet.",
+    ratedAvg:"average", sigNote:"Each party signs the agreement text with their Solana wallet; the server verifies the signature.",
     needRuleFirst:"Accept the rules above to hear and see proposals.",
     emptyList:"No posts here yet. Be the first!",
     stTitle:"Studio: try it before sending", stSubBack:"Record yourself singing your lyrics while the music plays. Then listen to the mix.", stSubMel:"Record your melody singing these lyrics (or humming with your instrument). Then listen back.",
@@ -236,6 +244,11 @@ const T = {
     stPhones:"Use headphones so the music doesn't get recorded with your voice.", stBadFile:"Couldn't read that audio.", stNeedRec:"Record or upload your melody first.", stMixedBadge:"Voice + music",
     err:"Something failed: ", loading:"Loading…", uploading:"Uploading…", nameTitle:"What's your name?", nameText:"This is how other songwriters will see you.", namePh:"Your artist name", save:"Save", editName:"Change name",
     authErr:"Couldn't sign in. Check your connection and try again.", noAudio:"Couldn't load the audio",
+    wSign:"Sign with wallet", wSignAcct:"Sign without wallet", wAdd:"Add wallet signature", wSigned:"Signed with wallet", wSignedAcct:"Signed",
+    wPick:"Choose your wallet", wWillSign:"You're about to sign this text. Signing is free and moves no funds:", wNone:"I couldn't find a Solana wallet in this browser.",
+    wOpenIn:"Open Duetto inside your wallet:", wAnchor:"Record on Solana", wAnchorCost:"Stores the agreement fingerprint on the blockchain as public proof. Costs the minimum network fee (≈0.000005 SOL).",
+    wAnchored:"Recorded on Solana", wView:"View on Solscan", wWorking:"Waiting for the wallet…", wNeedAllWallet:"Once everyone signs with a wallet, it can be recorded on Solana.",
+    wDone:"Signature verified ✓", wAnchorDone:"Recorded on Solana!", wLoading:"Loading wallets…",
     genres:["Bachata","Ballad","Merengue","Pop","Reggaeton","Salsa","R&B","Rock","Other"]
   }
 };
@@ -303,7 +316,7 @@ async function loadDetail(pid){
   const p=mapPost(row);const i=feed.findIndex(x=>x.id===pid);if(i>=0)feed[i]=p;
   const tasks=[
     sb.from("duetto_proposals").select("*, author:duetto_profiles(name), votes:duetto_votes(user_id), ratings:duetto_ratings(user_id,l,m,h), comments:duetto_comments(body,created_at,user:duetto_profiles(name))").eq("post_id",pid).order("created_at"),
-    sb.from("duetto_agreements").select("*, sigs:duetto_signatures(user_id,signed_at)").eq("post_id",pid).maybeSingle(),
+    sb.from("duetto_agreements").select("*, sigs:duetto_signatures(user_id,signed_at,method,wallet)").eq("post_id",pid).maybeSingle(),
     canSee(p)&&p.type==="lyrics"?sb.from("duetto_post_content").select("text").eq("post_id",pid).maybeSingle():Promise.resolve({data:null})
   ];
   const [pr,ag,ct]=await Promise.all(tasks);
@@ -313,8 +326,8 @@ async function loadDetail(pid){
     hash:x.hash,createdAt:Date.parse(x.created_at),votes:(x.votes||[]).map(v=>v.user_id),
     ratings:Object.fromEntries((x.ratings||[]).map(r=>[r.user_id,{l:r.l,m:r.m,h:r.h}])),
     comments:(x.comments||[]).map(c=>({u:c.user?.name||"—",c:c.body,ts:Date.parse(c.created_at)})).sort((a,b)=>a.ts-b.ts)}));
-  p.agreement=ag.data?{id:ag.data.id,parties:ag.data.parties,hash:ag.data.hash,createdAt:Date.parse(ag.data.created_at),
-    sigs:Object.fromEntries((ag.data.sigs||[]).map(s=>[s.user_id,Date.parse(s.signed_at)]))}:null;
+  p.agreement=ag.data?{id:ag.data.id,parties:ag.data.parties,hash:ag.data.hash,message:ag.data.message,anchorTx:ag.data.anchor_tx,createdAt:Date.parse(ag.data.created_at),
+    sigs:Object.fromEntries((ag.data.sigs||[]).map(s=>[s.user_id,{at:Date.parse(s.signed_at),method:s.method,wallet:s.wallet}]))}:null;
   detail=p;
 }
 
@@ -431,16 +444,23 @@ function renderPost(p){
   });
   return html;
 }
+const short=w=>w?w.slice(0,4)+"…"+w.slice(-4):"";
 function renderAgreement(p){
-  const a=p.agreement, done=a.parties.every(x=>a.sigs[x.id]);
+  const a=p.agreement, done=a.parties.every(x=>a.sigs[x.id]), allW=a.parties.every(x=>a.sigs[x.id]?.method==="wallet"), party=a.parties.some(x=>x.id===me);
   return `<div class="card agree">
-    <div class="row between"><b style="font-size:16px">📜 ${t("agreement")}</b>${done?`<span class="badge c">✓</span>`:`<span class="badge o">${t("pending")}</span>`}</div>
+    <div class="row between"><b style="font-size:16px">📜 ${t("agreement")}</b>${a.anchorTx?`<span class="badge c">⛓ Solana</span>`:done?`<span class="badge c">✓</span>`:`<span class="badge o">${t("pending")}</span>`}</div>
     <div class="meta" style="margin-top:4px">“${esc(p.title)}” · ${fdate(a.createdAt)}</div>
-    ${a.parties.map(x=>`<div class="sig"><span class="row">${av(x.name)} ${esc(x.name)} · ${x.role==="l"?"✎ "+t("lyricsW"):"♪ "+t("musicW")} <b>${x.pct}%</b></span>
-      ${a.sigs[x.id]?`<span class="ok">✓ ${t("signed")}</span>`:x.id===me?`<button class="btn pri" style="padding:7px 12px" data-sign="${a.id}">${t("signWith")}</button>`:`<span class="pend">${t("pending")}</span>`}
-    </div>`).join("")}
+    ${a.parties.map(x=>{const sg=a.sigs[x.id];return `<div class="sig"><span class="row">${av(x.name)} ${esc(x.name)} · ${x.role==="l"?"✎ "+t("lyricsW"):"♪ "+t("musicW")} <b>${x.pct}%</b></span>
+      <span style="text-align:right">${sg?(sg.method==="wallet"?`<span class="ok">✓ ${t("wSigned")}</span><br><a class="meta" href="https://solscan.io/account/${esc(sg.wallet)}" target="_blank" rel="noopener">◎ ${esc(short(sg.wallet))}</a>`:`<span class="ok">✓ ${t("wSignedAcct")}</span>`):`<span class="pend">${t("pending")}</span>`}</span>
+    </div>
+    ${x.id===me&&(!sg||sg.method!=="wallet")&&!a.anchorTx?`<div class="row" style="justify-content:flex-end;padding-bottom:8px;gap:6px">
+       ${!sg?`<button class="btn ghost" style="font-size:13px" data-signacct="${a.id}">${t("wSignAcct")}</button>`:""}
+       <button class="btn pri" style="padding:8px 12px" data-wsign="${a.id}">◎ ${sg?t("wAdd"):t("wSign")}</button></div>`:""}`}).join("")}
     <div class="hash">${t("fp")}: ${esc(a.hash)}</div>
-    <div class="hint">${done?"✅ "+t("allSigned"):t("sigNote")}</div>
+    ${a.anchorTx?`<div class="anch">⛓ ${t("wAnchored")} · <a href="https://solscan.io/tx/${esc(a.anchorTx)}" target="_blank" rel="noopener">${t("wView")} ↗</a></div>`
+      :allW&&party?`<button class="btn sec full" style="margin-top:10px" data-anchor="${a.id}">⛓ ${t("wAnchor")}</button><div class="hint">${t("wAnchorCost")}</div>`
+      :`<div class="hint">${done&&!allW?t("wNeedAllWallet"):t("sigNote")}</div>`}
+    ${done&&!a.anchorTx?`<div class="hint">✅ ${t("allSigned")}</div>`:""}
   </div>`;
 }
 let draft={type:"lyrics",split:50,genre:0};
@@ -493,6 +513,46 @@ function nameSheet(first){
   document.getElementById("nameForm").onsubmit=async e=>{e.preventDefault();const n=new FormData(e.target).get("n").trim();if(!n)return;
     const {error}=await sb.from("duetto_profiles").upsert({id:me,name:n});if(error)return fail(error);
     meName=n;closeSheet();render(true)};
+}
+function walletSheet(mode,agId){
+  const a=detail?.agreement;if(!a)return;
+  const draw=()=>{
+    const W=window.DuettoWallet, ws=W?W.list():[];
+    const here=encodeURIComponent(location.href), ref=encodeURIComponent(location.origin);
+    sheet(`<h3>${mode==="anchor"?"⛓ "+t("wAnchor"):"◎ "+t("wSign")}</h3>
+      <p>${mode==="anchor"?t("wAnchorCost"):t("wWillSign")}</p>
+      ${mode==="sign"?`<pre class="hash" style="white-space:pre-wrap;font-size:11.5px">${esc(a.message)}</pre>`:""}
+      <div class="sect" style="margin-top:14px">${t("wPick")}</div>
+      <div class="userlist">${!W?`<div class="meta">${t("wLoading")}</div>`:ws.length?ws.map((w,i)=>`<button data-wpick="${i}"><img src="${esc(w.icon)}" alt="" style="width:28px;height:28px;border-radius:8px"> ${esc(w.name)}</button>`).join("")
+        :`<p>${t("wNone")}</p><p>${t("wOpenIn")}</p>
+          <div class="row"><a class="btn sec" href="https://phantom.app/ul/browse/${here}?ref=${ref}">Phantom</a><a class="btn sec" href="https://solflare.com/ul/v1/browse/${here}?ref=${ref}">Solflare</a></div>`}</div>
+      <div class="meta" id="wStatus" style="margin-top:10px"></div>`);
+    document.querySelectorAll("[data-wpick]").forEach(b=>b.onclick=()=>runWallet(mode,agId,ws[+b.dataset.wpick]));
+  };
+  draw();
+  if(!window.DuettoWallet)window.addEventListener("duetto-wallet-ready",draw,{once:true});
+  else window.DuettoWallet.onChange(()=>{if(document.querySelector("[data-wpick],.userlist"))draw()});
+}
+async function callWalletFn(body){
+  const {data,error}=await sb.functions.invoke("duetto-wallet",{body});
+  if(error){let msg=error.message;try{msg=(await error.context.json()).error||msg}catch(e){}throw new Error(msg)}
+  return data;
+}
+async function runWallet(mode,agId,w){
+  const st=document.getElementById("wStatus");const busy=on=>{document.querySelectorAll("[data-wpick]").forEach(b=>b.disabled=on);if(st)st.textContent=on?t("wWorking"):""};
+  busy(true);
+  try{
+    if(mode==="sign"){
+      const r=await window.DuettoWallet.signMessage(w,detail.agreement.message);
+      await callWalletFn({action:"sign",agreement_id:agId,...r});
+      closeSheet();toast(t("wDone"));
+    }else{
+      const r=await window.DuettoWallet.anchor(w,detail.agreement.hash);
+      await callWalletFn({action:"anchor",agreement_id:agId,tx:r.tx});
+      closeSheet();toast(t("wAnchorDone"));
+    }
+    await refreshDetail();
+  }catch(err){busy(false);fail(err)}
 }
 function requireName(){if(!meName){nameSheet(true);return false}return true}
 
@@ -624,7 +684,9 @@ document.addEventListener("click",async e=>{
   else if(d.rate){const [xid,k]=d.rate.split("|");const x=detail.proposals.find(y=>y.id===xid);const r={...(x.ratings[me]||{l:0,m:0,h:0}),[k]:+d.v};
     const {error}=await sb.from("duetto_ratings").upsert({proposal_id:xid,user_id:me,...r},{onConflict:"proposal_id,user_id"});if(error)return fail(error);x.ratings[me]=r;render(true)}
   else if(d.choose){el.disabled=true;const {error}=await sb.from("duetto_agreements").insert({post_id:detail.id,proposal_id:d.choose});if(error){el.disabled=false;return fail(error)}toast(t("chosenToast"));await refreshDetail()}
-  else if(d.sign){el.disabled=true;const {error}=await sb.from("duetto_signatures").insert({agreement_id:d.sign,user_id:me});if(error){el.disabled=false;return fail(error)}toast(t("signedToast"));await refreshDetail()}
+  else if(d.signacct){el.disabled=true;const {error}=await sb.from("duetto_signatures").insert({agreement_id:d.signacct,user_id:me});if(error){el.disabled=false;return fail(error)}toast(t("signedToast"));await refreshDetail()}
+  else if(d.wsign){walletSheet("sign",d.wsign)}
+  else if(d.anchor){walletSheet("anchor",d.anchor)}
   else if(d.type){draft.type=d.type;draft.fileName=null;draft.file=null;render()}
   else if(el.hasAttribute("data-editname")||el.id==="userBtn"){nameSheet(false)}
   else if(el.id==="langBtn"){lang=lang==="es"?"en":"es";save("duetto_lang",lang);render(true)}
