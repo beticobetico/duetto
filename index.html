@@ -384,7 +384,8 @@ function renderExplore(){
   const list=feed.filter(p=>view.tab==="all"||p.type===view.tab);
   return `<div class="demo">${t("demo")}</div>
   <div class="challenge"><small>${t("chTag")}</small><h3>${t("chTitle")}</h3><p>${t("chText")}</p></div>
-  ${list.length?list.map(postCard).join(""):`<div class="empty">${t("emptyList")}<br><br><button class="btn pri" data-nav="new">＋ ${t("publish")}</button></div>`}`;
+  ${list.length?list.map(postCard).join(""):`<div class="empty">${t("emptyList")}<br><br><button class="btn pri" data-nav="new">＋ ${t("publish")}</button></div>`}
+  <div class="meta" style="text-align:center;margin:22px 0 6px"><a href="terms.html" style="color:inherit">${lang==="es"?"Términos":"Terms"}</a> · <a href="privacy.html" style="color:inherit">${lang==="es"?"Privacidad":"Privacy"}</a> · soporte@duettosongs.com</div>`;
 }
 function splitBar(p){
   const lp=p.type==="lyrics"?p.split:100-p.split, mp=100-lp;
@@ -640,7 +641,7 @@ function proposeSheet(id){
   </form>`);
   wireStudio();
   if(!isL&&p.audioPath){(async()=>{try{const r=await fetch(await signedUrl(p.audioPath));S.back=await decodeBlob(await r.blob());
-      const tm=document.getElementById("stTime");if(tm)tm.textContent="0:00 / "+fmt(S.back.duration)}catch(e){fail(e)}})();
+      const tm=document.getElementById("stTime");if(tm)tm.textContent="0:00 / "+fmt(S.back.duration);updStudio()}catch(e){fail(e)}})();
     const ta=document.getElementById("propText");ta.oninput=()=>{document.getElementById("kara").textContent=ta.value||""}}
   document.getElementById("propForm").onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.target);
