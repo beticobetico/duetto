@@ -547,8 +547,8 @@ async function runWallet(mode,agId,w){
       await callWalletFn({action:"sign",agreement_id:agId,...r});
       closeSheet();toast(t("wDone"));
     }else{
-      const r=await window.DuettoWallet.anchor(w,detail.agreement.hash);
-      await callWalletFn({action:"anchor",agreement_id:agId,tx:r.tx});
+      const r=await window.DuettoWallet.anchor(w,detail.agreement.hash,()=>callWalletFn({action:"blockhash",agreement_id:agId}));
+      await callWalletFn({action:"anchor",agreement_id:agId,tx:r.tx,signedTx:r.signedTx});
       closeSheet();toast(t("wAnchorDone"));
     }
     await refreshDetail();

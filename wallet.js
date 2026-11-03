@@ -6,7 +6,6 @@ import {
 import bs58 from "https://esm.sh/bs58@6.0.0";
 
 const CHAIN = "solana:mainnet";
-const RPC = "https://api.mainnet-beta.solana.com";
 const MEMO = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 try {
@@ -43,12 +42,12 @@ async function signMessage(w, text) {
   return { wallet: account.address, signature: b64(out.signature), signedMessage: out.signedMessage ? b64(out.signedMessage) : null };
 }
 
-async function anchor(w, hash) {
+// getBlockhash comes from our edge function (public RPCs block browser requests)
+async function anchor(w, hash, getBlockhash) {
   const account = await connect(w);
   const web3 = await import("https://esm.sh/@solana/web3.js@1.99.0");
-  const conn = new web3.Connection(RPC, "confirmed");
   const payer = new web3.PublicKey(account.address);
-  const { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash();
+  const { blockhash, lastValidBlockHeight } = await getBlockhash();
   const tx = new web3.Transaction({ feePayer: payer, blockhash, lastValidBlockHeight }).add(
     new web3.TransactionInstruction({
       programId: new web3.PublicKey(MEMO),
@@ -56,16 +55,15 @@ async function anchor(w, hash) {
       data: new TextEncoder().encode("duetto:v1:" + hash),
     }));
   const bytes = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
-  let sig;
   if (w.features["solana:signAndSendTransaction"]) {
     const [r] = await w.features["solana:signAndSendTransaction"].signAndSendTransaction({ account, chain: CHAIN, transaction: bytes });
-    sig = bs58.encode(r.signature);
-  } else if (w.features["solana:signTransaction"]) {
+    return { wallet: account.address, tx: bs58.encode(r.signature) };
+  }
+  if (w.features["solana:signTransaction"]) {
     const [r] = await w.features["solana:signTransaction"].signTransaction({ account, chain: CHAIN, transaction: bytes });
-    sig = await conn.sendRawTransaction(r.signedTransaction);
-  } else throw new Error("Wallet cannot send transactions");
-  await conn.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, "confirmed");
-  return { wallet: account.address, tx: sig };
+    return { wallet: account.address, signedTx: b64(r.signedTransaction) };
+  }
+  throw new Error("Wallet cannot send transactions");
 }
 
 window.DuettoWallet = { list, signMessage, anchor, onChange: (f) => listeners.add(f) };

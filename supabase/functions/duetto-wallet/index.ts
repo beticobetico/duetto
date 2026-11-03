@@ -10,7 +10,19 @@ const cors = {
 };
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
-const RPC = Deno.env.get("SOLANA_RPC") ?? "https://api.mainnet-beta.solana.com";
+const RPCS = [Deno.env.get("SOLANA_RPC"), "https://api.mainnet-beta.solana.com", "https://solana-rpc.publicnode.com"].filter(Boolean) as string[];
+async function rpc(method: string, params: unknown[]) {
+  let last = "";
+  for (const url of RPCS) {
+    try {
+      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
+      const j = await r.json();
+      if (j.error) { last = j.error.message ?? String(j.error.code); continue; }
+      return j.result;
+    } catch (e) { last = String(e); }
+  }
+  throw new Error("Solana RPC: " + last);
+}
 const b64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 const eq = (a: Uint8Array, b: Uint8Array) => a.length === b.length && a.every((v, i) => v === b[i]);
 
@@ -24,6 +36,10 @@ Deno.serve(async (req) => {
     if (uerr || !user) return json({ error: "unauthorized" }, 401);
 
     const body = await req.json();
+    if (body.action === "blockhash") {
+      const r = await rpc("getLatestBlockhash", [{ commitment: "confirmed" }]);
+      return json(r.value);
+    }
     const { data: ag } = await admin.from("duetto_agreements").select("id, parties, hash, message, anchor_tx").eq("id", body.agreement_id).maybeSingle();
     if (!ag) return json({ error: "agreement not found" }, 404);
     const parties = ag.parties as { id: string }[];
@@ -60,15 +76,14 @@ Deno.serve(async (req) => {
       const wallets = (sigs ?? []).filter((s) => s.method === "wallet").map((s) => s.wallet);
       if (!parties.every((p) => (sigs ?? []).some((s) => s.user_id === p.id && s.method === "wallet")))
         return json({ error: "all parties must sign with a wallet first" }, 400);
-      const tx = String(body.tx ?? "");
+      let tx = String(body.tx ?? "");
+      if (body.signedTx) tx = await rpc("sendTransaction", [String(body.signedTx), { encoding: "base64", preflightCommitment: "confirmed" }]);
       let info: any = null;
-      for (let i = 0; i < 6 && !info; i++) {
-        const r = await fetch(RPC, { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getTransaction", params: [tx, { encoding: "json", commitment: "confirmed", maxSupportedTransactionVersion: 0 }] }) });
-        info = (await r.json()).result;
+      for (let i = 0; i < 12 && !info; i++) {
+        info = await rpc("getTransaction", [tx, { encoding: "json", commitment: "confirmed", maxSupportedTransactionVersion: 0 }]).catch(() => null);
         if (!info) await new Promise((res) => setTimeout(res, 2500));
       }
-      if (!info) return json({ error: "transaction not found yet" }, 404);
+      if (!info) return json({ error: "transaction not found yet", tx }, 404);
       if (info.meta?.err) return json({ error: "transaction failed" }, 400);
       const logs: string[] = info.meta?.logMessages ?? [];
       if (!logs.some((l) => l.includes("duetto:v1:" + ag.hash))) return json({ error: "memo does not match" }, 400);
