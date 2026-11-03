@@ -8,6 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -140,7 +141,7 @@ const T = {
   es:{
     needMusic:"Buscan música", needLyrics:"Buscan letra", all:"Todo",
     explore:"Explorar", publish:"Publicar", mine:"Lo mío",
-    demo:"Prototipo: los datos se guardan solo en este teléfono y las firmas son simuladas. En la versión dApp se firma con la Seed Vault y se registra en Solana.",
+    demo:"Beta: tus publicaciones ya se comparten con todos. La firma con wallet de Solana llega en la versión dApp.",
     chTag:"Reto de la semana", chTitle:"Un coro sobre el mar Caribe", chText:"Sube tu letra o tu melodía con la etiqueta #mar. La propuesta más votada gana 100 SKR.",
     hasLyrics:"Tiene letra · busca música", hasMusic:"Tiene música · busca letra",
     proposals:"propuestas", votes:"votos", open:"Abierta", closed:"Cerrada",
@@ -174,21 +175,23 @@ const T = {
     newUser:"Nombre nuevo", add:"Agregar",
     chosenToast:"¡Escogida! Ahora ambos firman el acuerdo.", signedToast:"Firma registrada.",
     own:"Es tu publicación", alreadySent:"Ya enviaste una propuesta",
-    ratedAvg:"promedio", sigNote:"Firma simulada en el prototipo",
-    needRuleFirst:"Acepta las reglas arriba para escuchar y ver las propuestas.",
-    emptyList:"No hay publicaciones aquí todavía.",
+    ratedAvg:"promedio", sigNote:"Cada parte firma desde su cuenta. En la versión dApp se firmará con la wallet.",
+    needRuleFirst:"Acepta las reglas arriba para ver y escuchar las propuestas.",
+    emptyList:"Todavía no hay publicaciones aquí. ¡Sé el primero!",
     stTitle:"Estudio: pruébalo antes de enviar", stSubBack:"Graba tu voz cantando tu letra mientras suena la música. Luego escucha la mezcla.", stSubMel:"Graba tu melodía cantando esta letra (o tarareando con tu instrumento). Luego escúchala.",
     stWriteFirst:"Escribe tu letra arriba y aquí la verás mientras cantas.", stRecOver:"Grabar sobre la música", stRecMel:"Grabar mi melodía", stStopRec:"Parar", stAgain:"Grabar otra vez",
     stListenMix:"Escuchar mezcla", stListen:"Escuchar", stStop:"Parar", stRecording:"Grabando…", stReady:"Lista", stDone:"Grabación lista. Escucha la mezcla.",
     stNoMic:"El micrófono no está disponible en esta vista. En la app instalada sí funciona. Mientras tanto, graba con tu teléfono y súbela aquí abajo.", stUpload:"o sube una grabación tuya",
     stVolM:"Volumen de la música", stVolV:"Volumen de tu voz", stSync:"Sincronía", stSyncHint:"Si tu voz se oye atrasada o adelantada, mueve esto hasta que cuadre.",
     stPhones:"Usa audífonos para que la música no se grabe junto con tu voz.", stBadFile:"No pude leer ese audio.", stNeedRec:"Graba o sube tu melodía primero.", stMixedBadge:"Voz + música",
+    err:"Algo falló: ", loading:"Cargando…", uploading:"Subiendo…", nameTitle:"¿Cómo te llamas?", nameText:"Así te verán los demás compositores.", namePh:"Tu nombre artístico", save:"Guardar", editName:"Cambiar nombre",
+    authErr:"No se pudo iniciar sesión. Revisa tu conexión e intenta de nuevo.", noAudio:"No se pudo cargar el audio",
     genres:["Bachata","Balada","Merengue","Pop","Reguetón","Salsa","R&B","Rock","Otro"]
   },
   en:{
     needMusic:"Need music", needLyrics:"Need lyrics", all:"All",
     explore:"Explore", publish:"Post", mine:"Mine",
-    demo:"Prototype: data is saved only on this phone and signatures are simulated. In the dApp version you sign with Seed Vault and it's recorded on Solana.",
+    demo:"Beta: your posts are now shared with everyone. Solana wallet signing comes in the dApp version.",
     chTag:"Weekly challenge", chTitle:"A chorus about the Caribbean Sea", chText:"Post your lyrics or melody tagged #sea. The most-voted proposal wins 100 SKR.",
     hasLyrics:"Has lyrics · needs music", hasMusic:"Has music · needs lyrics",
     proposals:"proposals", votes:"votes", open:"Open", closed:"Closed",
@@ -222,30 +225,25 @@ const T = {
     newUser:"New name", add:"Add",
     chosenToast:"Chosen! Now both sign the agreement.", signedToast:"Signature recorded.",
     own:"This is your post", alreadySent:"You already sent a proposal",
-    ratedAvg:"average", sigNote:"Simulated signature in the prototype",
+    ratedAvg:"average", sigNote:"Each party signs from their account. In the dApp version it will be signed with the wallet.",
     needRuleFirst:"Accept the rules above to hear and see proposals.",
-    emptyList:"No posts here yet.",
+    emptyList:"No posts here yet. Be the first!",
     stTitle:"Studio: try it before sending", stSubBack:"Record yourself singing your lyrics while the music plays. Then listen to the mix.", stSubMel:"Record your melody singing these lyrics (or humming with your instrument). Then listen back.",
     stWriteFirst:"Write your lyrics above and you'll see them here while you sing.", stRecOver:"Record over the music", stRecMel:"Record my melody", stStopRec:"Stop", stAgain:"Record again",
     stListenMix:"Listen to mix", stListen:"Listen", stStop:"Stop", stRecording:"Recording…", stReady:"Ready", stDone:"Recording ready. Listen to the mix.",
     stNoMic:"The microphone isn't available in this view. It works in the installed app. Meanwhile, record with your phone and upload it below.", stUpload:"or upload your own recording",
     stVolM:"Music volume", stVolV:"Your voice volume", stSync:"Sync", stSyncHint:"If your voice sounds late or early, move this until it lines up.",
     stPhones:"Use headphones so the music doesn't get recorded with your voice.", stBadFile:"Couldn't read that audio.", stNeedRec:"Record or upload your melody first.", stMixedBadge:"Voice + music",
+    err:"Something failed: ", loading:"Loading…", uploading:"Uploading…", nameTitle:"What's your name?", nameText:"This is how other songwriters will see you.", namePh:"Your artist name", save:"Save", editName:"Change name",
+    authErr:"Couldn't sign in. Check your connection and try again.", noAudio:"Couldn't load the audio",
     genres:["Bachata","Ballad","Merengue","Pop","Reggaeton","Salsa","R&B","Rock","Other"]
   }
 };
 let lang = load("duetto_lang","es");
 const t = k => T[lang][k] ?? k;
 
-/* ======================= storage ======================= */
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-const audioMem = new Map();
-let idb=null;
-function openDB(){return new Promise(res=>{try{const r=indexedDB.open("duetto",1);r.onupgradeneeded=()=>r.result.createObjectStore("audio");r.onsuccess=()=>{idb=r.result;res()};r.onerror=()=>res()}catch(e){res()}})}
-function putAudio(id,blob){audioMem.set(id,blob);if(!idb)return;try{idb.transaction("audio","readwrite").objectStore("audio").put(blob,id)}catch(e){}}
-function getAudio(id){return new Promise(res=>{if(audioMem.has(id))return res(audioMem.get(id));if(!idb)return res(null);try{const r=idb.transaction("audio").objectStore("audio").get(id);r.onsuccess=()=>{if(r.result)audioMem.set(id,r.result);res(r.result||null)};r.onerror=()=>res(null)}catch(e){res(null)}})}
-
 /* ======================= helpers ======================= */
 const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -259,48 +257,66 @@ async function sha(data){try{const buf=typeof data==="string"?new TextEncoder().
 function toast(msg){const d=document.createElement("div");d.className="toast";d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
 function sheet(html){const m=document.getElementById("modal");m.innerHTML=`<div class="overlay" id="ov"><div class="sheet">${html}</div></div>`;document.getElementById("ov").onclick=e=>{if(e.target.id==="ov")closeSheet()}}
 function closeSheet(){try{stopAll()}catch(e){}document.getElementById("modal").innerHTML=""}
+/* ======================= backend (Supabase) ======================= */
+const SB_URL="https://ddrnkqmnoxknyotgbbnn.supabase.co";
+const SB_KEY="sb_publishable_tcoDxnXwHuf7B9cuNe1p4Q_eRkLmJNS";
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"duetto-auth"}});
+const BUCKET="duetto";
+let me=null, meName="";
+let feed=[], myUnlocks=new Set(), myPropPosts=new Set(), detail=null, loading=true;
+let view={tab:"all",page:"explore",postId:null};
+const urlCache=new Map();
 
-/* demo melody generator (so seed music posts have something to play) */
-function makeDemoAudio(notes,bpm){
-  const sr=22050, beat=60/bpm, dur=notes.length*beat+0.6, n=Math.floor(sr*dur);
-  const data=new Float32Array(n);
-  notes.forEach((f,i)=>{if(!f)return;const st=Math.floor(i*beat*sr),len=Math.floor(beat*1.6*sr);
-    for(let j=0;j<len&&st+j<n;j++){const tt=j/sr,env=Math.exp(-3*tt)*Math.min(1,tt*80);
-      data[st+j]+=0.28*env*(Math.sin(2*Math.PI*f*tt)+0.35*Math.sin(4*Math.PI*f*tt)+0.12*Math.sin(6*Math.PI*f*tt));}});
-  const buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
-  const w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
-  w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
-  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);
-  for(let i=0;i<n;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,data[i]))*32767,true);
-  return new Blob([buf],{type:"audio/wav"});
+function fail(error){console.error(error);toast(t("err")+(error?.message||error));}
+function mapPost(r){return{id:r.id,type:r.type,authorId:r.author_id,author:r.author?.name||"—",title:r.title,genre:r.genre||"",mood:r.mood||"",
+  preview:r.preview||"",audioPath:r.audio_path,split:r.split,hash:r.hash,status:r.status,chosenId:r.chosen_id,
+  proposalCount:r.proposal_count,voteCount:r.vote_count,createdAt:Date.parse(r.created_at)}}
+const canSee=p=>p&&(p.authorId===me||myUnlocks.has(p.id));
+
+async function signedUrl(path){
+  const c=urlCache.get(path);if(c&&c.exp>Date.now())return c.url;
+  const {data,error}=await sb.storage.from(BUCKET).createSignedUrl(path,3600);if(error)throw error;
+  urlCache.set(path,{url:data.signedUrl,exp:Date.now()+55*60e3});return data.signedUrl;
+}
+async function uploadAudio(blob){
+  const type=(blob.type||"audio/wav").split(";")[0];
+  const ext=type.includes("wav")?"wav":type.includes("webm")?"webm":type.includes("mp4")||type.includes("m4a")||type.includes("aac")?"m4a":type.includes("ogg")?"ogg":type.includes("mpeg")||type.includes("mp3")?"mp3":"audio";
+  const path=`u/${me}/${crypto.randomUUID()}.${ext}`;
+  const {error}=await sb.storage.from(BUCKET).upload(path,blob,{contentType:type,upsert:false});
+  if(error)throw error;return path;
 }
 
-/* ======================= state ======================= */
-let users = load("duetto_users",["Roberto","Marisol","DJ Kelvin","Andrés"]);
-let me = load("duetto_me","Roberto");
-let posts = load("duetto_posts",null);
-let view = {tab:"all", page:"explore", postId:null};
-
-async function seed(){
-  const now=Date.now(), H=3600e3;
-  const l1=`Se me olvidó tu nombre en la arena\ny el mar me lo devuelve cada tarde,\nte fuiste con la luna llena\ny yo aquí, aprendiendo a no esperarte.\n\nCoro:\nAy, marea, marea,\nllévate lo que duele, deja lo que quiera,\nque si vuelve en la ola primera\nyo la espero en la orilla entera.`;
-  const l2=`Café en la mesa, tu taza vacía,\nla radio canta lo que yo no diría,\nlas llaves cuelgan donde las dejaste,\ny el lunes sigue como si no te fuiste.\n\nCoro:\nY yo que pensé que era un día cualquiera,\nque ibas a volver por la escalera…`;
-  const aM1=makeDemoAudio([392,494,587,494,440,523,659,523,392,494,587,784,698,587,494,0],104);
-  const aM2=makeDemoAudio([330,392,494,392,349,440,523,440,294,349,440,349,330,0,330,0],92);
-  putAudio("seed-a1",aM1);putAudio("seed-a2",aM2);
-  const pA=makeDemoAudio([440,0,494,523,494,440,392,0,440,494,523,587,523,494,440,0],100);
-  putAudio("seed-p1",pA);
-  posts=[
-    {id:"s1",type:"lyrics",author:"Marisol",title:"Marea",genre:"Bachata",mood:"#mar — desamor frente al mar, quiero algo lento con requinto",text:l1,split:50,createdAt:now-5*H,hash:await sha(l1),status:"open",unlocked:["Marisol"],
-      proposals:[{id:"sp1",author:"DJ Kelvin",audioId:"seed-p1",note:"Le hice la melodía del coro subiendo en 'marea', imagínala con güira suave.",createdAt:now-2*H,hash:await sha(pA),votes:["Andrés","Roberto"],ratings:{"Andrés":{l:0,m:5,h:4}},comments:[{u:"Andrés",c:"El coro pega. La estrofa la bajaría medio tono.",ts:now-1*H}]}]},
-    {id:"s2",type:"music",author:"DJ Kelvin",title:"Instrumental Noche Azul",genre:"Pop",mood:"Algo romántico pero con energía, para bailar",audioId:"seed-a1",split:50,createdAt:now-9*H,hash:await sha(aM1),status:"open",unlocked:["DJ Kelvin"],proposals:[]},
-    {id:"s3",type:"lyrics",author:"Andrés",title:"Taza vacía",genre:"Balada",mood:"Balada de piano, la extraño pero sin drama",text:l2,split:50,createdAt:now-26*H,hash:await sha(l2),status:"open",unlocked:["Andrés"],proposals:[]},
-    {id:"s4",type:"music",author:"Marisol",title:"Bachata en Sol",genre:"Bachata",mood:"#mar — melodía de guitarra, busco letra alegre de verano",audioId:"seed-a2",split:40,createdAt:now-30*H,hash:await sha(aM2),status:"open",unlocked:["Marisol"],proposals:[]}
+async function loadFeed(){
+  const [posts,unl,props]=await Promise.all([
+    sb.from("duetto_posts").select("*, author:duetto_profiles(name)").order("created_at",{ascending:false}).limit(200),
+    sb.from("duetto_unlocks").select("post_id"),
+    sb.from("duetto_proposals").select("post_id").eq("author_id",me)
+  ]);
+  if(posts.error)return fail(posts.error);
+  feed=posts.data.map(mapPost);
+  myUnlocks=new Set((unl.data||[]).map(x=>x.post_id));
+  myPropPosts=new Set((props.data||[]).map(x=>x.post_id));
+}
+async function loadDetail(pid){
+  const {data:row,error}=await sb.from("duetto_posts").select("*, author:duetto_profiles(name)").eq("id",pid).maybeSingle();
+  if(error)return fail(error);if(!row){detail=null;return}
+  const p=mapPost(row);const i=feed.findIndex(x=>x.id===pid);if(i>=0)feed[i]=p;
+  const tasks=[
+    sb.from("duetto_proposals").select("*, author:duetto_profiles(name), votes:duetto_votes(user_id), ratings:duetto_ratings(user_id,l,m,h), comments:duetto_comments(body,created_at,user:duetto_profiles(name))").eq("post_id",pid).order("created_at"),
+    sb.from("duetto_agreements").select("*, sigs:duetto_signatures(user_id,signed_at)").eq("post_id",pid).maybeSingle(),
+    canSee(p)&&p.type==="lyrics"?sb.from("duetto_post_content").select("text").eq("post_id",pid).maybeSingle():Promise.resolve({data:null})
   ];
-  persist();
+  const [pr,ag,ct]=await Promise.all(tasks);
+  if(pr.error)fail(pr.error);
+  p.text=ct.data?.text||null;
+  p.proposals=(pr.data||[]).map(x=>({id:x.id,authorId:x.author_id,author:x.author?.name||"—",text:x.text,audioPath:x.audio_path,mixed:x.mixed,note:x.note,
+    hash:x.hash,createdAt:Date.parse(x.created_at),votes:(x.votes||[]).map(v=>v.user_id),
+    ratings:Object.fromEntries((x.ratings||[]).map(r=>[r.user_id,{l:r.l,m:r.m,h:r.h}])),
+    comments:(x.comments||[]).map(c=>({u:c.user?.name||"—",c:c.body,ts:Date.parse(c.created_at)})).sort((a,b)=>a.ts-b.ts)}));
+  p.agreement=ag.data?{id:ag.data.id,parties:ag.data.parties,hash:ag.data.hash,createdAt:Date.parse(ag.data.created_at),
+    sigs:Object.fromEntries((ag.data.sigs||[]).map(s=>[s.user_id,Date.parse(s.signed_at)]))}:null;
+  detail=p;
 }
-function persist(){save("duetto_posts",posts);save("duetto_users",users);save("duetto_me",me);save("duetto_lang",lang)}
-const P=id=>posts.find(p=>p.id===id);
 
 /* ======================= render shell ======================= */
 const ICON={
@@ -308,10 +324,10 @@ const ICON={
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>',
   mine:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>'
 };
-function render(){
+function render(keepScroll){
   document.documentElement.lang=lang;
   document.getElementById("langBtn").textContent=lang==="es"?"EN":"ES";
-  document.getElementById("userBtn").innerHTML=av(me)+esc(me);
+  document.getElementById("userBtn").innerHTML=meName?av(meName)+esc(meName):"…";
   const tabs=document.getElementById("tabs");
   tabs.style.display=view.page==="explore"?"flex":"none";
   tabs.innerHTML=[["all","a",t("all")],["lyrics","l",t("needMusic")],["music","m",t("needLyrics")]]
@@ -320,35 +336,42 @@ function render(){
     <button data-nav="explore" class="${view.page==="explore"||view.page==="post"?"on":""}">${ICON.explore}${t("explore")}</button>
     <button data-nav="new"><span class="plus">${ICON.plus}</span></button>
     <button data-nav="mine" class="${view.page==="mine"?"on":""}">${ICON.mine}${t("mine")}</button>`;
-  const m=document.getElementById("main");
-  if(view.page==="explore")m.innerHTML=renderExplore();
-  else if(view.page==="post")m.innerHTML=renderPost(P(view.postId));
+  const m=document.getElementById("main");const y=window.scrollY;
+  if(loading)m.innerHTML=`<div class="empty">${t("loading")}</div>`;
+  else if(view.page==="explore")m.innerHTML=renderExplore();
+  else if(view.page==="post")m.innerHTML=renderPost(detail);
   else if(view.page==="new")m.innerHTML=renderNew();
   else if(view.page==="mine")m.innerHTML=renderMine();
   hydrateAudio();
-  window.scrollTo?.(0,view.keepScroll?window.scrollY:0);view.keepScroll=false;
+  window.scrollTo(0,keepScroll?y:0);
 }
-function go(page,extra={}){Object.assign(view,{page},extra);const h=page==="post"?"":page;try{if(location.hash.slice(1)!==h)history.replaceState(null,"",h?"#"+h:location.pathname)}catch(e){}render()}
+async function go(page,extra={}){
+  Object.assign(view,{page},extra);
+  const h=page==="post"?"":page;try{if(location.hash.slice(1)!==h)history.replaceState(null,"",h?"#"+h:location.pathname)}catch(e){}
+  if(page==="post"){loading=true;render();await loadDetail(view.postId);loading=false}
+  else if(page==="explore"||page==="mine"){if(!feed.length)loading=true;render();await loadFeed();loading=false}
+  render();
+}
+async function refreshDetail(){await loadDetail(view.postId);render(true)}
 
 /* ======================= views ======================= */
 function postCard(p){
   const isL=p.type==="lyrics";
-  const votes=p.proposals.reduce((a,x)=>a+x.votes.length,0);
   return `<div class="card click" data-open="${p.id}">
     <div class="row between"><span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>
     ${p.status==="closed"?`<span class="badge c">✓ ${t("closed")}</span>`:""}</div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="meta">${t("by")} ${esc(p.author)} · ${esc(p.genre)} · ${ago(p.createdAt)}</div>
     ${p.mood?`<div style="font-size:13.5px;margin-top:6px;color:#d8d2e8">${esc(p.mood)}</div>`:""}
-    ${isL?`<div class="lyrics locked">${esc(p.text.split("\n").slice(0,2).join("\n"))}</div>`:`<div data-audio="${p.audioId}"></div>`}
-    <div class="stats"><span>💬 ${p.proposals.length} ${t("proposals")}</span><span>▲ ${votes} ${t("votes")}</span><span>${t("split")} ${isL?p.split:100-p.split}/${isL?100-p.split:p.split}</span></div>
+    ${isL?`<div class="lyrics locked">${esc(p.preview)}</div>`:(canSee(p)&&p.audioPath?`<div data-audio="${esc(p.audioPath)}"></div>`:`<div class="lyrics locked" style="font-family:Inter;font-size:14px;color:var(--muted)">♪ ••• ••• ••• •••\n♪ ••• •••</div>`)}
+    <div class="stats"><span>💬 ${p.proposalCount} ${t("proposals")}</span><span>▲ ${p.voteCount} ${t("votes")}</span><span>${t("split")} ${isL?p.split:100-p.split}/${isL?100-p.split:p.split}</span></div>
   </div>`;
 }
 function renderExplore(){
-  const list=posts.filter(p=>view.tab==="all"||p.type===view.tab).sort((a,b)=>b.createdAt-a.createdAt);
+  const list=feed.filter(p=>view.tab==="all"||p.type===view.tab);
   return `<div class="demo">${t("demo")}</div>
   <div class="challenge"><small>${t("chTag")}</small><h3>${t("chTitle")}</h3><p>${t("chText")}</p></div>
-  ${list.length?list.map(postCard).join(""):`<div class="empty">${t("emptyList")}</div>`}`;
+  ${list.length?list.map(postCard).join(""):`<div class="empty">${t("emptyList")}<br><br><button class="btn pri" data-nav="new">＋ ${t("publish")}</button></div>`}`;
 }
 function splitBar(p){
   const lp=p.type==="lyrics"?p.split:100-p.split, mp=100-lp;
@@ -358,19 +381,19 @@ function splitBar(p){
 function stars(val,attr){return `<div class="stars">${[1,2,3,4,5].map(i=>`<button class="star ${i<=val?"on":""}" ${attr} data-v="${i}">★</button>`).join("")}</div>`}
 function avg(r,k){const v=Object.values(r).map(x=>x[k]).filter(Boolean);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):"–"}
 function renderPost(p){
-  if(!p)return `<div class="empty">—</div>`;
-  const isL=p.type==="lyrics", owner=p.author===me, unlocked=p.unlocked.includes(me);
-  const mine=p.proposals.find(x=>x.author===me);
+  if(!p)return `<button class="back" data-nav="explore">← ${t("back")}</button><div class="empty">—</div>`;
+  const isL=p.type==="lyrics", owner=p.authorId===me, unlocked=canSee(p);
+  const mine=p.proposals.find(x=>x.authorId===me);
   let html=`<button class="back" data-nav="explore">← ${t("back")}</button>
   <div class="card">
     <span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>
     <div class="ptitle" style="font-size:26px">${esc(p.title)}</div>
     <div class="row meta" style="margin-top:4px">${av(p.author)} ${esc(p.author)} · ${esc(p.genre)} · ${ago(p.createdAt)}</div>
     ${p.mood?`<p style="margin-top:10px;font-size:14px">${esc(p.mood)}</p>`:""}
-    ${isL?`<div class="lyrics ${unlocked?"":"locked"}">${esc(unlocked?p.text:p.text.split("\n").slice(0,2).join("\n"))}</div>`
-         :(unlocked?`<div data-audio="${p.audioId}"></div>`:`<div class="lyrics locked" style="font-family:Inter;font-size:14px;color:var(--muted)">♪ ••• ••• ••• •••\n♪ ••• •••</div>`)}
+    ${isL?`<div class="lyrics ${p.text?"":"locked"}">${esc(p.text||p.preview)}</div>`
+         :(unlocked&&p.audioPath?`<div data-audio="${esc(p.audioPath)}"></div>`:`<div class="lyrics locked" style="font-family:Inter;font-size:14px;color:var(--muted)">♪ ••• ••• ••• •••\n♪ ••• •••</div>`)}
     <div style="margin-top:12px">${splitBar(p)}</div>
-    <div class="hash" title="${t("fp")}">${t("fp")}: ${p.hash.slice(0,32)}…<br>${t("date")}: ${fdate(p.createdAt)}</div>
+    <div class="hash">${t("fp")}: ${esc(p.hash.slice(0,32))}…<br>${t("date")}: ${fdate(p.createdAt)}</div>
     <div style="margin-top:12px">
     ${owner?`<div class="meta">${t("own")}</div>`
       :!unlocked?`<button class="btn pri full" data-unlock="${p.id}">🔓 ${t("seeFull")}</button>`
@@ -380,43 +403,43 @@ function renderPost(p){
     </div>
   </div>`;
   if(p.agreement)html+=renderAgreement(p);
-  html+=`<div class="sect">${t("propsTitle")} (${p.proposals.length})</div>`;
-  if(!p.proposals.length)html+=`<div class="empty" style="padding:16px">${t("noProps")}</div>`;
-  const canSee=owner||unlocked;
+  html+=`<div class="sect">${t("propsTitle")} (${unlocked?p.proposals.length:p.proposalCount})</div>`;
+  if(!unlocked&&p.proposalCount)html+=`<div class="meta" style="padding:6px 2px 10px">🔒 ${t("needRuleFirst")}</div>`;
+  if(unlocked&&!p.proposals.length)html+=`<div class="empty" style="padding:16px">${t("noProps")}</div>`;
   [...p.proposals].sort((a,b)=>b.votes.length-a.votes.length).forEach(x=>{
-    const seeX=canSee||x.author===me, myR=x.ratings[me]||{l:0,m:0,h:0}, voted=x.votes.includes(me), chosen=p.chosenId===x.id;
+    const myR=x.ratings[me]||{l:0,m:0,h:0}, voted=x.votes.includes(me), chosen=p.chosenId===x.id, own=x.authorId===me;
     html+=`<div class="prop ${chosen?"chosen":""}">
       <div class="row between"><div class="row">${av(x.author)}<b>${esc(x.author)}</b><span class="meta">· ${ago(x.createdAt)}</span></div>
       ${chosen?`<span class="badge c">✓ ${t("chosen")}</span>`:""}</div>
-      ${x.mixed?`<span class="badge m" style="margin-top:8px">🎙 ${t("stMixedBadge")}</span>`:""}${x.note?`<p style="font-size:14px;margin-top:8px">${esc(x.note)}</p>`:""}
-      ${seeX?`${x.text?`<div class="lyrics" style="background:#15121f">${esc(x.text)}</div>`:""}${x.audioId?`<div data-audio="${x.audioId}"></div>`:""}`
-        :`<div class="meta" style="margin-top:8px">🔒 ${t("needRuleFirst")}</div>`}
-      <div class="hash">${t("fp")}: ${x.hash.slice(0,24)}… · ${fdate(x.createdAt)}</div>
+      ${x.mixed?`<span class="badge m" style="margin-top:8px">🎙 ${t("stMixedBadge")}</span>`:""}
+      ${x.note?`<p style="font-size:14px;margin-top:8px">${esc(x.note)}</p>`:""}
+      ${x.text?`<div class="lyrics" style="background:#15121f">${esc(x.text)}</div>`:""}${x.audioPath?`<div data-audio="${esc(x.audioPath)}"></div>`:""}
+      <div class="hash">${t("fp")}: ${esc(x.hash.slice(0,24))}… · ${fdate(x.createdAt)}</div>
       <div class="row between" style="margin-top:10px">
-        <button class="btn sec" data-vote="${p.id}|${x.id}" ${x.author===me?"disabled":""}>▲ ${voted?t("voted"):t("vote")} · ${x.votes.length}</button>
-        ${owner&&p.status==="open"?`<button class="btn pri" data-choose="${p.id}|${x.id}">${t("choose")}</button>`:""}
+        <button class="btn sec" data-vote="${x.id}" ${own?"disabled":""}>▲ ${voted?t("voted"):t("vote")} · ${x.votes.length}</button>
+        ${owner&&p.status==="open"?`<button class="btn pri" data-choose="${x.id}">${t("choose")}</button>`:""}
       </div>
-      ${canSee&&x.author!==me?`<div class="rate">
-        <span>${t("rateL")}</span>${stars(myR.l,`data-rate="${p.id}|${x.id}|l"`)}
-        <span>${t("rateM")}</span>${stars(myR.m,`data-rate="${p.id}|${x.id}|m"`)}
-        <span>${t("rateH")}</span>${stars(myR.h,`data-rate="${p.id}|${x.id}|h"`)}
+      ${!own?`<div class="rate">
+        <span>${t("rateL")}</span>${stars(myR.l,`data-rate="${x.id}|l"`)}
+        <span>${t("rateM")}</span>${stars(myR.m,`data-rate="${x.id}|m"`)}
+        <span>${t("rateH")}</span>${stars(myR.h,`data-rate="${x.id}|h"`)}
       </div>`:""}
       <div class="meta" style="margin-top:6px">${t("ratedAvg")}: ${t("rateL")} ${avg(x.ratings,"l")} · ${t("rateM")} ${avg(x.ratings,"m")} · ${t("rateH")} ${avg(x.ratings,"h")}</div>
       ${x.comments.map(c=>`<div class="comment"><b>${esc(c.u)}</b> <span class="meta">${ago(c.ts)}</span><br>${esc(c.c)}</div>`).join("")}
-      ${canSee?`<form class="row" style="margin-top:8px;flex-wrap:nowrap" data-comment="${p.id}|${x.id}"><input name="c" placeholder="${t("commentPh")}" style="padding:8px 10px"><button class="btn sec" style="padding:8px 12px">${t("comment")}</button></form>`:""}
+      <form class="row" style="margin-top:8px;flex-wrap:nowrap" data-comment="${x.id}"><input name="c" placeholder="${t("commentPh")}" maxlength="500" style="padding:8px 10px"><button class="btn sec" style="padding:8px 12px">${t("comment")}</button></form>
     </div>`;
   });
   return html;
 }
 function renderAgreement(p){
-  const a=p.agreement, done=a.parties.every(x=>a.sigs[x.name]);
+  const a=p.agreement, done=a.parties.every(x=>a.sigs[x.id]);
   return `<div class="card agree">
     <div class="row between"><b style="font-size:16px">📜 ${t("agreement")}</b>${done?`<span class="badge c">✓</span>`:`<span class="badge o">${t("pending")}</span>`}</div>
     <div class="meta" style="margin-top:4px">“${esc(p.title)}” · ${fdate(a.createdAt)}</div>
     ${a.parties.map(x=>`<div class="sig"><span class="row">${av(x.name)} ${esc(x.name)} · ${x.role==="l"?"✎ "+t("lyricsW"):"♪ "+t("musicW")} <b>${x.pct}%</b></span>
-      ${a.sigs[x.name]?`<span class="ok">✓ ${t("signed")}</span>`:x.name===me?`<button class="btn pri" style="padding:7px 12px" data-sign="${p.id}">${t("signWith")}</button>`:`<button class="pend" data-switch="${esc(x.name)}" title="${t("switchTo")}">${t("pending")} ↺</button>`}
+      ${a.sigs[x.id]?`<span class="ok">✓ ${t("signed")}</span>`:x.id===me?`<button class="btn pri" style="padding:7px 12px" data-sign="${a.id}">${t("signWith")}</button>`:`<span class="pend">${t("pending")}</span>`}
     </div>`).join("")}
-    <div class="hash">${t("fp")}: ${a.hash}</div>
+    <div class="hash">${t("fp")}: ${esc(a.hash)}</div>
     <div class="hint">${done?"✅ "+t("allSigned"):t("sigNote")}</div>
   </div>`;
 }
@@ -432,35 +455,47 @@ function renderNew(){
     <label>${t("title")}</label><input name="title" maxlength="80" value="${esc(draft.title||"")}">
     <label>${t("genre")}</label><select name="genre">${T[lang].genres.map((g,i)=>`<option value="${i}" ${+draft.genre===i?"selected":""}>${g}</option>`).join("")}</select>
     <label>${t("mood")}</label><input name="mood" placeholder="${t("moodPh")}" maxlength="140" value="${esc(draft.mood||"")}">
-    ${isL?`<label>${t("lyrics")}</label><textarea name="text" placeholder="${t("lyricsPh")}" style="min-height:180px">${esc(draft.text||"")}</textarea>`
+    ${isL?`<label>${t("lyrics")}</label><textarea name="text" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:180px">${esc(draft.text||"")}</textarea>`
       :`<label>${t("audio")}</label><div class="file" id="fileBox">${draft.fileName?"🎵 "+esc(draft.fileName):"⬆ "+t("audioPick")}<input type="file" accept="audio/*" id="fileIn"></div><div class="hint">${t("audioHint")}</div>`}
     <label>${t("splitL")}</label>
     <div class="range"><input type="range" min="10" max="90" step="5" value="${draft.split}" id="splitIn"></div>
     <div class="row between meta" style="margin-top:4px"><span>${t("you")} (${isL?t("lyricsW"):t("musicW")}): <b id="sMe">${draft.split}%</b></span><span>${t("collab")}: <b id="sOt">${100-draft.split}%</b></span></div>
-    <button class="btn pri full" style="margin-top:20px">${t("post")}</button>
+    <button class="btn pri full" style="margin-top:20px" id="postBtn">${t("post")}</button>
   </form>`;
 }
 function renderMine(){
-  const mp=posts.filter(p=>p.author===me), pr=posts.filter(p=>p.proposals.some(x=>x.author===me));
-  return `<div class="row" style="margin:4px 0 6px">${av(me)}<b style="font-size:18px">${esc(me)}</b></div>
+  const mp=feed.filter(p=>p.authorId===me), pr=feed.filter(p=>myPropPosts.has(p.id));
+  return `<div class="row between" style="margin:4px 0 6px"><div class="row">${av(meName||"?")}<b style="font-size:18px">${esc(meName)}</b></div><button class="btn ghost" data-editname>✎ ${t("editName")}</button></div>
   <div class="sect">${t("myPosts")}</div>${mp.length?mp.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}
   <div class="sect">${t("myProps")}</div>${pr.length?pr.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}`;
 }
 async function hydrateAudio(){
   for(const el of document.querySelectorAll("[data-audio]")){
-    const b=await getAudio(el.dataset.audio);
-    if(b){const a=document.createElement("audio");a.controls=true;a.preload="metadata";a.src=URL.createObjectURL(b);el.replaceWith(a)}
-    else el.innerHTML=`<div class="meta" style="margin-top:8px">♪ audio no disponible en este dispositivo</div>`;
+    const path=el.dataset.audio;
+    try{const url=await signedUrl(path);const a=document.createElement("audio");a.controls=true;a.preload="metadata";a.src=url;el.replaceWith(a)}
+    catch(e){el.innerHTML=`<div class="meta" style="margin-top:8px">♪ ${t("noAudio")}</div>`}
   }
 }
 
 /* ======================= actions ======================= */
 function unlockSheet(id){
+  const p=detail;
   sheet(`<h3>${t("unlockTitle")}</h3><p>${t("unlockText")}</p>
   <ul class="rules"><li>${t("r1")}</li><li>${t("r2")}</li><li>${t("r3")}</li></ul>
-  ${splitBar(P(id))}
-  <div class="row" style="margin-top:18px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button><button class="btn pri" style="flex:2" data-doUnlock="${id}">${t("accept")}</button></div>`);
+  ${splitBar(p)}
+  <div class="row" style="margin-top:18px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button><button class="btn pri" style="flex:2" data-dounlock="${id}">${t("accept")}</button></div>`);
 }
+function nameSheet(first){
+  sheet(`<h3>${t("nameTitle")}</h3><p>${t("nameText")}</p>
+  <form id="nameForm"><input name="n" maxlength="24" value="${esc(meName||"")}" placeholder="${t("namePh")}" autocomplete="nickname">
+  <button class="btn pri full" style="margin-top:14px">${t("save")}</button></form>`);
+  if(first){document.getElementById("ov").onclick=null}
+  document.getElementById("nameForm").onsubmit=async e=>{e.preventDefault();const n=new FormData(e.target).get("n").trim();if(!n)return;
+    const {error}=await sb.from("duetto_profiles").upsert({id:me,name:n});if(error)return fail(error);
+    meName=n;closeSheet();render(true)};
+}
+function requireName(){if(!meName){nameSheet(true);return false}return true}
+
 /* ======================= studio: grabar tu voz sobre la música ======================= */
 const S={ctx:null,back:null,voc:null,vocBlob:null,offset:0,gM:.8,gV:1,rec:null,nodes:[],t0:0,endAt:0,raf:0,mode:"idle"};
 function actx(){if(!S.ctx)S.ctx=new (window.AudioContext||window.webkitAudioContext)();return S.ctx}
@@ -536,19 +571,20 @@ function wireStudio(){
 function updOff(){const e=document.getElementById("stOffV");if(e)e.textContent=(S.offset>0?"+":"")+S.offset+" ms"}
 
 function proposeSheet(id){
-  const p=P(id),isL=p.type==="lyrics";
+  const p=detail,isL=p.type==="lyrics";
   Object.assign(S,{back:null,voc:null,vocBlob:null,offset:0,gM:.8,gV:1,mode:"idle"});
   sheet(`<h3>${isL?t("propTitleL"):t("propTitleM")}</h3><p>“${esc(p.title)}” · ${esc(p.author)}</p>
   <form id="propForm">
-    ${isL?"":`<label>${t("lyrics")}</label><textarea name="text" id="propText" placeholder="${t("lyricsPh")}" style="min-height:150px"></textarea>`}
-    <div id="studioWrap">${studioHTML(isL?p.text:"",!isL)}</div>
+    ${isL?"":`<label>${t("lyrics")}</label><textarea name="text" id="propText" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:150px"></textarea>`}
+    <div id="studioWrap">${studioHTML(isL?(p.text||""):"",!isL)}</div>
     <label>${t("note")}</label><input name="note" placeholder="${t("notePh")}" maxlength="200">
     <div style="margin-top:14px">${splitBar(p)}</div>
     <label class="row" style="color:var(--text);font-size:14px;margin-top:12px;flex-wrap:nowrap"><input type="checkbox" name="ok" style="width:auto"> ${t("agreeSplit")}</label>
-    <button class="btn pri full" style="margin-top:14px">${t("sendProp")}</button>
+    <button class="btn pri full" style="margin-top:14px" id="propBtn">${t("sendProp")}</button>
   </form>`);
   wireStudio();
-  if(!isL){getAudio(p.audioId).then(async b=>{if(b){try{S.back=await decodeBlob(b);S.endAt=0;const tm=document.getElementById("stTime");if(tm)tm.textContent="0:00 / "+fmt(S.back.duration)}catch(e){}}});
+  if(!isL&&p.audioPath){(async()=>{try{const r=await fetch(await signedUrl(p.audioPath));S.back=await decodeBlob(await r.blob());
+      const tm=document.getElementById("stTime");if(tm)tm.textContent="0:00 / "+fmt(S.back.duration)}catch(e){fail(e)}})();
     const ta=document.getElementById("propText");ta.oninput=()=>{document.getElementById("kara").textContent=ta.value||""}}
   document.getElementById("propForm").onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.target);
@@ -556,49 +592,43 @@ function proposeSheet(id){
     if(!isL&&!text)return toast(t("lyricsPh"));
     if(isL&&!S.voc)return toast(t("stNeedRec"));
     if(!f.get("ok"))return toast(t("agreeSplit")+" ✓");
-    stopAll();let audioId=null,mixed=false;
-    if(S.voc){const blob=await renderMix();audioId="a-"+uid();putAudio(audioId,blob);mixed=!!S.back}
-    const hash=await sha(audioId?audioMem.get(audioId):text);
-    p.proposals.push({id:uid(),author:me,text:text||null,audioId,mixed,note:(f.get("note")||"").trim(),createdAt:Date.now(),hash,votes:[],ratings:{},comments:[]});
-    persist();closeSheet();toast(t("sent"));render();
+    if(!isL&&S.voc&&!S.back)return toast(t("loading"));
+    const btn=document.getElementById("propBtn");btn.disabled=true;btn.textContent=t("uploading");
+    try{
+      stopAll();let audio_path=null,mixed=false,hashSrc=text;
+      if(S.voc){const blob=await renderMix();mixed=!!S.back;hashSrc=blob;audio_path=await uploadAudio(blob)}
+      const hash=await sha(hashSrc);
+      const {error}=await sb.from("duetto_proposals").insert({post_id:p.id,text:text||null,audio_path,mixed,note:(f.get("note")||"").trim()||null,hash});
+      if(error)throw error;
+      myPropPosts.add(p.id);closeSheet();toast(t("sent"));await refreshDetail();
+    }catch(err){btn.disabled=false;btn.textContent=t("sendProp");fail(err)}
   };
 }
-async function choose(pid,xid){
-  const p=P(pid),x=p.proposals.find(y=>y.id===xid);
-  const isL=p.type==="lyrics", lp=isL?p.split:100-p.split;
-  const parties=isL?[{name:p.author,role:"l",pct:lp},{name:x.author,role:"m",pct:100-lp}]:[{name:x.author,role:"l",pct:lp},{name:p.author,role:"m",pct:100-lp}];
-  const createdAt=Date.now();
-  const body=JSON.stringify({app:"duetto",work:p.title,parties,workHash:p.hash,proposalHash:x.hash,createdAt});
-  p.chosenId=xid;p.status="closed";p.agreement={parties,createdAt,hash:await sha(body),sigs:{}};
-  persist();toast(t("chosenToast"));render();
-}
-function userSheet(){
-  sheet(`<h3>${t("whoAreYou")}</h3><p>${t("whoText")}</p>
-  <div class="userlist">${users.map(u=>`<button class="${u===me?"on":""}" data-user="${esc(u)}">${av(u)} ${esc(u)} ${u===me?"✓":""}</button>`).join("")}</div>
-  <form id="uForm" class="row" style="margin-top:12px;flex-wrap:nowrap"><input name="n" placeholder="${t("newUser")}" maxlength="24"><button class="btn sec">${t("add")}</button></form>`);
-  document.getElementById("uForm").onsubmit=e=>{e.preventDefault();const n=new FormData(e.target).get("n").trim();if(n&&!users.includes(n)){users.push(n)}if(n){me=n;persist();closeSheet();render()}};
-}
 
-document.addEventListener("click",e=>{
+/* ======================= events ======================= */
+document.addEventListener("click",async e=>{
   if(e.target.closest("audio,input,textarea,select"))return;
   const el=e.target.closest("button,[data-open]");if(!el)return;
   const d=el.dataset;
+  try{
   if(d.tab){view.tab=d.tab;render()}
-  else if(d.nav){if(d.nav==="new")draft={type:"lyrics",split:50,genre:0};go(d.nav)}
+  else if(d.nav){if(d.nav==="new"){if(!requireName())return;draft={type:"lyrics",split:50,genre:0}}go(d.nav)}
   else if(d.open){go("post",{postId:d.open})}
-  else if(d.unlock){unlockSheet(d.unlock)}
-  else if(d.dounlock!==undefined||el.hasAttribute("data-doUnlock")){const id=el.getAttribute("data-doUnlock");const p=P(id);if(!p.unlocked.includes(me))p.unlocked.push(me);persist();closeSheet();render()}
+  else if(d.unlock){if(requireName())unlockSheet(d.unlock)}
+  else if(d.dounlock){const {error}=await sb.from("duetto_unlocks").insert({post_id:d.dounlock,user_id:me});if(error&&error.code!=="23505")return fail(error);myUnlocks.add(d.dounlock);closeSheet();await refreshDetail()}
   else if(el.hasAttribute("data-close")){closeSheet()}
-  else if(d.propose){proposeSheet(d.propose)}
-  else if(d.vote){const [pid,xid]=d.vote.split("|");const x=P(pid).proposals.find(y=>y.id===xid);const i=x.votes.indexOf(me);i<0?x.votes.push(me):x.votes.splice(i,1);persist();view.keepScroll=true;render()}
-  else if(d.rate){const [pid,xid,k]=d.rate.split("|");const x=P(pid).proposals.find(y=>y.id===xid);x.ratings[me]=x.ratings[me]||{l:0,m:0,h:0};x.ratings[me][k]=+d.v;persist();view.keepScroll=true;render()}
-  else if(d.choose){const [pid,xid]=d.choose.split("|");choose(pid,xid)}
-  else if(d.sign){const p=P(d.sign);p.agreement.sigs[me]=Date.now();persist();toast(t("signedToast"));view.keepScroll=true;render()}
-  else if(d.switch){me=d.switch;persist();toast("↺ "+me);view.keepScroll=true;render()}
+  else if(d.propose){if(requireName())proposeSheet(d.propose)}
+  else if(d.vote){const x=detail.proposals.find(y=>y.id===d.vote);const has=x.votes.includes(me);
+    const {error}=has?await sb.from("duetto_votes").delete().eq("proposal_id",x.id).eq("user_id",me):await sb.from("duetto_votes").insert({proposal_id:x.id,user_id:me});
+    if(error)return fail(error);await refreshDetail()}
+  else if(d.rate){const [xid,k]=d.rate.split("|");const x=detail.proposals.find(y=>y.id===xid);const r={...(x.ratings[me]||{l:0,m:0,h:0}),[k]:+d.v};
+    const {error}=await sb.from("duetto_ratings").upsert({proposal_id:xid,user_id:me,...r},{onConflict:"proposal_id,user_id"});if(error)return fail(error);x.ratings[me]=r;render(true)}
+  else if(d.choose){el.disabled=true;const {error}=await sb.from("duetto_agreements").insert({post_id:detail.id,proposal_id:d.choose});if(error){el.disabled=false;return fail(error)}toast(t("chosenToast"));await refreshDetail()}
+  else if(d.sign){el.disabled=true;const {error}=await sb.from("duetto_signatures").insert({agreement_id:d.sign,user_id:me});if(error){el.disabled=false;return fail(error)}toast(t("signedToast"));await refreshDetail()}
   else if(d.type){draft.type=d.type;draft.fileName=null;draft.file=null;render()}
-  else if(d.user){me=d.user;persist();closeSheet();render()}
-  else if(el.id==="userBtn"){userSheet()}
-  else if(el.id==="langBtn"){lang=lang==="es"?"en":"es";persist();render()}
+  else if(el.hasAttribute("data-editname")||el.id==="userBtn"){nameSheet(false)}
+  else if(el.id==="langBtn"){lang=lang==="es"?"en":"es";save("duetto_lang",lang);render(true)}
+  }catch(err){fail(err)}
 });
 document.addEventListener("input",e=>{
   if(e.target.id==="splitIn"){draft.split=+e.target.value;document.getElementById("sMe").textContent=draft.split+"%";document.getElementById("sOt").textContent=(100-draft.split)+"%"}
@@ -612,24 +642,41 @@ document.addEventListener("submit",async e=>{
     e.preventDefault();const f=new FormData(e.target);
     const title=f.get("title").trim(),isL=draft.type==="lyrics",text=(f.get("text")||"").trim();
     if(!title||(isL&&!text)||(!isL&&!draft.file))return toast(t("needFields"));
-    let audioId=null;if(!isL){audioId="a-"+uid();putAudio(audioId,draft.file)}
-    const p={id:uid(),type:draft.type,author:me,title,genre:T[lang].genres[+f.get("genre")],mood:f.get("mood").trim(),text:isL?text:null,audioId,split:draft.split,createdAt:Date.now(),hash:await sha(isL?text:draft.file),status:"open",unlocked:[me],proposals:[]};
-    posts.unshift(p);persist();toast(t("posted"));go("post",{postId:p.id});
+    const btn=document.getElementById("postBtn");btn.disabled=true;btn.textContent=t("uploading");
+    try{
+      let audio_path=null;if(!isL)audio_path=await uploadAudio(draft.file);
+      const hash=await sha(isL?text:draft.file);
+      const preview=isL?text.split("\n").filter(Boolean).slice(0,2).join("\n").slice(0,300):null;
+      const {data,error}=await sb.from("duetto_posts").insert({type:draft.type,title,genre:T[lang].genres[+f.get("genre")],mood:f.get("mood").trim()||null,preview,audio_path,split:draft.split,hash,author_id:me}).select("id").single();
+      if(error)throw error;
+      if(isL){const r=await sb.from("duetto_post_content").insert({post_id:data.id,text});if(r.error)throw r.error}
+      toast(t("posted"));draft={type:"lyrics",split:50,genre:0};go("post",{postId:data.id});
+    }catch(err){btn.disabled=false;btn.textContent=t("post");fail(err)}
   } else if(e.target.dataset.comment){
-    e.preventDefault();const [pid,xid]=e.target.dataset.comment.split("|");const c=new FormData(e.target).get("c").trim();if(!c)return;
-    P(pid).proposals.find(y=>y.id===xid).comments.push({u:me,c,ts:Date.now()});persist();view.keepScroll=true;render();
+    e.preventDefault();const c=new FormData(e.target).get("c").trim();if(!c)return;if(!requireName())return;
+    const {error}=await sb.from("duetto_comments").insert({proposal_id:e.target.dataset.comment,body:c,user_id:me});if(error)return fail(error);
+    await refreshDetail();
   }
 });
 function fromHash(){const h=location.hash.slice(1);if(["explore","new","mine"].includes(h))view.page=h}
-window.addEventListener("hashchange",()=>{fromHash();render()});
+window.addEventListener("hashchange",()=>{fromHash();go(view.page)});
 
-(async()=>{await openDB();if(!posts)await seed();else{
-  // regenerate seed audio if storage was lost
-  for(const [id,notes,bpm] of [["seed-a1",[392,494,587,494,440,523,659,523,392,494,587,784,698,587,494,0],104],["seed-a2",[330,392,494,392,349,440,523,440,294,349,440,349,330,0,330,0],92],["seed-p1",[440,0,494,523,494,440,392,0,440,494,523,587,523,494,440,0],100]])
-    if(!(await getAudio(id)))putAudio(id,makeDemoAudio(notes,bpm));
-}
-fromHash();render()})();
+/* ======================= boot ======================= */
+(async()=>{
+  render();
+  try{
+    let {data:{session}}=await sb.auth.getSession();
+    if(!session){const {data,error}=await sb.auth.signInAnonymously();if(error)throw error;session=data.session}
+    me=session.user.id;
+    const {data:prof}=await sb.from("duetto_profiles").select("name").eq("id",me).maybeSingle();
+    meName=prof?.name||"";
+    fromHash();
+    await go(view.page==="post"?"explore":view.page);
+    if(!meName)nameSheet(true);
+  }catch(err){loading=false;document.getElementById("main").innerHTML=`<div class="empty">⚠️ ${t("authErr")}<br><br><span class="hash">${esc(err?.message||err)}</span></div>`}
+})();
 try{if('serviceWorker' in navigator&&window.top===window.self&&location.protocol==='https:')navigator.serviceWorker.register('sw.js')}catch(e){}
+
 </script>
 </body>
 </html>
