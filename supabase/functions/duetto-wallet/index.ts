@@ -53,6 +53,17 @@ async function anchorAgreement(admin: any, ag: { id: string; hash: string }) {
   }
   throw new Error("Solana is slow, try again in a minute / Solana va lenta, intenta en un minuto");
 }
+// Limits so nobody can drain the fee wallet with fake agreements.
+const MAX_ANCHORS_PER_USER_DAY = 5, MAX_ANCHORS_TOTAL_DAY = 300;
+async function anchorAllowed(admin: any, userId: string) {
+  const since = new Date(Date.now() - 86400e3).toISOString();
+  const mine = await admin.from("duetto_agreements").select("id", { count: "exact", head: true })
+    .contains("parties", [{ id: userId }]).gte("anchored_at", since);
+  if ((mine.count ?? 0) >= MAX_ANCHORS_PER_USER_DAY) return "Límite diario de registros en Solana alcanzado / Daily Solana record limit reached";
+  const all = await admin.from("duetto_agreements").select("id", { count: "exact", head: true }).gte("anchored_at", since);
+  if ((all.count ?? 0) >= MAX_ANCHORS_TOTAL_DAY) return "Duetto alcanzó su límite diario de registros, intenta mañana / Duetto daily limit reached, try tomorrow";
+  return null;
+}
 const allWallet = async (admin: any, ag: { id: string; parties: { id: string }[] }) => {
   const { data: sigs } = await admin.from("duetto_signatures").select("user_id, method").eq("agreement_id", ag.id);
   return ag.parties.every((p) => (sigs ?? []).some((s: any) => s.user_id === p.id && s.method === "wallet"));
@@ -96,6 +107,8 @@ Deno.serve(async (req) => {
         { onConflict: "agreement_id,user_id" });
       if (error) return json({ error: error.message }, 500);
       if (await allWallet(admin, { id: ag.id, parties })) {
+        const limit = await anchorAllowed(admin, user.id);
+        if (limit) return json({ ok: true, anchorError: limit });
         try { return json({ ok: true, anchored: await anchorAgreement(admin, ag) }); }
         catch (e) { return json({ ok: true, anchorError: String((e as Error).message) }); }
       }
@@ -105,6 +118,8 @@ Deno.serve(async (req) => {
     if (body.action === "anchor") {
       if (ag.anchor_tx) return json({ ok: true, tx: ag.anchor_tx });
       if (!(await allWallet(admin, { id: ag.id, parties }))) return json({ error: "all parties must sign with a wallet first" }, 400);
+      const limit = await anchorAllowed(admin, user.id);
+      if (limit) return json({ error: limit }, 429);
       return json({ ok: true, tx: await anchorAgreement(admin, ag) });
     }
     return json({ error: "unknown action" }, 400);
