@@ -48,10 +48,10 @@ const T = {
     stPhones:"Usa audífonos para que la música no se grabe junto con tu voz.", stBadFile:"No pude leer ese audio.", stNeedRec:"Graba o sube tu melodía primero.", stMixedBadge:"Voz + música",
     err:"Algo falló: ", loading:"Cargando…", uploading:"Subiendo…", nameTitle:"¿Cómo te llamas?", nameText:"Así te verán los demás compositores.", namePh:"Tu nombre artístico", save:"Guardar", editName:"Cambiar nombre",
     authErr:"No se pudo iniciar sesión. Revisa tu conexión e intenta de nuevo.", noAudio:"No se pudo cargar el audio",
-    wSign:"Firmar con wallet", wSignAcct:"Firmar sin wallet", wAdd:"Añadir firma con wallet", wSigned:"Firmado con wallet", wSignedAcct:"Firmado",
+    wSign:"Firmar con wallet", wSignAcct:"Firmar sin wallet", wSignEmail:"✉️ Firmar con mi correo", wSignedEmail:"Firmado con correo", wNeedEmail:"Para firmar sin wallet, primero protege tu cuenta con tu correo.", wOld:"Firma simple (sin verificar)", wAdd:"Añadir firma con wallet", wSigned:"Firmado con wallet", wSignedAcct:"Firmado",
     wPick:"Escoge tu wallet", wWillSign:"Vas a firmar este texto. Firmar es gratis, no mueve fondos:", wNone:"No encontré ninguna wallet de Solana en este navegador.",
     wOpenIn:"Abre Duetto dentro de tu wallet:", wAnchor:"Registrar en Solana", wAnchorCost:"Guarda la huella del acuerdo en Solana como prueba pública. Duetto paga la comisión; no necesitas SOL.", wWorking2:"Registrando en Solana…",
-    wAnchored:"Registrado en Solana", wView:"Ver en Solscan", wWorking:"Esperando a la wallet…", wNeedAllWallet:"Cuando todos firmen con wallet, Duetto lo registra en Solana automáticamente.",
+    wAnchored:"Registrado en Solana", wView:"Ver en Solscan", wWorking:"Esperando a la wallet…", wNeedAllWallet:"Cuando todos firmen (con wallet o con correo verificado), Duetto lo registra en Solana automáticamente.",
     wDone:"Firma verificada ✓", wAnchorDone:"¡Registrado en Solana!", wLoading:"Cargando wallets…",
     genres:["Bachata","Balada","Bolero","Merengue","Pop","Reguetón","Salsa","R&B","Rock","Otro"]
   },
@@ -103,10 +103,10 @@ const T = {
     stPhones:"Use headphones so the music doesn't get recorded with your voice.", stBadFile:"Couldn't read that audio.", stNeedRec:"Record or upload your melody first.", stMixedBadge:"Voice + music",
     err:"Something failed: ", loading:"Loading…", uploading:"Uploading…", nameTitle:"What's your name?", nameText:"This is how other songwriters will see you.", namePh:"Your artist name", save:"Save", editName:"Change name",
     authErr:"Couldn't sign in. Check your connection and try again.", noAudio:"Couldn't load the audio",
-    wSign:"Sign with wallet", wSignAcct:"Sign without wallet", wAdd:"Add wallet signature", wSigned:"Signed with wallet", wSignedAcct:"Signed",
+    wSign:"Sign with wallet", wSignAcct:"Sign without wallet", wSignEmail:"✉️ Sign with my email", wSignedEmail:"Signed with email", wNeedEmail:"To sign without a wallet, first protect your account with your email.", wOld:"Simple signature (unverified)", wAdd:"Add wallet signature", wSigned:"Signed with wallet", wSignedAcct:"Signed",
     wPick:"Choose your wallet", wWillSign:"You're about to sign this text. Signing is free and moves no funds:", wNone:"I couldn't find a Solana wallet in this browser.",
     wOpenIn:"Open Duetto inside your wallet:", wAnchor:"Record on Solana", wAnchorCost:"Stores the agreement fingerprint on Solana as public proof. Duetto pays the fee; you don't need SOL.", wWorking2:"Recording on Solana…",
-    wAnchored:"Recorded on Solana", wView:"View on Solscan", wWorking:"Waiting for the wallet…", wNeedAllWallet:"Once everyone signs with a wallet, Duetto records it on Solana automatically.",
+    wAnchored:"Recorded on Solana", wView:"View on Solscan", wWorking:"Waiting for the wallet…", wNeedAllWallet:"Once everyone signs (with a wallet or a verified email), Duetto records it on Solana automatically.",
     wDone:"Signature verified ✓", wAnchorDone:"Recorded on Solana!", wLoading:"Loading wallets…",
     genres:["Bachata","Ballad","Bolero","Merengue","Pop","Reggaeton","Salsa","R&B","Rock","Other"]
   }
@@ -538,16 +538,16 @@ function renderPost(p){
   return html;
 }
 function renderAgreement(p){
-  const a=p.agreement, done=a.parties.every(x=>a.sigs[x.id]), allW=a.parties.every(x=>a.sigs[x.id]?.method==="wallet"), party=a.parties.some(x=>x.id===me);
+  const a=p.agreement, done=a.parties.every(x=>a.sigs[x.id]), allW=a.parties.every(x=>["wallet","email"].includes(a.sigs[x.id]?.method)), party=a.parties.some(x=>x.id===me);
   return `<div class="card agree">
     <div class="row between"><b style="font-size:16px">📜 ${t("agreement")}</b>${a.anchorTx?`<span class="badge c">⛓ Solana</span>`:done?`<span class="badge c">✓</span>`:`<span class="badge o">${t("pending")}</span>`}</div>
     <div class="meta" style="margin-top:4px">“${esc(p.title)}” · ${fdate(a.createdAt)}</div>
     ${a.parties.map(x=>{const sg=a.sigs[x.id];return `<div class="sig"><span class="row click" data-user="${x.id}">${av(x.name)} ${esc(x.name)} · ${x.role==="l"?"✎ "+t("lyricsW"):"♪ "+t("musicW")} <b>${x.pct}%</b></span>
-      <span style="text-align:right">${sg?(sg.method==="wallet"?`<span class="ok">✓ ${t("wSigned")}</span><br><a class="meta" href="https://solscan.io/account/${esc(sg.wallet)}" target="_blank" rel="noopener">◎ ${esc(short(sg.wallet))}</a>`:`<span class="ok">✓ ${t("wSignedAcct")}</span>`):`<span class="pend">${t("pending")}</span>`}</span>
+      <span style="text-align:right">${sg?(sg.method==="wallet"?`<span class="ok">✓ ${t("wSigned")}</span><br><a class="meta" href="https://solscan.io/account/${esc(sg.wallet)}" target="_blank" rel="noopener">◎ ${esc(short(sg.wallet))}</a>`:sg.method==="email"?`<span class="ok">✓ ${t("wSignedEmail")}</span><br><span class="meta">✉️ ${esc(sg.sig||"")}</span>`:`<span class="ok">✓ ${t("wSignedAcct")}</span><br><span class="meta">${t("wOld")}</span>`):`<span class="pend">${t("pending")}</span>`}</span>
     </div>
-    ${x.id===me&&(!sg||sg.method!=="wallet")&&!a.anchorTx?`<div class="row" style="justify-content:flex-end;padding-bottom:8px;gap:6px">
-       ${!sg?`<button class="btn ghost" style="font-size:13px" data-signacct="${a.id}">${t("wSignAcct")}</button>`:""}
-       <button class="btn pri" style="padding:8px 12px" data-wsign="${a.id}">◎ ${sg?t("wAdd"):t("wSign")}</button></div>`:""}`}).join("")}
+    ${x.id===me&&(!sg||sg.method==="account")&&!a.anchorTx?`<div class="row" style="justify-content:flex-end;padding-bottom:8px;gap:6px;flex-wrap:wrap">
+       <button class="btn pri" style="padding:8px 12px" data-signemail="${a.id}">${t("wSignEmail")}</button>
+       <button class="btn sec" style="padding:8px 12px" data-wsign="${a.id}">◎ ${t("wSign")}</button></div>`:""}`}).join("")}
     <div class="hash">${t("fp")}: ${esc(a.hash)}</div>
     ${a.anchorTx?`<div class="anch">⛓ ${t("wAnchored")} · <a href="https://solscan.io/tx/${esc(a.anchorTx)}" target="_blank" rel="noopener">${t("wView")} ↗</a></div>`
       :allW&&party?`<button class="btn sec full" style="margin-top:10px" data-anchor="${a.id}">⛓ ${t("wAnchor")}</button><div class="hint">${t("wAnchorCost")}</div>`
@@ -780,9 +780,11 @@ function delAsk(id){
     <div class="row" style="margin-top:16px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button><button class="btn pri" style="flex:1;background:#d64545" data-delpost="${id}">${t("delYes")}</button></div>`);
 }
 async function delPost(id){
+  const p=detail&&detail.id===id?detail:feed.find(x=>x.id===id);const path=p?.audioPath;
   const {data,error}=await sb.from("duetto_posts").delete().eq("id",id).select("id");
   if(error)return fail(error);
   if(!data||!data.length)return toast(t("cantDel"));
+  if(path)sb.storage.from("duetto").remove([path]).catch(()=>{});
   closeSheet();toast(t("deleted"));feed=feed.filter(x=>x.id!==id);if(detail?.id===id)detail=null;
   go(view.page==="post"?"mine":view.page);
 }
@@ -941,7 +943,7 @@ async function makePdf(agId){
       line(`Aporte / Contribution: ${x.role==="l"?"Letra / Lyrics":"Música / Music"}      Porcentaje / Share: ${x.pct}%`,11);
       line(`Nombre legal / Legal name: ${d.legal_name||"__________________________"}`,10);
       line(`Sociedad / PRO: ${d.pro||"______________"}      IPI/CAE: ${d.ipi||"______________"}`,10);
-      line(sg?(sg.method==="wallet"?`Firma / Signature: wallet ${sg.wallet}  ·  ${new Date(sg.at).toISOString().slice(0,16).replace("T"," ")} UTC`:`Firma / Signature: cuenta Duetto / Duetto account · ${new Date(sg.at).toISOString().slice(0,16).replace("T"," ")} UTC`):"Firma / Signature: pendiente / pending",9,false,[80,75,95]);
+      line(sg?(sg.method==="wallet"?`Firma / Signature: wallet ${sg.wallet}  ·  ${new Date(sg.at).toISOString().slice(0,16).replace("T"," ")} UTC`:sg.method==="email"?`Firma / Signature: correo verificado / verified email ${sg.sig||""}  ·  ${new Date(sg.at).toISOString().slice(0,16).replace("T"," ")} UTC`:`Firma / Signature: cuenta Duetto / Duetto account · ${new Date(sg.at).toISOString().slice(0,16).replace("T"," ")} UTC`):"Firma / Signature: pendiente / pending",9,false,[80,75,95]);
       if(sg?.sig)line(`Firma digital / Digital signature (ed25519): ${sg.sig}`,7,false,[110,105,125]);
       y+=6;line("Firma a mano / Signature: _______________________________     Fecha / Date: ____________",10);
       y+=8;
@@ -1401,6 +1403,11 @@ document.addEventListener("click",async e=>{
   else if(d.rate){const [xid,k]=d.rate.split("|");const x=detail.proposals.find(y=>y.id===xid);const r={...(x.ratings[me]||{l:0,m:0,h:0}),[k]:+d.v};
     const {error}=await sb.from("duetto_ratings").upsert({proposal_id:xid,user_id:me,...r},{onConflict:"proposal_id,user_id"});if(error)return fail(error);x.ratings[me]=r;render(true)}
   else if(d.choose){el.disabled=true;const {error}=await sb.from("duetto_agreements").insert({post_id:detail.id,proposal_id:d.choose});if(error){el.disabled=false;return fail(error)}toast(t("chosenToast"));pushFlush();await refreshDetail()}
+  else if(d.signemail){
+    if(!myEmail){toast(t("wNeedEmail"));return emailSheet("protect")}
+    el.disabled=true;try{const res=await callWalletFn({action:"sign_email",agreement_id:d.signemail});
+      toast(res?.anchored?t("wAnchorDone"):res?.anchorError?res.anchorError:t("signedToast"));pushFlush();await loadMe();await refreshDetail()}
+    catch(err){el.disabled=false;if(/correo|email/i.test(err.message||"")){toast(t("wNeedEmail"));emailSheet("protect")}else fail(err)}}
   else if(d.signacct){el.disabled=true;const {error}=await sb.from("duetto_signatures").insert({agreement_id:d.signacct,user_id:me});if(error){el.disabled=false;return fail(error)}toast(t("signedToast"));pushFlush();await refreshDetail()}
   else if(d.wsign){signAgreementSheet(d.wsign)}
   else if(d.anchor){el.disabled=true;el.textContent=t("wWorking2");try{await callWalletFn({action:"anchor",agreement_id:d.anchor});toast(t("wAnchorDone"));pushFlush()}catch(err){fail(err)}await refreshDetail()}

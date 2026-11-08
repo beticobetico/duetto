@@ -79,10 +79,12 @@ async function anchorAllowed(admin: any, userId: string) {
   if ((all.count ?? 0) >= MAX_ANCHORS_TOTAL_DAY) return "Duetto alcanzó su límite diario de registros, intenta mañana / Duetto daily limit reached, try tomorrow";
   return null;
 }
-const allWallet = async (admin: any, ag: { id: string; parties: { id: string }[] }) => {
+// Every party signed with a wallet or with a verified email account.
+const allSigned = async (admin: any, ag: { id: string; parties: { id: string }[] }) => {
   const { data: sigs } = await admin.from("duetto_signatures").select("user_id, method").eq("agreement_id", ag.id);
-  return ag.parties.every((p) => (sigs ?? []).some((s: any) => s.user_id === p.id && s.method === "wallet"));
+  return ag.parties.every((p) => (sigs ?? []).some((s: any) => s.user_id === p.id && (s.method === "wallet" || s.method === "email")));
 };
+const maskEmail = (e: string) => { const [u, d] = e.split("@"); return (u.slice(0, 2) + "•••@" + d); };
 // Link a verified wallet to a profile if neither is linked yet (one wallet = one account).
 async function autoLink(admin: any, userId: string, wallet: string) {
   const { data: owner } = await admin.from("duetto_profiles").select("id").eq("wallet", wallet).maybeSingle();
@@ -226,7 +228,26 @@ async function handle(req: Request) {
       { onConflict: "agreement_id,user_id" });
     if (error) return json({ error: error.message }, 500);
     await autoLink(admin, user.id, wallet);
-    if (await allWallet(admin, { id: ag.id, parties })) {
+    if (await allSigned(admin, { id: ag.id, parties })) {
+      const limit = await anchorAllowed(admin, user.id);
+      if (limit) return json({ ok: true, anchorError: limit });
+      try { return json({ ok: true, anchored: await anchorAgreement(admin, ag) }); }
+      catch (e) { return json({ ok: true, anchorError: String((e as Error).message) }); }
+    }
+    return json({ ok: true });
+  }
+
+  if (body.action === "sign_email") {
+    if (ag.anchor_tx) return json({ error: "already recorded on Solana" }, 400);
+    if (user.is_anonymous || !user.email || !user.email_confirmed_at)
+      return json({ error: "Primero protege tu cuenta con tu correo / Protect your account with your email first", needEmail: true }, 409);
+    const { data: prev } = await admin.from("duetto_signatures").select("method").eq("agreement_id", ag.id).eq("user_id", user.id).maybeSingle();
+    if (prev?.method === "wallet") return json({ ok: true });
+    const { error } = await admin.from("duetto_signatures").upsert(
+      { agreement_id: ag.id, user_id: user.id, method: "email", wallet: null, sig: maskEmail(user.email), signed_at: new Date().toISOString() },
+      { onConflict: "agreement_id,user_id" });
+    if (error) return json({ error: error.message }, 500);
+    if (await allSigned(admin, { id: ag.id, parties })) {
       const limit = await anchorAllowed(admin, user.id);
       if (limit) return json({ ok: true, anchorError: limit });
       try { return json({ ok: true, anchored: await anchorAgreement(admin, ag) }); }
@@ -237,7 +258,7 @@ async function handle(req: Request) {
 
   if (body.action === "anchor") {
     if (ag.anchor_tx) return json({ ok: true, tx: ag.anchor_tx });
-    if (!(await allWallet(admin, { id: ag.id, parties }))) return json({ error: "all parties must sign with a wallet first" }, 400);
+    if (!(await allSigned(admin, { id: ag.id, parties }))) return json({ error: "Falta que todos firmen / Everyone must sign first" }, 400);
     const limit = await anchorAllowed(admin, user.id);
     if (limit) return json({ error: limit }, 429);
     return json({ ok: true, tx: await anchorAgreement(admin, ag) });
