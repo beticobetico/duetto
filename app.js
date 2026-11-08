@@ -138,6 +138,10 @@ Object.assign(T.es,{
   delAccText:"Se borra para siempre: tu perfil, foto, correo, tus publicaciones sin propuestas, tus propuestas no escogidas, críticas, comentarios, mensajes y avisos.",
   delAccKeep:"Los acuerdos de coautoría ya firmados y las obras donde otras personas participaron se conservan (ocultas al público) porque son prueba para ellas. Lo registrado en Solana no se puede borrar.",
   delAccType:"Para confirmar, escribe ELIMINAR:", delAccWord:"ELIMINAR", delAccBtn:"Eliminar para siempre", delAccDone:"Tu cuenta fue eliminada.",
+  waLine:"Línea {n}", waSyl:"{n} sílabas", waSyl1:"1 sílaba", waRhymes:"Riman con «{w}»", waAson:"Asonantes", waNone:"Sin rimas cercanas", waAll:"Sílabas por línea", waLoading:"Cargando rimas…", waTap:"Toca una palabra para añadirla.",
+  shShare:"Compartir", shInvite:"Invitar a colaborar", shTitle:"Comparte «{t}»", shWa:"WhatsApp", shCopy:"Copiar enlace", shCopied:"Enlace copiado ✓", shMore:"Más opciones…",
+  shMsgL:"Escribí la letra de «{t}» y busco quién le ponga música 🎶 ¿Te animas? Mírala en Duetto:", shMsgM:"Tengo esta pista, «{t}», y busco quién le escriba la letra y la cante 🎤 Escúchala en Duetto:",
+  shMsgS:"Terminé mi canción «{t}» 🎧 Dame tu opinión sincera en Duetto:", shMsgO:"Mira «{t}» de {a} en Duetto 🎶", shApp:"Duetto: tú pones la letra, alguien pone la música 🎶 Únete:", shAppBtn:"Invitar amigos a Duetto",
   ownMenu:"Opciones de tu publicación", makePrivate:"🔒 Hacer privada (solo yo la veo)", makePublic:"🌐 Volver a publicar",
   delPost:"🗑 Borrar de Duetto", delTitle:"¿Borrar \"{t}\"?", delText:"Se borra para siempre, con sus críticas, comentarios y escuchas. No se puede deshacer.",
   delYes:"Sí, borrar", deleted:"Borrada.", nowPrivate:"Ahora es privada: solo tú la ves.", nowPublic:"Publicada otra vez.",
@@ -213,6 +217,10 @@ Object.assign(T.en,{
   delAccText:"This permanently deletes your profile, photo, email, your posts without proposals, your proposals that weren't chosen, reviews, comments, messages and notifications.",
   delAccKeep:"Co-writing agreements already signed and works other people took part in are kept (hidden from the public) because they're proof for them. Records on Solana can't be deleted.",
   delAccType:"To confirm, type DELETE:", delAccWord:"DELETE", delAccBtn:"Delete forever", delAccDone:"Your account was deleted.",
+  waLine:"Line {n}", waSyl:"{n} syllables", waSyl1:"1 syllable", waRhymes:"Rhymes with “{w}”", waAson:"Near rhymes", waNone:"No close rhymes", waAll:"Syllables per line", waLoading:"Loading rhymes…", waTap:"Tap a word to add it.",
+  shShare:"Share", shInvite:"Invite to collaborate", shTitle:"Share “{t}”", shWa:"WhatsApp", shCopy:"Copy link", shCopied:"Link copied ✓", shMore:"More options…",
+  shMsgL:"I wrote the lyrics for “{t}” and I'm looking for someone to put music to them 🎶 Up for it? See it on Duetto:", shMsgM:"I've got this track, “{t}”, and I'm looking for someone to write lyrics and sing it 🎤 Listen on Duetto:",
+  shMsgS:"I finished my song “{t}” 🎧 Give me your honest opinion on Duetto:", shMsgO:"Check out “{t}” by {a} on Duetto 🎶", shApp:"Duetto: you write the lyrics, someone brings the music 🎶 Join:", shAppBtn:"Invite friends to Duetto",
   ownMenu:"Your post options", makePrivate:"🔒 Make private (only me)", makePublic:"🌐 Publish again",
   delPost:"🗑 Delete from Duetto", delTitle:"Delete \"{t}\"?", delText:"It's deleted forever, with its reviews, comments and listens. This can't be undone.",
   delYes:"Yes, delete", deleted:"Deleted.", nowPrivate:"It's private now: only you can see it.", nowPublic:"Published again.",
@@ -495,6 +503,7 @@ function renderPost(p){
     <div class="row between"><span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>${owner?`<button class="iconbtn" title="${t("ownMenu")}" data-ownmenu="${p.id}">${ICON.dots}</button>`:moreBtn("post",p.id,p.authorId,p.author)}</div>
     <div class="ptitle" style="font-size:26px">${esc(p.title)}</div>
     <div class="row meta click" style="margin-top:4px" data-user="${p.authorId}">${av(p.author,p.authorAvatar)} <u>${esc(p.author)}</u> · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
+    ${p.priv?"":`<div class="row" style="margin-top:10px;gap:8px"><button class="btn sec" style="flex:1;padding:9px" data-share="${p.id}">${owner?"📣 "+t("shInvite"):"🔗 "+t("shShare")}</button></div>`}
     ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}${p.priv?`<div class="hiddenmsg">🔒 ${t("privNote")}</div>`:""}
     ${ch?`<div class="meta click" style="margin-top:8px" data-nav="challenge">🏆 ${t("challenge")} #${esc(ch.tag)} →</div>`:""}
     ${p.mood?`<p style="margin-top:10px;font-size:14px">${esc(p.mood)}</p>`:""}
@@ -579,7 +588,7 @@ function renderNew(){
     <div class="row" style="gap:10px;flex-wrap:nowrap"><div style="flex:1"><label>${t("genre")}</label><select name="genre">${T[lang].genres.map((g,i)=>`<option value="${i}" ${+draft.genre===i?"selected":""}>${g}</option>`).join("")}</select></div>
     <div style="flex:1"><label>${t("songLang")}</label><select name="lang">${Object.entries(T[lang].langNames).map(([k,v])=>`<option value="${k}" ${draft.lang===k?"selected":""}>${esc(v)}</option>`).join("")}</select></div></div>
     <label>${t("mood")}</label><input name="mood" placeholder="${t("moodPh")}" maxlength="140" value="${esc(draft.mood||"")}">
-    ${isL?`<label>${t("lyrics")}</label><textarea name="text" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:180px">${esc(draft.text||"")}</textarea>`
+    ${isL?`<label>${t("lyrics")}</label><textarea name="text" data-lyrics="1" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:180px">${esc(draft.text||"")}</textarea>`
       :`<label>${t("audio")}</label><div class="file" id="fileBox">${draft.fileName?"🎵 "+esc(draft.fileName):"⬆ "+t("audioPick")}<input type="file" accept="audio/*" id="fileIn"></div><div class="hint">${t("audioHint")}</div>`}
     <label>${t("splitL")}</label>
     <div class="range"><input type="range" min="10" max="90" step="5" value="${draft.split}" id="splitIn"></div>
@@ -602,6 +611,7 @@ function renderMine(){
   </div>
   <div class="sect">${t("myPosts")}</div>${mp.length?mp.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}
   <div class="sect">${t("myProps")}</div>${pr.length?pr.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}
+  <button class="btn sec full" style="margin-top:22px" data-shareapp="1">📣 ${t("shAppBtn")}</button>
   <div style="text-align:center;margin:28px 0 8px"><button class="btn ghost" style="color:#ff7a7a;font-size:13px" data-delacc="1">🗑 ${t("delAcc")}</button></div>`;
 }
 async function hydrateAudio(){
@@ -783,6 +793,133 @@ function delAccSheet(){
       try{Object.keys(localStorage).filter(k=>k.startsWith("duetto")||k.includes("auth")).forEach(k=>localStorage.removeItem(k));localStorage.setItem("duetto_welcomed","1")}catch(e){}
       closeSheet();toast(t("delAccDone"));setTimeout(()=>location.reload(),1500)}
     catch(err){btn.disabled=false;fail(err)}};
+}
+
+/* ======================= writing aid: syllables & rhymes ======================= */
+const WA={es:null,en:null,loading:{}};
+const ES_STRONG="aeoáéóíú", ES_V="aeiouáéíóúü";
+const stripAcc=w=>w.replace(/ñ/g,"\u0001").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\u0001/g,"ñ");
+// Spanish: vowel nuclei of a word (grammatical syllables)
+function esNuclei(word){
+  let w=word.toLowerCase().replace(/[^a-záéíóúüñ]/g,"");
+  w=w.replace(/(q|g)u([eiéí])/g,"$1·$2"); // silent u in que/qui/gue/gui
+  if(/[aeiouáéíóú]y$/.test(w))w=w.slice(0,-1)+"i"; // hoy, rey
+  if(w==="y")w="i";
+  const nuc=[];let i=0;
+  while(i<w.length){
+    if(!ES_V.includes(w[i])){i++;continue}
+    let j=i;while(j<w.length&&ES_V.includes(w[j]))j++;
+    const g=w.slice(i,j);let start=i;
+    for(let k=1;k<=g.length;k++){
+      const a=g[k-1],b=g[k];
+      const strongPair=b!==undefined&&"aeoáéó".includes(a)&&"aeoáéó".includes(b);
+      if(b===undefined||strongPair||((a==="í"||a==="ú"))||((b==="í"||b==="ú"))||(a===b)){
+        const seg=w.slice(start,i+k);let pos=-1;
+        for(let q=0;q<seg.length;q++)if("aeoáéóíú".includes(seg[q]))pos=q;
+        if(pos<0)pos=seg.length-1;
+        nuc.push({at:start+pos,seg});start=i+k;
+      }
+    }
+    i=j;
+  }
+  return {w,nuc};
+}
+function esSyl(word){return Math.max(esNuclei(word).nuc.length, /[a-záéíóúüñ]/i.test(word)?1:0)}
+function esKeys(word){
+  const {w,nuc}=esNuclei(word);if(!nuc.length)return null;
+  let st=nuc.findIndex(n=>/[áéíóú]/.test(w[n.at]));
+  if(st<0)st=(/[aeiouns]$/.test(w)&&nuc.length>1)?nuc.length-2:nuc.length-1;
+  let tail=w.slice(nuc[st].at).replace(/·/g,"");
+  tail=stripAcc(tail).replace(/ch/g,"ç").replace(/h/g,"").replace(/v/g,"b").replace(/z/g,"s").replace(/c([ei])/g,"s$1").replace(/ll/g,"y").replace(/qu/g,"k").replace(/c/g,"k");
+  const vow=tail.replace(/[^aeiou]/g,"");
+  const ason=vow[0]+vow.slice(1).replace(/[iu](?=[aeo])|(?<=[aeo])[iu]/g,"").slice(-1);
+  return {cons:tail,ason:vow.length>1?ason:vow};
+}
+// English
+function enSylGuess(w){w=w.toLowerCase().replace(/[^a-z]/g,"");if(!w)return 0;if(w.length<=3)return 1;w=w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,"").replace(/^y/,"");const m=w.match(/[aeiouy]{1,2}/g);return Math.max(1,m?m.length:1)}
+function lineSyl(line,lg){const ws=line.match(/[A-Za-zÀ-ÿñÑüÜ']+/g)||[];
+  if(lg==="en"){const d=WA.en;return ws.reduce((n,w)=>n+((d&&d.syl.get(w.toLowerCase()))||enSylGuess(w)),0)}
+  return ws.reduce((n,w)=>n+esSyl(w),0)}
+async function waLoad(lg){
+  const k=lg==="en"?"en":"es";if(WA[k])return WA[k];if(WA.loading[k])return WA.loading[k];
+  WA.loading[k]=(async()=>{
+    if(k==="en"){const txt=await fetch("rhymes-en.txt").then(r=>r.text());const syl=new Map(),key=new Map(),by=new Map();
+      for(const l of txt.split("\n")){const [w,n,kk]=l.split(",");syl.set(w,+n);key.set(w,kk);if(!by.has(kk))by.set(kk,[]);by.get(kk).push(w)}
+      WA.en={syl,key,by};return WA.en}
+    const words=await fetch("rhymes-es.json").then(r=>r.json());const cons=new Map(),ason=new Map();
+    for(const w of words){const kk=esKeys(w);if(!kk)continue;(cons.get(kk.cons)||cons.set(kk.cons,[]).get(kk.cons)).push(w);(ason.get(kk.ason)||ason.set(kk.ason,[]).get(kk.ason)).push(w)}
+    WA.es={cons,ason};return WA.es})();
+  return WA.loading[k];
+}
+function rhymesFor(word,lg){
+  const wl=word.toLowerCase();
+  if(lg==="en"){const d=WA.en;if(!d)return null;const kk=d.key.get(wl);if(!kk)return {cons:[],ason:[]};
+    return {cons:d.by.get(kk).filter(x=>x!==wl&&!x.includes("'")).slice(0,14),ason:[]}}
+  const d=WA.es;if(!d)return null;const kk=esKeys(wl);if(!kk)return {cons:[],ason:[]};
+  const base=stripAcc(wl);
+  const junk=/^(john|ok|oh|eh|ah|uh|mm|hmm|ja|je|jo)$/;
+  const pool=(d.cons.get(kk.cons)||[]).filter(x=>stripAcc(x)!==base&&!stripAcc(x).endsWith(base)&&!junk.test(x));
+  const cons=[...pool.filter(x=>esSyl(x)>1),...pool.filter(x=>esSyl(x)<=1)].slice(0,14);
+  const cs=new Set(cons);
+  const ason=(d.ason.get(kk.ason)||[]).filter(x=>!cs.has(x)&&stripAcc(x)!==base&&!junk.test(x)&&esSyl(x)>1&&!(d.cons.get(kk.cons)||[]).includes(x)).slice(0,10);
+  return {cons,ason};
+}
+function waLang(ta){const sel=ta.form?.querySelector('[name=lang]');return (sel?.value||ta.dataset.lang||lang)==="en"?"en":"es"}
+function waUpdate(ta){
+  let box=ta.nextElementSibling;
+  if(!box||!box.classList.contains("wa")){box=document.createElement("div");box.className="wa";ta.after(box)}
+  const lg=waLang(ta),val=ta.value,pos=ta.selectionStart??val.length;
+  const lines=val.split("\n");const li=val.slice(0,pos).split("\n").length-1;
+  let line=lines[li]||"";if(!line.trim()&&li>0)line=lines[li-1]||"";
+  const n=lineSyl(line,lg);
+  const words=line.match(/[A-Za-zÀ-ÿñÑüÜ']+/g)||[];const last=words[words.length-1]||"";
+  const ready=lg==="en"?WA.en:WA.es;
+  let rh="";
+  if(last){
+    if(!ready){rh=`<div class="meta">${t("waLoading")}</div>`;waLoad(lg).then(()=>{if(document.body.contains(ta))waUpdate(ta)}).catch(()=>{})}
+    else{const r=rhymesFor(last,lg);
+      rh=r.cons.length||r.ason.length?`<div class="wah">${esc(t("waRhymes").replace("{w}",last))}</div><div class="wachips">${r.cons.map(w=>`<button type="button" data-waw="${esc(w)}">${esc(w)}</button>`).join("")}</div>
+        ${r.ason.length?`<div class="wah">${t("waAson")}</div><div class="wachips soft">${r.ason.map(w=>`<button type="button" data-waw="${esc(w)}">${esc(w)}</button>`).join("")}</div>`:""}`
+        :`<div class="meta">${t("waNone")}</div>`}
+  }
+  const all=lines.map((l,i)=>l.trim()?`<div class="${i===li?"on":""}"><span>${lineSyl(l,lg)}</span>${esc(l.slice(0,60))}</div>`:`<div class="gap"></div>`).join("");
+  const open=box.querySelector("details")?.open;
+  box.innerHTML=`<div class="row between"><b>✍️ ${esc(t("waLine").replace("{n}",li+1))} · ${n===1?t("waSyl1"):esc(t("waSyl").replace("{n}",n))}</b></div>${rh}
+    ${lines.filter(l=>l.trim()).length>1?`<details ${open?"open":""}><summary>${t("waAll")}</summary><div class="walines">${all}</div></details>`:""}`;
+}
+function waInsert(ta,word){
+  const pos=ta.selectionStart??ta.value.length,before=ta.value.slice(0,pos),after=ta.value.slice(pos);
+  const sep=before&&!/\s$/.test(before)?" ":"";
+  ta.value=before+sep+word+after;const np=pos+sep.length+word.length;ta.focus();ta.setSelectionRange(np,np);
+  ta.dispatchEvent(new Event("input",{bubbles:true}));
+}
+let waLastTa=null;
+document.addEventListener("focusin",e=>{if(e.target.matches?.("textarea[data-lyrics]")){waLastTa=e.target;waUpdate(e.target)}});
+["input","keyup","click"].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.matches?.("textarea[data-lyrics]"))waUpdate(e.target)}));
+document.addEventListener("change",e=>{if(e.target.name==="lang"){const ta=e.target.form?.querySelector("textarea[data-lyrics]");if(ta&&ta.nextElementSibling?.classList.contains("wa"))waUpdate(ta)}});
+document.addEventListener("mousedown",e=>{if(e.target.closest?.("[data-waw]"))e.preventDefault()});
+document.addEventListener("click",e=>{const b=e.target.closest?.("[data-waw]");if(!b)return;e.preventDefault();e.stopPropagation();
+  const ta=b.closest(".wa")?.previousElementSibling;if(ta)waInsert(ta,b.dataset.waw)},true);
+
+/* ======================= share / invite ======================= */
+function shareSheet(text,url,title){
+  const full=text+" "+url;
+  const go2=async()=>{try{await navigator.share({title:title||"Duetto",text,url});closeSheet()}catch(e){}};
+  sheet(`<h3>${esc(title?t("shTitle").replace("{t}",title):t("shAppBtn"))}</h3>
+  <div class="hash" style="white-space:pre-wrap;font-size:13px">${esc(full)}</div>
+  <div class="userlist" style="margin-top:12px">
+    <a class="btn pri full" style="text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(full)}">💬 ${t("shWa")}</a>
+    <button class="btn sec full" id="shCopy">🔗 ${t("shCopy")}</button>
+    ${navigator.share?`<button class="btn ghost full" id="shMore">${t("shMore")}</button>`:""}
+  </div>`);
+  document.getElementById("shCopy").onclick=async()=>{try{await navigator.clipboard.writeText(full)}catch(e){const ta=document.createElement("textarea");ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove()}toast(t("shCopied"))};
+  const m=document.getElementById("shMore");if(m)m.onclick=go2;
+}
+function sharePost(id){
+  const p=detail&&detail.id===id?detail:feed.find(x=>x.id===id);if(!p)return;
+  const own=p.authorId===me,url=location.origin+"/#post-"+p.id;
+  const k=!own?"shMsgO":p.type==="lyrics"?"shMsgL":p.type==="music"?"shMsgM":"shMsgS";
+  shareSheet(t(k).replace("{t}",p.title).replace("{a}",p.author),url,p.title);
 }
 
 /* ======================= own post: private / delete ======================= */
@@ -1184,7 +1321,7 @@ function proposeSheet(id){
   Object.assign(S,{back:null,voc:null,vocBlob:null,offset:0,gM:.8,gV:1,mode:"idle"});
   sheet(`<h3>${isL?t("propTitleL"):t("propTitleM")}</h3><p>“${esc(p.title)}” · ${esc(p.author)}</p>
   <form id="propForm">
-    ${isL?"":`<label>${t("lyrics")}</label><textarea name="text" id="propText" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:150px"></textarea>`}
+    ${isL?"":`<label>${t("lyrics")}</label><textarea name="text" id="propText" data-lyrics="1" data-lang="${esc(p.lang||"es")}" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:150px"></textarea>`}
     <div id="studioWrap">${studioHTML(isL?(p.text||""):"",!isL)}</div>
     <label>${t("note")}</label><input name="note" placeholder="${t("notePh")}" maxlength="200">
     <div style="margin-top:14px">${splitBar(p)}</div>
@@ -1247,7 +1384,7 @@ function renderNewSong(){
     <div style="flex:1"><label>${t("songLang")}</label><select name="lang">${Object.entries(T[lang].langNames).map(([k,v])=>`<option value="${k}" ${draft.lang===k?"selected":""}>${esc(v)}</option>`).join("")}</select></div></div>
     <label>${t("mood")}</label><input name="mood" placeholder="${t("moodPh")}" maxlength="140" value="${esc(draft.mood||"")}">
     <label>${t("songAudio")}</label><div class="file" id="fileBox">${draft.fileName?"🎵 "+esc(draft.fileName):"⬆ "+t("audioPick")}<input type="file" accept="audio/*" id="fileIn"></div>
-    <label>${t("songLyricsOpt")}</label><textarea name="text" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:120px">${esc(draft.text||"")}</textarea>
+    <label>${t("songLyricsOpt")}</label><textarea name="text" data-lyrics="1" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:120px">${esc(draft.text||"")}</textarea>
     <button class="btn pri full" style="margin-top:20px" id="postBtn">${t("post")}</button>
   </form>`;
 }
@@ -1295,6 +1432,7 @@ function renderSong(p){
     <div class="row between"><span class="badge s">🎧 ${t("hasSong")}</span>${owner?`<button class="iconbtn" title="${t("ownMenu")}" data-ownmenu="${p.id}">${ICON.dots}</button>`:moreBtn("post",p.id,p.authorId,p.author)}</div>
     <div class="ptitle" style="font-size:26px">${esc(p.title)}</div>
     <div class="row meta click" style="margin-top:4px" data-user="${p.authorId}">${av(p.author,p.authorAvatar)} <u>${esc(p.author)}</u> · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
+    ${p.priv?"":`<div class="row" style="margin-top:10px;gap:8px"><button class="btn sec" style="flex:1;padding:9px" data-share="${p.id}">${owner?"📣 "+t("shInvite"):"🔗 "+t("shShare")}</button></div>`}
     ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}${p.priv?`<div class="hiddenmsg">🔒 ${t("privNote")}</div>`:""}
     ${p.mood?`<p style="margin-top:10px;font-size:14px">${esc(p.mood)}</p>`:""}
     ${unlocked&&p.audioPath?`<div class="player" id="player" data-path="${esc(p.audioPath)}">
@@ -1441,6 +1579,8 @@ document.addEventListener("click",async e=>{
   else if(d.email){emailSheet(d.email)}
   else if(d.ownmenu){ownMenu(d.ownmenu)}
   else if(d.delacc){delAccSheet()}
+  else if(d.share){sharePost(d.share)}
+  else if(d.shareapp){shareSheet(t("shApp"),location.origin+"/")}
   else if(d.setpriv){const [id,v]=d.setpriv.split("|");setPriv(id,v==="1")}
   else if(d.delask){delAsk(d.delask)}
   else if(d.delpost){delPost(d.delpost)}
@@ -1536,7 +1676,7 @@ render=function(k){_render(k);if(view.page==="challenge")fillWinner();if(view.pa
     if(view.page==="new"&&!meName)view.page="explore";
     await go(view.page);
     let welcomed=false;try{welcomed=!!localStorage.getItem("duetto_welcomed")}catch(e){}
-    if(!meName&&!welcomed)showWelcome();
+    if(!meName&&!welcomed&&view.page!=="post")showWelcome();
     pushFlush();
   }catch(err){loading=false;document.getElementById("main").innerHTML=`<div class="empty">⚠️ ${t("authErr")}<br><br><span class="hash">${esc(err?.message||err)}</span></div>`}
 })();

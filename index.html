@@ -16,7 +16,7 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script type="module" src="wallet.js?v=17"></script>
+<script type="module" src="wallet.js?v=18"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -181,6 +181,16 @@ details summary{list-style:none}
 .wcard b{display:block;margin:6px 0 4px;font-size:14px}.wcard p{color:var(--muted);font-size:13px;line-height:1.35}
 .wico{font-size:22px}
 .wfoot{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}
+
+.wa{margin-top:8px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px}
+.wa .wah{color:var(--muted);font-size:12px;margin:8px 0 5px}
+.wachips{display:flex;flex-wrap:wrap;gap:6px}
+.wachips button{background:rgba(139,123,255,.16);border:1px solid rgba(139,123,255,.35);border-radius:999px;padding:4px 10px;font-size:13px}
+.wachips.soft button{background:transparent;border-color:var(--line);color:var(--muted)}
+.wa details{margin-top:8px}.wa summary{cursor:pointer;color:var(--muted);font-size:12px}
+.walines{margin-top:6px;max-height:220px;overflow:auto;font-family:ui-monospace,monospace;font-size:12px}
+.walines div{display:flex;gap:8px;padding:1px 0;color:var(--muted)}.walines div.on{color:var(--text)}
+.walines span{min-width:22px;text-align:right;color:var(--lyr);font-weight:700}.walines .gap{height:8px}
 </style>
 </head>
 <body>
@@ -201,6 +211,6 @@ details summary{list-style:none}
 <nav><div class="in" id="nav"></div></nav>
 <div id="modal"></div>
 
-<script src="app.js?v=17"></script>
+<script src="app.js?v=18"></script>
 </body>
 </html>
