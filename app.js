@@ -252,7 +252,7 @@ let feed=[], myUnlocks=new Set(), myPropPosts=new Set(), myBlocks=new Set(), det
 let challenges=[], unread=0, profileView=null, notifList=[], adminData=null, config={};
 let view={tab:"all",page:"explore",postId:null,userId:null,q:"",genre:"",lang:""};
 const urlCache=new Map();
-const POST_SELECT="*, author:duetto_profiles(name,avatar_path)";
+const POST_SELECT="*, author:duetto_profiles!author_id(name,avatar_path)";
 
 function fail(error){console.error(error);toast(t("err")+(error?.message||error));}
 function mapPost(r){return{id:r.id,type:r.type,authorId:r.author_id,author:r.author?.name||"—",authorAvatar:r.author?.avatar_path||null,title:r.title,genre:r.genre||"",mood:r.mood||"",
@@ -320,7 +320,7 @@ async function loadDetail(pid){
   if(error)return fail(error);if(!row){detail=null;return}
   const p=mapPost(row);const i=feed.findIndex(x=>x.id===pid);if(i>=0)feed[i]=p;
   const [pr,ag,ct,tips]=await Promise.all([
-    sb.from("duetto_proposals").select("*, author:duetto_profiles(name,avatar_path), votes:duetto_votes(user_id), ratings:duetto_ratings(user_id,l,m,h), comments:duetto_comments(id,body,hidden,created_at,user_id,user:duetto_profiles(name))").eq("post_id",pid).order("created_at"),
+    sb.from("duetto_proposals").select("*, author:duetto_profiles!author_id(name,avatar_path), votes:duetto_votes(user_id), ratings:duetto_ratings(user_id,l,m,h), comments:duetto_comments(id,body,hidden,created_at,user_id,user:duetto_profiles!user_id(name))").eq("post_id",pid).order("created_at"),
     sb.from("duetto_agreements").select("*, sigs:duetto_signatures(user_id,signed_at,method,wallet,sig)").eq("post_id",pid).maybeSingle(),
     canSee(p)&&p.type!=="music"?sb.from("duetto_post_content").select("text").eq("post_id",pid).maybeSingle():Promise.resolve({data:null}),
     sb.from("duetto_payments").select("proposal_id,symbol,amount").eq("post_id",pid).eq("status","confirmed").eq("kind","tip")
@@ -842,7 +842,7 @@ function renderChallenge(){
 }
 async function fillWinner(){
   const el=document.getElementById("winnerBox");if(!el)return;
-  const {data}=await sb.from("duetto_proposals").select("id,post_id,author:duetto_profiles(name),post:duetto_posts(title)").eq("id",el.dataset.winnerid).maybeSingle();
+  const {data}=await sb.from("duetto_proposals").select("id,post_id,author:duetto_profiles!author_id(name),post:duetto_posts(title)").eq("id",el.dataset.winnerid).maybeSingle();
   if(data)el.innerHTML=`<span class="click" data-open="${data.post_id}">${esc(data.author?.name||"")} · “${esc(data.post?.title||"")}” →</span>`;
   else el.textContent="—";
 }
@@ -1072,8 +1072,8 @@ function renderNewSong(){
 async function loadSongExtras(p){
   const owner=p.authorId===me;
   const [rv,mk,ls]=await Promise.all([
-    canSee(p)?sb.from("duetto_reviews").select("*, user:duetto_profiles(name,avatar_path)").eq("post_id",p.id).order("created_at",{ascending:false}):Promise.resolve({data:[]}),
-    canSee(p)?sb.from("duetto_marks").select("*, user:duetto_profiles(name)").eq("post_id",p.id).order("at_sec"):Promise.resolve({data:[]}),
+    canSee(p)?sb.from("duetto_reviews").select("*, user:duetto_profiles!user_id(name,avatar_path)").eq("post_id",p.id).order("created_at",{ascending:false}):Promise.resolve({data:[]}),
+    canSee(p)?sb.from("duetto_marks").select("*, user:duetto_profiles!user_id(name)").eq("post_id",p.id).order("at_sec"):Promise.resolve({data:[]}),
     owner?sb.from("duetto_listens").select("max_sec,duration").eq("post_id",p.id):Promise.resolve({data:[]})
   ]);
   p.reviews=(rv.data||[]).filter(r=>visible(r.hidden,r.user_id));
