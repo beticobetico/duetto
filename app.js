@@ -127,6 +127,11 @@ Object.assign(T.es,{
   biggestDrop:"Donde más se van:", changeLbl:"Cambiaría", bestLbl:"Lo mejor", noReviews:"Todavía no hay críticas. ¡Sé el primero!", ownSongHint:"Así verán tu canción. Las críticas y comentarios te llegarán como avisos.",
   demo:"Beta: comparte tus obras, firma acuerdos con tu wallet y regístralos en Solana.",
   search:"Buscar título, tema o autor…", allGenres:"Todos los géneros", allLangs:"Todos los idiomas",
+  ownMenu:"Opciones de tu publicación", makePrivate:"🔒 Hacer privada (solo yo la veo)", makePublic:"🌐 Volver a publicar",
+  delPost:"🗑 Borrar de Duetto", delTitle:"¿Borrar \"{t}\"?", delText:"Se borra para siempre, con sus críticas, comentarios y escuchas. No se puede deshacer.",
+  delYes:"Sí, borrar", deleted:"Borrada.", nowPrivate:"Ahora es privada: solo tú la ves.", nowPublic:"Publicada otra vez.",
+  privBadge:"🔒 Solo tú", privNote:"Privada: solo tú la ves (y quien ya te mandó una propuesta).",
+  cantDel:"Tiene propuestas de otras personas, así que no se puede borrar (es trabajo de ellos). Puedes hacerla privada.",
   langNames:{es:"Español",en:"Inglés",pt:"Portugués",fr:"Francés",it:"Italiano",other:"Otro"}, songLang:"Idioma de la canción",
   noResults:"No hay resultados con esos filtros.",
   boosted:"Destacada", boostBtn:"Destacar", boostTitle:"Destacar tu publicación", boostText:"Tu publicación sale de primera en Explorar durante {h} horas.",
@@ -186,6 +191,11 @@ Object.assign(T.en,{
   biggestDrop:"Biggest drop-off:", changeLbl:"Would change", bestLbl:"Best part", noReviews:"No reviews yet. Be the first!", ownSongHint:"This is how others see your song. Reviews and comments will reach you as notifications.",
   demo:"Beta: share your works, sign agreements with your wallet and record them on Solana.",
   search:"Search title, theme or author…", allGenres:"All genres", allLangs:"All languages",
+  ownMenu:"Your post options", makePrivate:"🔒 Make private (only me)", makePublic:"🌐 Publish again",
+  delPost:"🗑 Delete from Duetto", delTitle:"Delete \"{t}\"?", delText:"It's deleted forever, with its reviews, comments and listens. This can't be undone.",
+  delYes:"Yes, delete", deleted:"Deleted.", nowPrivate:"It's private now: only you can see it.", nowPublic:"Published again.",
+  privBadge:"🔒 Only you", privNote:"Private: only you can see it (and anyone who already sent you a proposal).",
+  cantDel:"It has proposals from other people, so it can't be deleted (that's their work). You can make it private.",
   langNames:{es:"Spanish",en:"English",pt:"Portuguese",fr:"French",it:"Italian",other:"Other"}, songLang:"Song language",
   noResults:"No results with those filters.",
   boosted:"Featured", boostBtn:"Feature", boostTitle:"Feature your post", boostText:"Your post shows first in Explore for {h} hours.",
@@ -270,7 +280,7 @@ const POST_SELECT="*, author:duetto_profiles!author_id(name,avatar_path)";
 
 function fail(error){console.error(error);toast(t("err")+(error?.message||error));}
 function mapPost(r){return{id:r.id,type:r.type,authorId:r.author_id,author:r.author?.name||"—",authorAvatar:r.author?.avatar_path||null,title:r.title,genre:r.genre||"",mood:r.mood||"",
-  preview:r.preview||"",audioPath:r.audio_path,split:r.split,hash:r.hash,status:r.status,chosenId:r.chosen_id,lang:r.lang||"es",hidden:!!r.hidden,
+  preview:r.preview||"",audioPath:r.audio_path,split:r.split,hash:r.hash,status:r.status,chosenId:r.chosen_id,lang:r.lang||"es",hidden:!!r.hidden,priv:!!r.private,
   challengeId:r.challenge_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0,
   proposalCount:r.proposal_count,voteCount:r.vote_count,reviewCount:r.review_count||0,ratingAvg:r.rating_avg!=null?Number(r.rating_avg):null,createdAt:Date.parse(r.created_at)}}
 const canSee=p=>p&&(p.authorId===me||myUnlocks.has(p.id));
@@ -413,10 +423,10 @@ function postCard(p){
   const ch=p.challengeId&&challenges.find(c=>c.id===p.challengeId);
   return `<div class="card click ${isBoosted(p)?"boost":""}" data-open="${p.id}">
     <div class="row between"><span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>
-    <span class="row" style="gap:6px">${isBoosted(p)?`<span class="badge o">⭐ ${t("boosted")}</span>`:""}${p.status==="closed"?`<span class="badge c">✓ ${t("closed")}</span>`:""}</span></div>
+    <span class="row" style="gap:6px">${p.priv?`<span class="badge c">${t("privBadge")}</span>`:""}${isBoosted(p)?`<span class="badge o">⭐ ${t("boosted")}</span>`:""}${p.status==="closed"?`<span class="badge c">✓ ${t("closed")}</span>`:""}</span></div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="meta">${t("by")} ${esc(p.author)} · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
-    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}
+    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}${p.priv?`<div class="hiddenmsg">🔒 ${t("privNote")}</div>`:""}
     ${ch?`<div class="meta" style="margin-top:6px">🏆 #${esc(ch.tag)}</div>`:""}
     ${p.mood?`<div style="font-size:13.5px;margin-top:6px;color:#d8d2e8">${esc(p.mood)}</div>`:""}
     ${isL?`<div class="lyrics locked">${esc(p.preview)}</div>`:(canSee(p)&&p.audioPath?`<div data-audio="${esc(p.audioPath)}"></div>`:`<div class="lyrics locked" style="font-family:Inter;font-size:14px;color:var(--muted)">♪ ••• ••• ••• •••\n♪ ••• •••</div>`)}
@@ -460,10 +470,10 @@ function renderPost(p){
   const ch=p.challengeId&&challenges.find(c=>c.id===p.challengeId);
   let html=`<button class="back" data-nav="explore">← ${t("back")}</button>
   <div class="card ${isBoosted(p)?"boost":""}">
-    <div class="row between"><span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>${owner?"":moreBtn("post",p.id,p.authorId,p.author)}</div>
+    <div class="row between"><span class="badge ${isL?"l":"m"}">${isL?"✎ "+t("hasLyrics"):"♪ "+t("hasMusic")}</span>${owner?`<button class="iconbtn" title="${t("ownMenu")}" data-ownmenu="${p.id}">${ICON.dots}</button>`:moreBtn("post",p.id,p.authorId,p.author)}</div>
     <div class="ptitle" style="font-size:26px">${esc(p.title)}</div>
     <div class="row meta click" style="margin-top:4px" data-user="${p.authorId}">${av(p.author,p.authorAvatar)} <u>${esc(p.author)}</u> · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
-    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}
+    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}${p.priv?`<div class="hiddenmsg">🔒 ${t("privNote")}</div>`:""}
     ${ch?`<div class="meta click" style="margin-top:8px" data-nav="challenge">🏆 ${t("challenge")} #${esc(ch.tag)} →</div>`:""}
     ${p.mood?`<p style="margin-top:10px;font-size:14px">${esc(p.mood)}</p>`:""}
     ${isL?`<div class="lyrics ${p.text?"":"locked"}">${esc(p.text||p.preview)}</div>`
@@ -706,6 +716,33 @@ function codeSheet(email,kind,protect){
       pushFlush();
     }catch(err){fail(err)}
   };
+}
+
+/* ======================= own post: private / delete ======================= */
+function ownMenu(id){
+  const p=detail&&detail.id===id?detail:feed.find(x=>x.id===id);if(!p)return;
+  sheet(`<h3>${esc(p.title)}</h3><div class="userlist">
+    <button data-setpriv="${id}|${p.priv?0:1}">${p.priv?t("makePublic"):t("makePrivate")}</button>
+    <button data-delask="${id}" style="color:#ff7a7a">${t("delPost")}</button></div>`);
+}
+async function setPriv(id,priv){
+  const {error}=await sb.rpc("duetto_set_post_private",{p_id:id,p_private:priv});if(error)return fail(error);
+  closeSheet();toast(priv?t("nowPrivate"):t("nowPublic"));
+  const f=feed.find(x=>x.id===id);if(f)f.priv=priv;if(detail&&detail.id===id)detail.priv=priv;render(true);
+}
+function delAsk(id){
+  const p=detail&&detail.id===id?detail:feed.find(x=>x.id===id);if(!p)return;
+  if((p.proposalCount||0)>0){sheet(`<h3>🗑 ${t("delPost").replace("🗑 ","")}</h3><p>${t("cantDel")}</p>
+    <div class="row" style="margin-top:16px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button>${p.priv?"":`<button class="btn pri" style="flex:2" data-setpriv="${id}|1">${t("makePrivate")}</button>`}</div>`);return}
+  sheet(`<h3>${esc(t("delTitle").replace("{t}",p.title))}</h3><p>${t("delText")}</p>
+    <div class="row" style="margin-top:16px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button><button class="btn pri" style="flex:1;background:#d64545" data-delpost="${id}">${t("delYes")}</button></div>`);
+}
+async function delPost(id){
+  const {data,error}=await sb.from("duetto_posts").delete().eq("id",id).select("id");
+  if(error)return fail(error);
+  if(!data||!data.length)return toast(t("cantDel"));
+  closeSheet();toast(t("deleted"));feed=feed.filter(x=>x.id!==id);if(detail?.id===id)detail=null;
+  go(view.page==="post"?"mine":view.page);
 }
 
 /* ======================= report & block ======================= */
@@ -1118,10 +1155,10 @@ let reviewDraft={};
 function songCard(p){
   return `<div class="card click ${isBoosted(p)?"boost":""}" data-open="${p.id}">
     <div class="row between"><span class="badge s">🎧 ${t("hasSong")}</span>
-    <span class="row" style="gap:6px">${isBoosted(p)?`<span class="badge o">⭐ ${t("boosted")}</span>`:""}</span></div>
+    <span class="row" style="gap:6px">${p.priv?`<span class="badge c">${t("privBadge")}</span>`:""}${isBoosted(p)?`<span class="badge o">⭐ ${t("boosted")}</span>`:""}</span></div>
     <div class="ptitle">${esc(p.title)}</div>
     <div class="meta">${t("by")} ${esc(p.author)} · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
-    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}
+    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}${p.priv?`<div class="hiddenmsg">🔒 ${t("privNote")}</div>`:""}
     ${p.mood?`<div style="font-size:13.5px;margin-top:6px;color:#d8d2e8">${esc(p.mood)}</div>`:""}
     <div class="minwave">${Array.from({length:42},(_,i)=>`<i style="height:${20+Math.round(70*Math.abs(Math.sin(i*1.7+p.title.length)))}%"></i>`).join("")}</div>
     <div class="stats"><span>⭐ ${p.ratingAvg!=null?p.ratingAvg.toFixed(1):"–"}</span><span>📝 ${p.reviewCount} ${p.reviewCount===1?t("reviewsN1"):t("reviewsN")}</span></div>
@@ -1186,10 +1223,10 @@ function renderSong(p){
   const mine=(p.reviews||[]).find(r=>r.user_id===me);
   let html=`<button class="back" data-nav="explore">← ${t("back")}</button>
   <div class="card ${isBoosted(p)?"boost":""}">
-    <div class="row between"><span class="badge s">🎧 ${t("hasSong")}</span>${owner?"":moreBtn("post",p.id,p.authorId,p.author)}</div>
+    <div class="row between"><span class="badge s">🎧 ${t("hasSong")}</span>${owner?`<button class="iconbtn" title="${t("ownMenu")}" data-ownmenu="${p.id}">${ICON.dots}</button>`:moreBtn("post",p.id,p.authorId,p.author)}</div>
     <div class="ptitle" style="font-size:26px">${esc(p.title)}</div>
     <div class="row meta click" style="margin-top:4px" data-user="${p.authorId}">${av(p.author,p.authorAvatar)} <u>${esc(p.author)}</u> · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
-    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}
+    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}${p.priv?`<div class="hiddenmsg">🔒 ${t("privNote")}</div>`:""}
     ${p.mood?`<p style="margin-top:10px;font-size:14px">${esc(p.mood)}</p>`:""}
     ${unlocked&&p.audioPath?`<div class="player" id="player" data-path="${esc(p.audioPath)}">
         <div class="wave" id="wave"><div class="wbars" id="wbars">${Array.from({length:80},()=>`<i style="height:12%"></i>`).join("")}</div><div class="wprog" id="wprog"></div>
@@ -1328,6 +1365,10 @@ document.addEventListener("click",async e=>{
   else if(d.link){linkSheet(false)}
   else if(d.restore){linkSheet(true)}
   else if(d.email){emailSheet(d.email)}
+  else if(d.ownmenu){ownMenu(d.ownmenu)}
+  else if(d.setpriv){const [id,v]=d.setpriv.split("|");setPriv(id,v==="1")}
+  else if(d.delask){delAsk(d.delask)}
+  else if(d.delpost){delPost(d.delpost)}
   else if(d.more){const [type,id,uid,name]=d.more.split("|");moreSheet(type,id,uid,name)}
   else if(d.report){const [type,id]=d.report.split("|");reportSheet(type,id)}
   else if(d.blockuser){const [uid]=d.blockuser.split("|");await toggleBlock(uid)}
