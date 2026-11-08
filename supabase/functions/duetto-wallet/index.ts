@@ -149,6 +149,25 @@ async function handle(req: Request) {
     return json({ ok: true, merged: !!op });
   }
 
+  // ----- account: delete my account (Google Play requirement) -----
+  if (body.action === "delete_account") {
+    const c = String(body.confirm ?? "").trim().toUpperCase();
+    if (c !== "ELIMINAR" && c !== "DELETE") return json({ error: "confirm" }, 400);
+    const { data: res, error } = await admin.rpc("duetto_delete_account", { p_uid: user.id });
+    if (error) return json({ error: error.message }, 500);
+    const files: string[] = res?.files ?? [];
+    if (files.length) await admin.storage.from("duetto").remove(files).catch(() => {});
+    if (res?.keep) {
+      // shared agreements/proposals stay for the other people; the login and personal data go away
+      await admin.auth.admin.updateUserById(user.id, {
+        email: `deleted-${user.id}@deleted.duettosongs.com`, email_confirm: true, user_metadata: {}, ban_duration: "876000h",
+      }).catch(() => {});
+    } else {
+      await admin.auth.admin.deleteUser(user.id).catch(() => {});
+    }
+    return json({ ok: true });
+  }
+
   // ----- payments -----
   if (body.action === "pay_create") {
     const hourAgo = new Date(Date.now() - 3600e3).toISOString();

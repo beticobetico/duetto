@@ -134,6 +134,10 @@ Object.assign(T.es,{
   wb3t:"Acuerdo justo", wb3:"Desde el inicio se sabe quién lleva qué porcentaje, registrado en Solana con prueba pública.",
   wb4t:"Críticas que sirven", wb4:"Te dicen qué cambiarías, en qué segundo y hasta dónde escuchan tu canción.",
   wNow:"Ahora en Duetto", wStart:"Empezar gratis", wBrowse:"Ver canciones primero", wFoot:"Gratis · Sin contraseñas",
+  delAcc:"Eliminar mi cuenta", delAccTitle:"¿Eliminar tu cuenta?",
+  delAccText:"Se borra para siempre: tu perfil, foto, correo, tus publicaciones sin propuestas, tus propuestas no escogidas, críticas, comentarios, mensajes y avisos.",
+  delAccKeep:"Los acuerdos de coautoría ya firmados y las obras donde otras personas participaron se conservan (ocultas al público) porque son prueba para ellas. Lo registrado en Solana no se puede borrar.",
+  delAccType:"Para confirmar, escribe ELIMINAR:", delAccWord:"ELIMINAR", delAccBtn:"Eliminar para siempre", delAccDone:"Tu cuenta fue eliminada.",
   ownMenu:"Opciones de tu publicación", makePrivate:"🔒 Hacer privada (solo yo la veo)", makePublic:"🌐 Volver a publicar",
   delPost:"🗑 Borrar de Duetto", delTitle:"¿Borrar \"{t}\"?", delText:"Se borra para siempre, con sus críticas, comentarios y escuchas. No se puede deshacer.",
   delYes:"Sí, borrar", deleted:"Borrada.", nowPrivate:"Ahora es privada: solo tú la ves.", nowPublic:"Publicada otra vez.",
@@ -205,6 +209,10 @@ Object.assign(T.en,{
   wb3t:"A fair deal", wb3:"Everyone knows the split from the start, recorded on Solana with public proof.",
   wb4t:"Feedback that helps", wb4:"People tell you what they'd change, at which second, and how far they listen.",
   wNow:"Now on Duetto", wStart:"Start for free", wBrowse:"Browse songs first", wFoot:"Free · No passwords",
+  delAcc:"Delete my account", delAccTitle:"Delete your account?",
+  delAccText:"This permanently deletes your profile, photo, email, your posts without proposals, your proposals that weren't chosen, reviews, comments, messages and notifications.",
+  delAccKeep:"Co-writing agreements already signed and works other people took part in are kept (hidden from the public) because they're proof for them. Records on Solana can't be deleted.",
+  delAccType:"To confirm, type DELETE:", delAccWord:"DELETE", delAccBtn:"Delete forever", delAccDone:"Your account was deleted.",
   ownMenu:"Your post options", makePrivate:"🔒 Make private (only me)", makePublic:"🌐 Publish again",
   delPost:"🗑 Delete from Duetto", delTitle:"Delete \"{t}\"?", delText:"It's deleted forever, with its reviews, comments and listens. This can't be undone.",
   delYes:"Yes, delete", deleted:"Deleted.", nowPrivate:"It's private now: only you can see it.", nowPublic:"Published again.",
@@ -593,7 +601,8 @@ function renderMine(){
     <div id="pushBox" style="margin-top:12px">${pushBoxHTML()}</div>
   </div>
   <div class="sect">${t("myPosts")}</div>${mp.length?mp.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}
-  <div class="sect">${t("myProps")}</div>${pr.length?pr.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}`;
+  <div class="sect">${t("myProps")}</div>${pr.length?pr.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}
+  <div style="text-align:center;margin:28px 0 8px"><button class="btn ghost" style="color:#ff7a7a;font-size:13px" data-delacc="1">🗑 ${t("delAcc")}</button></div>`;
 }
 async function hydrateAudio(){
   for(const el of document.querySelectorAll("[data-audio]")){
@@ -758,6 +767,22 @@ function showWelcome(){
     else if(b.dataset.wlogin){close();emailSheet("login")}
     else if(b.dataset.open){close();go("post",{postId:b.dataset.open})}
   };
+}
+
+/* ======================= delete my account ======================= */
+function delAccSheet(){
+  sheet(`<h3>⚠️ ${t("delAccTitle")}</h3><p>${t("delAccText")}</p><p class="meta" style="margin-top:8px">${t("delAccKeep")}</p>
+  <form id="delAccForm"><label>${t("delAccType")}</label><input name="c" autocomplete="off" autocapitalize="characters" placeholder="${t("delAccWord")}">
+  <div class="row" style="margin-top:16px;flex-wrap:nowrap"><button type="button" class="btn sec" style="flex:1" data-close>${t("cancel")}</button>
+  <button class="btn pri" style="flex:1;background:#d64545" disabled id="delAccBtn">${t("delAccBtn")}</button></div></form>`);
+  const f=document.getElementById("delAccForm"),inp=f.querySelector("input"),btn=document.getElementById("delAccBtn");
+  inp.oninput=()=>{btn.disabled=inp.value.trim().toUpperCase()!==t("delAccWord")};
+  f.onsubmit=async e=>{e.preventDefault();if(btn.disabled)return;btn.disabled=true;
+    try{await callWalletFn({action:"delete_account",confirm:inp.value.trim()});
+      try{await sb.auth.signOut({scope:"local"})}catch(e){}
+      try{Object.keys(localStorage).filter(k=>k.startsWith("duetto")||k.includes("auth")).forEach(k=>localStorage.removeItem(k));localStorage.setItem("duetto_welcomed","1")}catch(e){}
+      closeSheet();toast(t("delAccDone"));setTimeout(()=>location.reload(),1500)}
+    catch(err){btn.disabled=false;fail(err)}};
 }
 
 /* ======================= own post: private / delete ======================= */
@@ -1415,6 +1440,7 @@ document.addEventListener("click",async e=>{
   else if(d.restore){linkSheet(true)}
   else if(d.email){emailSheet(d.email)}
   else if(d.ownmenu){ownMenu(d.ownmenu)}
+  else if(d.delacc){delAccSheet()}
   else if(d.setpriv){const [id,v]=d.setpriv.split("|");setPriv(id,v==="1")}
   else if(d.delask){delAsk(d.delask)}
   else if(d.delpost){delPost(d.delpost)}
