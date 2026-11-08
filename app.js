@@ -145,6 +145,13 @@ Object.assign(T.es,{
   pushDenied:"Las notificaciones están bloqueadas en tu navegador. Actívalas en los ajustes del sitio.", pushUnsupported:"Este navegador no permite notificaciones.",
   account:"Tu cuenta", walletLinked:"Wallet vinculada", protect:"Proteger mi cuenta con mi wallet",
   protectText:"Si cambias de teléfono o borras datos, entras con tu wallet y recuperas todo.",
+  emailIn:"Entrar con mi correo", haveAcc:"¿Ya tienes cuenta?", orWallet:"o entrar con mi wallet",
+  emTitle:"Entra con tu correo", emText:"Te mandamos un código de 6 dígitos. Sin contraseñas.", emPh:"tucorreo@ejemplo.com", emSend:"Enviarme el código",
+  emProtTitle:"Proteger mi cuenta con mi correo", emProtText:"Si cambias de teléfono, entras con tu correo y recuperas todo.",
+  codeTitle:"Revisa tu correo", codeText:"Escribe el código que enviamos a {e}. Si no lo ves, mira en Spam o Promociones.", codePh:"Código",
+  codeOk:"Entrar", codeResend:"Reenviar código", codeWait:"Espera {s} s para reenviar", codeBad:"Código incorrecto o vencido. Intenta de nuevo.",
+  emDone:"¡Listo! Tu cuenta quedó protegida con {e}.", emWelcome:"¡Bienvenido{n}!", emLinked:"Correo", emChange:"Cambiar",
+  emBadMail:"Escribe un correo válido.", emSlow:"Espera un minuto antes de pedir otro código.",
   restore:"¿Ya tienes cuenta? Entrar con mi wallet", restoreTitle:"Entrar con tu wallet", linkTitle:"Vincular tu wallet",
   linkSign:"Vas a firmar este texto para demostrar que la wallet es tuya. Es gratis:", linked:"¡Listo! Tu cuenta quedó protegida con tu wallet.",
   restored:"¡Bienvenido de vuelta, {n}! Recuperamos tu cuenta.",
@@ -197,6 +204,13 @@ Object.assign(T.en,{
   pushDenied:"Notifications are blocked in your browser. Enable them in the site settings.", pushUnsupported:"This browser doesn't support notifications.",
   account:"Your account", walletLinked:"Linked wallet", protect:"Protect my account with my wallet",
   protectText:"If you change phones or clear data, sign in with your wallet and get everything back.",
+  emailIn:"Sign in with email", haveAcc:"Already have an account?", orWallet:"or sign in with my wallet",
+  emTitle:"Sign in with your email", emText:"We'll send you a 6-digit code. No passwords.", emPh:"you@example.com", emSend:"Send me the code",
+  emProtTitle:"Protect my account with my email", emProtText:"If you switch phones, sign in with your email and get everything back.",
+  codeTitle:"Check your email", codeText:"Enter the code we sent to {e}. If you don't see it, check Spam or Promotions.", codePh:"Code",
+  codeOk:"Sign in", codeResend:"Resend code", codeWait:"Wait {s}s to resend", codeBad:"Wrong or expired code. Try again.",
+  emDone:"Done! Your account is protected with {e}.", emWelcome:"Welcome{n}!", emLinked:"Email", emChange:"Change",
+  emBadMail:"Enter a valid email.", emSlow:"Wait a minute before asking for another code.",
   restore:"Already have an account? Sign in with my wallet", restoreTitle:"Sign in with your wallet", linkTitle:"Link your wallet",
   linkSign:"You'll sign this text to prove the wallet is yours. It's free:", linked:"Done! Your account is now protected by your wallet.",
   restored:"Welcome back, {n}! Your account is restored.",
@@ -548,8 +562,10 @@ function renderMine(){
   return `<div class="card click" data-user="${me}"><div class="row between"><div class="row">${av(meName||"?",myProfile?.avatar_path,46)}<div><b style="font-size:18px">${esc(meName)}</b><div class="meta">${t("seeProfile")} →</div></div></div></div></div>
   <div class="row" style="gap:8px;margin-bottom:12px"><button class="btn sec" style="flex:1" data-nav="notifs">🔔 ${t("notifs")}${unread?` (${unread})`:""}</button>${isAdmin?`<button class="btn sec" style="flex:1" data-nav="admin">🛠 Admin</button>`:""}</div>
   <div class="card"><b>🔐 ${t("account")}</b>
+    ${myEmail?`<div class="meta" style="margin-top:6px">✉️ ${t("emLinked")}: ${esc(myEmail)} ✓</div>`
+      :`<p class="meta" style="margin-top:6px">${t("emProtText")}</p><button class="btn pri full" style="margin-top:10px" data-email="protect">✉️ ${t("emProtTitle")}</button>`}
     ${w?`<div class="meta" style="margin-top:6px">${t("walletLinked")}: <a href="https://solscan.io/account/${esc(w)}" target="_blank" rel="noopener" style="color:inherit">◎ ${esc(short(w))}</a> ✓</div>`
-      :`<p class="meta" style="margin-top:6px">${t("protectText")}</p><button class="btn pri full" style="margin-top:10px" data-link="1">◎ ${t("protect")}</button>`}
+      :`<button class="btn sec full" style="margin-top:10px" data-link="1">◎ ${t("protect")}</button>`}
     <div id="pushBox" style="margin-top:12px">${pushBoxHTML()}</div>
   </div>
   <div class="sect">${t("myPosts")}</div>${mp.length?mp.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}
@@ -581,7 +597,9 @@ function nameSheet(first){
   sheet(`<h3>${t("nameTitle")}</h3><p>${t("nameText")}</p>
   <form id="nameForm"><input name="n" maxlength="24" value="${esc(meName||"")}" placeholder="${t("namePh")}" autocomplete="nickname">
   <button class="btn pri full" style="margin-top:14px">${t("save")}</button></form>
-  ${first?`<div style="text-align:center;margin-top:16px"><button class="btn ghost" data-restore="1">◎ ${t("restore")}</button></div>`:""}`);
+  ${first?`<div class="sect" style="text-align:center;margin-top:18px">${t("haveAcc")}</div>
+  <button class="btn sec full" data-email="login">✉️ ${t("emailIn")}</button>
+  <div style="text-align:center;margin-top:8px"><button class="btn ghost" style="font-size:13px" data-restore="1">◎ ${t("orWallet")}</button></div>`:""}`);
   if(first){document.getElementById("ov").onclick=null}
   document.getElementById("nameForm").onsubmit=async e=>{e.preventDefault();const n=new FormData(e.target).get("n").trim();if(!n)return;
     const {error}=myProfile?await sb.from("duetto_profiles").update({name:n}).eq("id",me):await sb.from("duetto_profiles").insert({id:me,name:n});
@@ -629,6 +647,65 @@ function linkSheet(restore){
     toast(res.restored?t("restored").replace("{n}",res.name||meName):t("linked"));
     go(view.page==="post"?"explore":view.page);
   });
+}
+
+/* ======================= email sign-in / protect ======================= */
+let myEmail="";
+function emailSheet(mode){
+  const protect=mode==="protect"&&!!myProfile;
+  sheet(`<h3>✉️ ${protect?t("emProtTitle"):t("emTitle")}</h3><p>${protect?t("emProtText"):t("emText")}</p>
+  <form id="emForm"><input name="e" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="${t("emPh")}" required>
+  <button class="btn pri full" style="margin-top:14px">${t("emSend")}</button></form>`);
+  document.getElementById("emForm").onsubmit=async e=>{e.preventDefault();
+    const email=new FormData(e.target).get("e").trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))return toast(t("emBadMail"));
+    const btn=e.target.querySelector("button");btn.disabled=true;
+    try{const kind=await sendCode(email,protect);codeSheet(email,kind,protect)}
+    catch(err){btn.disabled=false;fail(/rate|seconds|security purposes/i.test(err?.message||"")?t("emSlow"):err)}
+  };
+}
+async function sendCode(email,protect){
+  if(protect){
+    const {error}=await sb.auth.updateUser({email});
+    if(!error)return "email_change";
+    if(!/already|registered|exists/i.test(error.message||""))throw error;
+  }
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+  if(error)throw error;
+  return "email";
+}
+function codeSheet(email,kind,protect){
+  let left=60,timer;
+  sheet(`<h3>📬 ${t("codeTitle")}</h3><p>${esc(t("codeText").replace("{e}",email))}</p>
+  <form id="codeForm"><input name="c" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="${t("codePh")}" style="font-size:24px;letter-spacing:6px;text-align:center" required>
+  <button class="btn pri full" style="margin-top:14px">${t("codeOk")}</button></form>
+  <div style="text-align:center;margin-top:12px"><button class="btn ghost" id="resendBtn" disabled style="font-size:13px"></button></div>`);
+  const rb=document.getElementById("resendBtn");
+  const tick=()=>{if(!document.body.contains(rb))return clearInterval(timer);
+    if(left>0){rb.disabled=true;rb.textContent=t("codeWait").replace("{s}",left--)}else{rb.disabled=false;rb.textContent=t("codeResend");clearInterval(timer)}};
+  tick();timer=setInterval(tick,1000);
+  rb.onclick=async()=>{try{kind=await sendCode(email,protect&&kind==="email_change");left=60;tick();timer=setInterval(tick,1000)}catch(err){fail(err)}};
+  const inp=document.querySelector("#codeForm input");inp.focus();
+  document.getElementById("codeForm").onsubmit=async e=>{e.preventDefault();
+    const token=inp.value.replace(/\D/g,"");if(token.length<6)return toast(t("codeBad"));
+    const btn=e.target.querySelector("button");btn.disabled=true;
+    const {data:{session:old}}=await sb.auth.getSession();
+    const oldTok=old?.access_token, oldId=old?.user?.id, wasAnon=!!old?.user?.is_anonymous;
+    const {data,error}=await sb.auth.verifyOtp({email,token,type:kind});
+    if(error||!data?.session&&kind!=="email_change"){btn.disabled=false;return toast(t("codeBad"))}
+    clearInterval(timer);
+    try{
+      const {data:{session}}=await sb.auth.getSession();
+      if(session.user.id!==oldId&&wasAnon&&oldTok){await callWalletFn({action:"absorb",old_token:oldTok}).catch(e=>console.warn(e))}
+      me=session.user.id;myEmail=session.user.email||email;
+      await loadMe();closeSheet();
+      if(kind==="email_change")toast(t("emDone").replace("{e}",email));
+      else toast(t("emWelcome").replace("{n}",meName?", "+meName:""));
+      await go(view.page==="post"?"explore":view.page);
+      if(!meName)nameSheet(true);
+      pushFlush();
+    }catch(err){fail(err)}
+  };
 }
 
 /* ======================= report & block ======================= */
@@ -1250,6 +1327,7 @@ document.addEventListener("click",async e=>{
   else if(d.anchor){el.disabled=true;el.textContent=t("wWorking2");try{await callWalletFn({action:"anchor",agreement_id:d.anchor});toast(t("wAnchorDone"));pushFlush()}catch(err){fail(err)}await refreshDetail()}
   else if(d.link){linkSheet(false)}
   else if(d.restore){linkSheet(true)}
+  else if(d.email){emailSheet(d.email)}
   else if(d.more){const [type,id,uid,name]=d.more.split("|");moreSheet(type,id,uid,name)}
   else if(d.report){const [type,id]=d.report.split("|");reportSheet(type,id)}
   else if(d.blockuser){const [uid]=d.blockuser.split("|");await toggleBlock(uid)}
@@ -1336,7 +1414,7 @@ render=function(k){_render(k);if(view.page==="challenge")fillWinner();if(view.pa
   try{
     let {data:{session}}=await sb.auth.getSession();
     if(!session){const {data,error}=await sb.auth.signInAnonymously();if(error)throw error;session=data.session}
-    me=session.user.id;
+    me=session.user.id;myEmail=session.user.is_anonymous?"":(session.user.email||"");
     await loadMe();
     fromHash();
     if(view.page==="new"&&!meName)view.page="explore";

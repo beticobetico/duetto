@@ -132,6 +132,21 @@ async function handle(req: Request) {
     return json({ ok: true, linked: true });
   }
 
+  // ----- account: after email login on a device, bring in the temporary (anonymous) account -----
+  if (body.action === "absorb") {
+    const old = await admin.auth.getUser(String(body.old_token ?? ""));
+    const o = old.data?.user;
+    if (old.error || !o) return json({ ok: true, merged: false });
+    if (!o.is_anonymous || o.id === user.id || user.is_anonymous) return json({ ok: true, merged: false });
+    const { data: op } = await admin.from("duetto_profiles").select("id").eq("id", o.id).maybeSingle();
+    if (op) {
+      const { error } = await admin.rpc("duetto_merge_account_keep", { p_old: o.id, p_new: user.id });
+      if (error) return json({ error: error.message }, 500);
+    }
+    await admin.auth.admin.deleteUser(o.id).catch(() => {});
+    return json({ ok: true, merged: !!op });
+  }
+
   // ----- payments -----
   if (body.action === "pay_create") {
     const hourAgo = new Date(Date.now() - 3600e3).toISOString();
