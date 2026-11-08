@@ -114,6 +114,17 @@ const T = {
 
 /* ======================= i18n v2 additions ======================= */
 Object.assign(T.es,{
+  finished:"Terminadas", tabLyrics:"Letras", tabMusic:"Músicas", hasSong:"Canción terminada · busca opiniones", iHaveS:"Tengo una canción terminada", iHaveSs:"Quiero opiniones antes de lanzarla",
+  songAudio:"Tu canción (audio completo)", songLyricsOpt:"Letra (opcional, ayuda a criticar la letra)",
+  reviews:"Críticas", reviewsN:"críticas", reviewsN1:"crítica", cats:{lyrics:"Letra",melody:"Melodía",voice:"Voz",production:"Producción / mezcla",hook:"Coro / gancho",commercial:"Potencial comercial"},
+  change:"¿Qué cambiarías?", changePh:"Sé específico: qué parte y cómo la mejorarías…", best:"Lo que más te gustó (opcional)",
+  sendReview:"Enviar crítica", updateReview:"Actualizar mi crítica", yourReview:"Tu crítica", reviewSent:"¡Gracias por tu crítica!", rateAtLeast:"Califica al menos una categoría con estrellas.",
+  changeShort:"Escribe qué cambiarías (al menos unas palabras).",
+  markHere:"Comentar en", markTitle:"Comentar este momento", markPh:"¿Qué pasa en este momento de la canción?", marks:"Comentarios en la canción", noMarks:"Toca la onda o el botón para comentar un momento exacto.",
+  songRules:"Puedes escucharla y opinar. No la descargues ni la uses fuera de Duetto sin permiso de su autor.",
+  listenCritique:"Escuchar y criticar", summary:"Resumen de opiniones", overall:"Promedio general", listeners:"oyentes",
+  retention:"¿Hasta dónde escuchan?", retentionHint:"% de oyentes que siguen escuchando en cada momento de tu canción.", noListens:"Todavía nadie la ha escuchado. Comparte tu canción para recibir opiniones.",
+  biggestDrop:"Donde más se van:", changeLbl:"Cambiaría", bestLbl:"Lo mejor", noReviews:"Todavía no hay críticas. ¡Sé el primero!", ownSongHint:"Así verán tu canción. Las críticas y comentarios te llegarán como avisos.",
   demo:"Beta: comparte tus obras, firma acuerdos con tu wallet y regístralos en Solana.",
   search:"Buscar título, tema o autor…", allGenres:"Todos los géneros", allLangs:"Todos los idiomas",
   langNames:{es:"Español",en:"Inglés",pt:"Portugués",fr:"Francés",it:"Italiano",other:"Otro"}, songLang:"Idioma de la canción",
@@ -129,7 +140,7 @@ Object.assign(T.es,{
   block:"Bloquear", unblock:"Desbloquear", blocked:"Bloqueaste a esta persona. Ya no verás su contenido.", unblocked:"Desbloqueado.",
   hiddenMsg:"Oculto mientras se revisan reportes.", more:"Más opciones",
   notifs:"Avisos", noNotifs:"No tienes avisos todavía.", markAll:"Marcar todo como leído",
-  nk:{proposal:"te envió una propuesta para",chosen:"escogió tu propuesta en",signed:"firmó el acuerdo de",anchored:"Quedó registrado en Solana el acuerdo de",comment:"comentó tu propuesta en",message:"te escribió sobre",tip:"te envió una propina en"},
+  nk:{proposal:"te envió una propuesta para",chosen:"escogió tu propuesta en",signed:"firmó el acuerdo de",anchored:"Quedó registrado en Solana el acuerdo de",comment:"comentó tu propuesta en",message:"te escribió sobre",tip:"te envió una propina en",review:"criticó tu canción",mark:"comentó un momento de"},
   pushOn:"Activar notificaciones", pushOnText:"Te avisamos cuando te llegue una propuesta, te escojan o te escriban.", pushEnabled:"Notificaciones activadas ✓",
   pushDenied:"Las notificaciones están bloqueadas en tu navegador. Actívalas en los ajustes del sitio.", pushUnsupported:"Este navegador no permite notificaciones.",
   account:"Tu cuenta", walletLinked:"Wallet vinculada", protect:"Proteger mi cuenta con mi wallet",
@@ -155,6 +166,17 @@ Object.assign(T.es,{
   close:"Cerrar", cancel2:"Cancelar"
 });
 Object.assign(T.en,{
+  finished:"Finished", tabLyrics:"Lyrics", tabMusic:"Music", hasSong:"Finished song · wants feedback", iHaveS:"I have a finished song", iHaveSs:"I want feedback before releasing it",
+  songAudio:"Your song (full audio)", songLyricsOpt:"Lyrics (optional, helps people review them)",
+  reviews:"Reviews", reviewsN:"reviews", reviewsN1:"review", cats:{lyrics:"Lyrics",melody:"Melody",voice:"Vocals",production:"Production / mix",hook:"Chorus / hook",commercial:"Commercial potential"},
+  change:"What would you change?", changePh:"Be specific: which part and how you'd improve it…", best:"What you liked most (optional)",
+  sendReview:"Send review", updateReview:"Update my review", yourReview:"Your review", reviewSent:"Thanks for your review!", rateAtLeast:"Rate at least one category with stars.",
+  changeShort:"Write what you'd change (at least a few words).",
+  markHere:"Comment at", markTitle:"Comment on this moment", markPh:"What's happening at this moment of the song?", marks:"Comments on the song", noMarks:"Tap the waveform or the button to comment on an exact moment.",
+  songRules:"You can listen and give feedback. Don't download it or use it outside Duetto without the author's permission.",
+  listenCritique:"Listen and review", summary:"Feedback summary", overall:"Overall average", listeners:"listeners",
+  retention:"How far do people listen?", retentionHint:"% of listeners still listening at each moment of your song.", noListens:"Nobody has listened yet. Share your song to get feedback.",
+  biggestDrop:"Biggest drop-off:", changeLbl:"Would change", bestLbl:"Best part", noReviews:"No reviews yet. Be the first!", ownSongHint:"This is how others see your song. Reviews and comments will reach you as notifications.",
   demo:"Beta: share your works, sign agreements with your wallet and record them on Solana.",
   search:"Search title, theme or author…", allGenres:"All genres", allLangs:"All languages",
   langNames:{es:"Spanish",en:"English",pt:"Portuguese",fr:"French",it:"Italian",other:"Other"}, songLang:"Song language",
@@ -170,7 +192,7 @@ Object.assign(T.en,{
   block:"Block", unblock:"Unblock", blocked:"You blocked this person. You won't see their content.", unblocked:"Unblocked.",
   hiddenMsg:"Hidden while reports are reviewed.", more:"More options",
   notifs:"Notifications", noNotifs:"No notifications yet.", markAll:"Mark all as read",
-  nk:{proposal:"sent you a proposal for",chosen:"chose your proposal in",signed:"signed the agreement for",anchored:"Recorded on Solana: the agreement for",comment:"commented on your proposal in",message:"wrote to you about",tip:"sent you a tip on"},
+  nk:{proposal:"sent you a proposal for",chosen:"chose your proposal in",signed:"signed the agreement for",anchored:"Recorded on Solana: the agreement for",comment:"commented on your proposal in",message:"wrote to you about",tip:"sent you a tip on",review:"reviewed your song",mark:"commented on a moment of"},
   pushOn:"Turn on notifications", pushOnText:"We'll let you know when you get a proposal, get chosen or get a message.", pushEnabled:"Notifications on ✓",
   pushDenied:"Notifications are blocked in your browser. Enable them in the site settings.", pushUnsupported:"This browser doesn't support notifications.",
   account:"Your account", walletLinked:"Linked wallet", protect:"Protect my account with my wallet",
@@ -236,7 +258,7 @@ function fail(error){console.error(error);toast(t("err")+(error?.message||error)
 function mapPost(r){return{id:r.id,type:r.type,authorId:r.author_id,author:r.author?.name||"—",authorAvatar:r.author?.avatar_path||null,title:r.title,genre:r.genre||"",mood:r.mood||"",
   preview:r.preview||"",audioPath:r.audio_path,split:r.split,hash:r.hash,status:r.status,chosenId:r.chosen_id,lang:r.lang||"es",hidden:!!r.hidden,
   challengeId:r.challenge_id,boostedUntil:r.boosted_until?Date.parse(r.boosted_until):0,
-  proposalCount:r.proposal_count,voteCount:r.vote_count,createdAt:Date.parse(r.created_at)}}
+  proposalCount:r.proposal_count,voteCount:r.vote_count,reviewCount:r.review_count||0,ratingAvg:r.rating_avg!=null?Number(r.rating_avg):null,createdAt:Date.parse(r.created_at)}}
 const canSee=p=>p&&(p.authorId===me||myUnlocks.has(p.id));
 const isBoosted=p=>p.boostedUntil>Date.now();
 const visible=(hidden,authorId)=>!myBlocks.has(authorId)&&(!hidden||authorId===me||isAdmin);
@@ -300,11 +322,12 @@ async function loadDetail(pid){
   const [pr,ag,ct,tips]=await Promise.all([
     sb.from("duetto_proposals").select("*, author:duetto_profiles(name,avatar_path), votes:duetto_votes(user_id), ratings:duetto_ratings(user_id,l,m,h), comments:duetto_comments(id,body,hidden,created_at,user_id,user:duetto_profiles(name))").eq("post_id",pid).order("created_at"),
     sb.from("duetto_agreements").select("*, sigs:duetto_signatures(user_id,signed_at,method,wallet,sig)").eq("post_id",pid).maybeSingle(),
-    canSee(p)&&p.type==="lyrics"?sb.from("duetto_post_content").select("text").eq("post_id",pid).maybeSingle():Promise.resolve({data:null}),
+    canSee(p)&&p.type!=="music"?sb.from("duetto_post_content").select("text").eq("post_id",pid).maybeSingle():Promise.resolve({data:null}),
     sb.from("duetto_payments").select("proposal_id,symbol,amount").eq("post_id",pid).eq("status","confirmed").eq("kind","tip")
   ]);
   if(pr.error)fail(pr.error);
   p.text=ct.data?.text||null;
+  if(p.type==="song")await loadSongExtras(p);
   const tipMap={};(tips.data||[]).forEach(x=>{const k=x.proposal_id||"post";tipMap[k]=tipMap[k]||{};tipMap[k][x.symbol]=(tipMap[k][x.symbol]||0)+Number(x.amount)});
   p.tips=tipMap.post||{};
   p.proposals=(pr.data||[]).map(x=>({id:x.id,authorId:x.author_id,author:x.author?.name||"—",authorAvatar:x.author?.avatar_path||null,text:x.text,audioPath:x.audio_path,mixed:x.mixed,note:x.note,hidden:!!x.hidden,
@@ -331,7 +354,7 @@ function render(keepScroll){
   document.getElementById("userBtn").innerHTML=meName?av(meName,myProfile?.avatar_path)+esc(meName):"…";
   const tabs=document.getElementById("tabs");
   tabs.style.display=view.page==="explore"?"block":"none";
-  tabs.innerHTML=`<div class="row" style="flex-wrap:nowrap;gap:8px">${[["all","a",t("all")],["lyrics","l",t("needMusic")],["music","m",t("needLyrics")]]
+  tabs.innerHTML=`<div class="row" style="flex-wrap:nowrap;gap:8px">${[["all","a",t("all")],["lyrics","l","✎ "+t("tabLyrics")],["music","m","♪ "+t("tabMusic")],["song","s","🎧 "+t("finished")]]
     .map(([k,c,l])=>`<button class="tab ${c} ${view.tab===k?"on":""}" data-tab="${k}">${l}</button>`).join("")}</div>
     <div class="filters"><input id="q" type="search" placeholder="${t("search")}" value="${esc(view.q)}">
     <select id="fGenre"><option value="">${t("allGenres")}</option>${T[lang].genres.map((g,i)=>`<option value="${esc(T.es.genres[i])}" ${view.genre===T.es.genres[i]?"selected":""}>${esc(g)}</option>`).join("")}</select>
@@ -371,6 +394,7 @@ async function refreshDetail(){await loadDetail(view.postId);render(true)}
 
 /* ======================= views ======================= */
 function postCard(p){
+  if(p.type==="song")return songCard(p);
   const isL=p.type==="lyrics";
   const ch=p.challengeId&&challenges.find(c=>c.id===p.challengeId);
   return `<div class="card click ${isBoosted(p)?"boost":""}" data-open="${p.id}">
@@ -415,6 +439,7 @@ function avg(r,k){const v=Object.values(r).map(x=>x[k]).filter(Boolean);return v
 const tipText=tp=>Object.entries(tp||{}).map(([s,a])=>`${+a.toFixed(2)} ${s}`).join(" · ");
 const moreBtn=(type,id,uid,name)=>`<button class="iconbtn" title="${t("more")}" data-more="${type}|${id}|${uid}|${esc(name)}">${ICON.dots}</button>`;
 function renderPost(p){
+  if(p&&p.type==="song")return renderSong(p);
   if(!p)return `<button class="back" data-nav="explore">← ${t("back")}</button><div class="empty">—</div>`;
   const isL=p.type==="lyrics", owner=p.authorId===me, unlocked=canSee(p);
   const mine=p.proposals.find(x=>x.authorId===me);
@@ -495,11 +520,13 @@ function renderAgreement(p){
 }
 let draft={type:"lyrics",split:50,genre:0,lang:"es",challenge:false};
 function renderNew(){
+  if(draft.type==="song")return renderNewSong();
   const isL=draft.type==="lyrics", ch=activeChallenge();
   return `<div class="sect" style="margin-top:4px">${t("newPost")}</div>
   <div class="typepick">
     <button class="tp l ${isL?"on":""}" data-type="lyrics"><b>✎ ${t("iHaveL")}</b><span>${t("iHaveLs")}</span></button>
     <button class="tp m ${!isL?"on":""}" data-type="music"><b>♪ ${t("iHaveM")}</b><span>${t("iHaveMs")}</span></button>
+    <button class="tp s wide" data-type="song"><b>🎧 ${t("iHaveS")}</b><span>${t("iHaveSs")}</span></button>
   </div>
   <form id="newForm">
     <label>${t("title")}</label><input name="title" maxlength="80" value="${esc(draft.title||"")}">
@@ -546,8 +573,8 @@ async function hydrateImages(root){
 function unlockSheet(id){
   const p=detail;
   sheet(`<h3>${t("unlockTitle")}</h3><p>${t("unlockText")}</p>
-  <ul class="rules"><li>${t("r1")}</li><li>${t("r2")}</li><li>${t("r3")}</li></ul>
-  ${splitBar(p)}
+  ${p.type==="song"?`<ul class="rules"><li>${t("songRules")}</li><li>${t("r3")}</li></ul>`:`<ul class="rules"><li>${t("r1")}</li><li>${t("r2")}</li><li>${t("r3")}</li></ul>
+  ${splitBar(p)}`}
   <div class="row" style="margin-top:18px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button><button class="btn pri" style="flex:2" data-dounlock="${id}">${t("accept")}</button></div>`);
 }
 function nameSheet(first){
@@ -830,6 +857,7 @@ async function loadAdmin(){
   for(const x of g){
     if(x.type==="post")x.post=x.id;
     else if(x.type==="proposal"){const {data}=await sb.from("duetto_proposals").select("post_id").eq("id",x.id).maybeSingle();x.post=data?.post_id}
+    else if(x.type==="review"||x.type==="mark"){const {data}=await sb.from(x.type==="review"?"duetto_reviews":"duetto_marks").select("post_id").eq("id",x.id).maybeSingle();x.post=data?.post_id}
     else if(x.type==="comment"){const {data}=await sb.from("duetto_comments").select("proposal:duetto_proposals(post_id)").eq("id",x.id).maybeSingle();x.post=data?.proposal?.post_id}
   }
   adminData={groups:g};
@@ -1004,13 +1032,204 @@ function proposeSheet(id){
 }
 
 
+/* ======================= finished songs: feedback ======================= */
+const CATS=["lyrics","melody","voice","production","hook","commercial"];
+const mmss=s=>{s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+const starTxt=v=>v?"★".repeat(v)+"☆".repeat(5-v):"";
+let reviewDraft={};
+
+function songCard(p){
+  return `<div class="card click ${isBoosted(p)?"boost":""}" data-open="${p.id}">
+    <div class="row between"><span class="badge s">🎧 ${t("hasSong")}</span>
+    <span class="row" style="gap:6px">${isBoosted(p)?`<span class="badge o">⭐ ${t("boosted")}</span>`:""}</span></div>
+    <div class="ptitle">${esc(p.title)}</div>
+    <div class="meta">${t("by")} ${esc(p.author)} · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
+    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}
+    ${p.mood?`<div style="font-size:13.5px;margin-top:6px;color:#d8d2e8">${esc(p.mood)}</div>`:""}
+    <div class="minwave">${Array.from({length:42},(_,i)=>`<i style="height:${20+Math.round(70*Math.abs(Math.sin(i*1.7+p.title.length)))}%"></i>`).join("")}</div>
+    <div class="stats"><span>⭐ ${p.ratingAvg!=null?p.ratingAvg.toFixed(1):"–"}</span><span>📝 ${p.reviewCount} ${p.reviewCount===1?t("reviewsN1"):t("reviewsN")}</span></div>
+  </div>`;
+}
+
+function renderNewSong(){
+  return `<div class="sect" style="margin-top:4px">${t("newPost")}</div>
+  <div class="typepick">
+    <button class="tp l" data-type="lyrics"><b>✎ ${t("iHaveL")}</b><span>${t("iHaveLs")}</span></button>
+    <button class="tp m" data-type="music"><b>♪ ${t("iHaveM")}</b><span>${t("iHaveMs")}</span></button>
+    <button class="tp s wide on" data-type="song"><b>🎧 ${t("iHaveS")}</b><span>${t("iHaveSs")}</span></button>
+  </div>
+  <form id="newForm">
+    <label>${t("title")}</label><input name="title" maxlength="80" value="${esc(draft.title||"")}">
+    <div class="row" style="gap:10px;flex-wrap:nowrap"><div style="flex:1"><label>${t("genre")}</label><select name="genre">${T[lang].genres.map((g,i)=>`<option value="${i}" ${+draft.genre===i?"selected":""}>${g}</option>`).join("")}</select></div>
+    <div style="flex:1"><label>${t("songLang")}</label><select name="lang">${Object.entries(T[lang].langNames).map(([k,v])=>`<option value="${k}" ${draft.lang===k?"selected":""}>${esc(v)}</option>`).join("")}</select></div></div>
+    <label>${t("mood")}</label><input name="mood" placeholder="${t("moodPh")}" maxlength="140" value="${esc(draft.mood||"")}">
+    <label>${t("songAudio")}</label><div class="file" id="fileBox">${draft.fileName?"🎵 "+esc(draft.fileName):"⬆ "+t("audioPick")}<input type="file" accept="audio/*" id="fileIn"></div>
+    <label>${t("songLyricsOpt")}</label><textarea name="text" placeholder="${t("lyricsPh")}" maxlength="6000" style="min-height:120px">${esc(draft.text||"")}</textarea>
+    <button class="btn pri full" style="margin-top:20px" id="postBtn">${t("post")}</button>
+  </form>`;
+}
+
+async function loadSongExtras(p){
+  const owner=p.authorId===me;
+  const [rv,mk,ls]=await Promise.all([
+    canSee(p)?sb.from("duetto_reviews").select("*, user:duetto_profiles(name,avatar_path)").eq("post_id",p.id).order("created_at",{ascending:false}):Promise.resolve({data:[]}),
+    canSee(p)?sb.from("duetto_marks").select("*, user:duetto_profiles(name)").eq("post_id",p.id).order("at_sec"):Promise.resolve({data:[]}),
+    owner?sb.from("duetto_listens").select("max_sec,duration").eq("post_id",p.id):Promise.resolve({data:[]})
+  ]);
+  p.reviews=(rv.data||[]).filter(r=>visible(r.hidden,r.user_id));
+  p.marks=(mk.data||[]).filter(m=>visible(m.hidden,m.user_id));
+  p.listens=ls.data||[];
+  const mine=p.reviews.find(r=>r.user_id===me);
+  reviewDraft=mine?Object.fromEntries(CATS.map(c=>[c,mine[c]||0])):{};
+}
+
+function catBars(reviews){
+  return CATS.map(c=>{const v=reviews.map(r=>r[c]).filter(Boolean);const a=v.length?v.reduce((x,y)=>x+y,0)/v.length:0;
+    return `<div class="catbar"><span>${esc(T[lang].cats[c])}</span><div><i style="width:${a/5*100}%"></i></div><b>${a?a.toFixed(1):"–"}</b></div>`}).join("");
+}
+function retentionChart(listens){
+  if(!listens.length)return `<p class="meta">${t("noListens")}</p>`;
+  const D=Math.max(...listens.map(l=>Number(l.duration)));const N=24;
+  const pts=[...Array(N+1)].map((_,i)=>{const tt=i/N*D;const pct=listens.filter(l=>Number(l.max_sec)>=tt-0.5).length/listens.length*100;return {tt,pct}});
+  let drop=0,dropAt=0;for(let i=1;i<pts.length;i++){const d=pts[i-1].pct-pts[i].pct;if(d>drop){drop=d;dropAt=pts[i].tt}}
+  const W=320,H=120,x=i=>i/N*W,y=v=>H-v/100*H;
+  const line=pts.map((p,i)=>`${x(i).toFixed(1)},${y(p.pct).toFixed(1)}`).join(" ");
+  return `<svg viewBox="0 0 ${W} ${H+18}" class="retchart" role="img" aria-label="${t("retention")}">
+    <defs><linearGradient id="rg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff6b8b" stop-opacity=".45"/><stop offset="1" stop-color="#ff6b8b" stop-opacity="0"/></linearGradient></defs>
+    <line x1="0" y1="${y(50)}" x2="${W}" y2="${y(50)}" class="grid"/>
+    <polygon points="0,${H} ${line} ${W},${H}" fill="url(#rg)"/><polyline points="${line}" fill="none" stroke="#ff6b8b" stroke-width="2.5" stroke-linejoin="round"/>
+    ${drop>0?`<circle cx="${(dropAt/D*W).toFixed(1)}" cy="${y(pts[Math.round(dropAt/D*N)].pct).toFixed(1)}" r="5" fill="#ffcf5c"/>`:""}
+    <text x="0" y="${H+14}">0:00</text><text x="${W}" y="${H+14}" text-anchor="end">${mmss(D)}</text><text x="${W}" y="${y(50)-4}" text-anchor="end">50%</text>
+  </svg>
+  <div class="meta">${listens.length} ${t("listeners")}${drop>=10?` · ${t("biggestDrop")} <b>${mmss(dropAt)}</b> (−${Math.round(drop)}%)`:""}</div>`;
+}
+
+function renderSong(p){
+  const owner=p.authorId===me, unlocked=canSee(p);
+  const mine=(p.reviews||[]).find(r=>r.user_id===me);
+  let html=`<button class="back" data-nav="explore">← ${t("back")}</button>
+  <div class="card ${isBoosted(p)?"boost":""}">
+    <div class="row between"><span class="badge s">🎧 ${t("hasSong")}</span>${owner?"":moreBtn("post",p.id,p.authorId,p.author)}</div>
+    <div class="ptitle" style="font-size:26px">${esc(p.title)}</div>
+    <div class="row meta click" style="margin-top:4px" data-user="${p.authorId}">${av(p.author,p.authorAvatar)} <u>${esc(p.author)}</u> · ${esc(p.genre)} · ${esc(T[lang].langNames[p.lang]||"")} · ${ago(p.createdAt)}</div>
+    ${p.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}
+    ${p.mood?`<p style="margin-top:10px;font-size:14px">${esc(p.mood)}</p>`:""}
+    ${unlocked&&p.audioPath?`<div class="player" id="player" data-path="${esc(p.audioPath)}">
+        <div class="wave" id="wave"><div class="wbars" id="wbars">${Array.from({length:80},()=>`<i style="height:12%"></i>`).join("")}</div><div class="wprog" id="wprog"></div>
+          <div class="wmarks">${(p.marks||[]).map(m=>`<button class="wdot" data-seek="${m.at_sec}" title="${esc(mmss(m.at_sec)+" · "+m.body)}"></button>`).join("")}</div></div>
+        <div class="row between" style="margin-top:8px;flex-wrap:nowrap"><button class="btn sec" id="playBtn">▶</button><span class="meta" id="ptime">0:00</span>
+          ${owner?"":`<button class="btn sec" style="white-space:nowrap;font-size:13px" data-markhere="1">📍 ${t("markHere")} <span id="markT">0:00</span></button>`}</div>
+        <audio id="songAudio" preload="metadata"></audio>
+      </div>`
+      :`<div class="lyrics locked" style="font-family:Inter;font-size:14px;color:var(--muted)">🎧 ••• ••• ••• •••</div>`}
+    ${p.text?`<details style="margin-top:10px"><summary class="meta click">${t("lyrics")}</summary><div class="lyrics">${esc(p.text)}</div></details>`:""}
+    <div class="hash">${t("fp")}: ${esc(p.hash.slice(0,32))}… · ${fdate(p.createdAt)}</div>
+    <div style="margin-top:12px">
+    ${owner?`<div class="row between"><span class="meta">${t("ownSongHint")}</span><button class="btn sec" data-boost="${p.id}">⭐ ${t("boostBtn")}</button></div>`
+      :!unlocked?`<button class="btn pri full" data-unlock="${p.id}">🎧 ${t("listenCritique")}</button>`
+      :`<button class="btn sec" data-tip="post|${p.id}|${esc(p.author)}">💸 ${t("tipBtn")}</button>`}
+    </div>
+  </div>`;
+  if(owner){
+    html+=`<div class="card"><b>📊 ${t("summary")}</b>
+      <div class="row between" style="margin-top:8px"><span class="meta">${t("overall")}</span><b style="font-size:20px">⭐ ${p.ratingAvg!=null?p.ratingAvg.toFixed(2):"–"} <span class="meta">· ${p.reviewCount} ${p.reviewCount===1?t("reviewsN1"):t("reviewsN")}</span></b></div>
+      <div style="margin-top:8px">${catBars(p.reviews||[])}</div>
+      <div class="sect" style="margin:16px 0 4px">📉 ${t("retention")}</div><p class="meta" style="margin-bottom:6px">${t("retentionHint")}</p>
+      ${retentionChart(p.listens||[])}</div>`;
+  }
+  if(!unlocked)return html;
+  html+=`<div class="sect">📍 ${t("marks")} (${(p.marks||[]).length})</div>
+  ${(p.marks||[]).length?(p.marks||[]).map(m=>`<div class="markrow"><button class="mtime" data-seek="${m.at_sec}">${mmss(m.at_sec)}</button><div style="flex:1"><b class="click" data-user="${m.user_id}">${esc(m.user?.name||"")}</b> ${m.hidden?`<span class="meta">🚩</span>`:""}${esc(m.body)}</div>${m.user_id===me?"":moreBtn("mark",m.id,m.user_id,m.user?.name||"")}</div>`).join("")
+    :`<div class="meta" style="padding:4px 2px 8px">${t("noMarks")}</div>`}`;
+  if(!owner){
+    html+=`<form id="revForm" class="card"><b>📝 ${mine?t("yourReview"):t("sendReview")}</b>
+      <div class="rate" style="margin-top:10px">${CATS.map(c=>`<span>${esc(T[lang].cats[c])}</span><div class="stars">${[1,2,3,4,5].map(i=>`<button type="button" class="star ${i<=(reviewDraft[c]||0)?"on":""}" data-rv="${c}|${i}">★</button>`).join("")}</div>`).join("")}</div>
+      <label>${t("change")} *</label><textarea name="change" maxlength="600" required placeholder="${t("changePh")}" style="min-height:80px">${esc(mine?.change||"")}</textarea>
+      <label>${t("best")}</label><input name="best" maxlength="600" value="${esc(mine?.best||"")}">
+      <button class="btn pri full" style="margin-top:12px">${mine?t("updateReview"):t("sendReview")}</button></form>`;
+  }
+  html+=`<div class="sect">📝 ${t("reviews")} (${(p.reviews||[]).length})</div>
+  ${(p.reviews||[]).length?(p.reviews||[]).map(r=>`<div class="prop">
+    <div class="row between"><div class="row click" data-user="${r.user_id}">${av(r.user?.name,r.user?.avatar_path)}<b>${esc(r.user?.name||"")}</b><span class="meta">· ${ago(Date.parse(r.created_at))}</span></div>${r.user_id===me?"":moreBtn("review",r.id,r.user_id,r.user?.name||"")}</div>
+    ${r.hidden?`<div class="hiddenmsg">🚩 ${t("hiddenMsg")}</div>`:""}
+    <div class="rvchips">${CATS.filter(c=>r[c]).map(c=>`<span>${esc(T[lang].cats[c])} <b>${starTxt(r[c])}</b></span>`).join("")}</div>
+    <p style="margin-top:8px;font-size:14px"><b>${t("changeLbl")}:</b> ${esc(r.change)}</p>
+    ${r.best?`<p style="margin-top:4px;font-size:14px"><b>${t("bestLbl")}:</b> ${esc(r.best)}</p>`:""}
+  </div>`).join(""):`<div class="empty" style="padding:14px">${t("noReviews")}</div>`}`;
+  return html;
+}
+
+/* ----- player: waveform, marks, listening record ----- */
+const peaksCache=new Map();
+let listenState=null;
+async function setupSongPlayer(){
+  const box=document.getElementById("player");if(!box||box.dataset.ready)return;box.dataset.ready="1";
+  const p=detail, audio=document.getElementById("songAudio"), path=box.dataset.path;
+  let url;try{url=await signedUrl(path)}catch(e){return}
+  audio.src=url;
+  const playBtn=document.getElementById("playBtn"), prog=document.getElementById("wprog"), ptime=document.getElementById("ptime"), markT=document.getElementById("markT");
+  playBtn.onclick=()=>audio.paused?audio.play().catch(()=>{}):audio.pause();
+  audio.onplay=()=>playBtn.textContent="❚❚";audio.onpause=()=>playBtn.textContent="▶";
+  const owner=p.authorId===me;
+  listenState=owner?null:{post:p.id,max:0,sent:-1,created:false,dur:0};
+  const tick=()=>{const d=audio.duration||0,c=audio.currentTime||0;
+    prog.style.width=(d?c/d*100:0)+"%";ptime.textContent=mmss(c)+(d?" / "+mmss(d):"");if(markT)markT.textContent=mmss(c);
+    if(listenState&&d){listenState.dur=d;if(c>listenState.max&&c<=listenState.max+3)listenState.max=c;if(listenState.max-listenState.sent>=8)sendListen()}};
+  audio.ontimeupdate=tick;audio.onended=()=>{if(listenState){listenState.max=audio.duration;sendListen()}};
+  audio.onpause=()=>{playBtn.textContent="▶";if(listenState)sendListen()};
+  audio.onloadedmetadata=()=>{positionDots();tick()};
+  document.getElementById("wave").onclick=e=>{if(e.target.closest(".wdot"))return;const r=e.currentTarget.getBoundingClientRect();if(audio.duration)audio.currentTime=(e.clientX-r.left)/r.width*audio.duration};
+  // waveform peaks
+  try{
+    let peaks=peaksCache.get(path);
+    if(!peaks){const buf=await decodeBlob(await (await fetch(url)).blob());const ch=buf.getChannelData(0),N=80,step=Math.floor(ch.length/N);
+      peaks=[...Array(N)].map((_,i)=>{let m=0;for(let j=i*step;j<(i+1)*step;j+=16){const v=Math.abs(ch[j]);if(v>m)m=v}return m});
+      const mx=Math.max(...peaks,.01);peaks=peaks.map(v=>v/mx);peaksCache.set(path,peaks)}
+    document.getElementById("wbars").innerHTML=peaks.map(v=>`<i style="height:${Math.max(8,Math.round(v*100))}%"></i>`).join("");
+  }catch(e){}
+}
+function positionDots(){
+  const audio=document.getElementById("songAudio");if(!audio||!audio.duration)return;
+  document.querySelectorAll(".wdot").forEach(d=>{d.style.left=Math.min(100,+d.dataset.seek/audio.duration*100)+"%"});
+}
+async function sendListen(){
+  const s=listenState;if(!s||!s.dur||s.max<=s.sent)return;const max=Math.round(s.max*100)/100;s.sent=max;
+  if(!s.created){const r=await sb.from("duetto_listens").insert({post_id:s.post,user_id:me,max_sec:max,duration:Math.round(s.dur*100)/100});
+    if(!r.error||r.error.code==="23505")s.created=true;if(!r.error)return}
+  await sb.from("duetto_listens").update({max_sec:max}).eq("post_id",s.post).eq("user_id",me);
+}
+window.addEventListener("pagehide",()=>{try{sendListen()}catch(e){}});
+function seekTo(sec){const a=document.getElementById("songAudio");if(!a)return;a.currentTime=+sec;a.play().catch(()=>{});document.getElementById("player")?.scrollIntoView({behavior:"smooth",block:"center"})}
+function markSheet(){
+  const a=document.getElementById("songAudio");const at=a?Math.round((a.currentTime||0)*100)/100:0;a?.pause();
+  sheet(`<h3>📍 ${t("markTitle")} · ${mmss(at)}</h3>
+  <form id="markForm"><textarea name="b" maxlength="300" required placeholder="${t("markPh")}" style="min-height:90px"></textarea>
+  <button class="btn pri full" style="margin-top:12px">${t("comment")}</button></form>`);
+  document.getElementById("markForm").onsubmit=async e=>{e.preventDefault();const body=new FormData(e.target).get("b").trim();if(!body)return;
+    const {error}=await sb.from("duetto_marks").insert({post_id:detail.id,user_id:me,at_sec:at,body});if(error)return fail(error);
+    closeSheet();pushFlush();await refreshDetail()};
+}
+async function submitReview(form){
+  const f=new FormData(form);const change=f.get("change").trim(),best=f.get("best").trim();
+  if(!CATS.some(c=>reviewDraft[c]))return toast(t("rateAtLeast"));
+  if(change.length<3)return toast(t("changeShort"));
+  const row={post_id:detail.id,user_id:me,change,best:best||null,updated_at:new Date().toISOString(),...Object.fromEntries(CATS.map(c=>[c,reviewDraft[c]||null]))};
+  const mine=(detail.reviews||[]).find(r=>r.user_id===me);
+  const {error}=mine?await sb.from("duetto_reviews").update(row).eq("id",mine.id):await sb.from("duetto_reviews").insert(row);
+  if(error)return fail(error);toast(t("reviewSent"));if(!mine)pushFlush();await refreshDetail();
+}
+
 /* ======================= events ======================= */
 document.addEventListener("click",async e=>{
   if(e.target.closest("audio,input,textarea,select,a"))return;
   const el=e.target.closest("button,[data-open],[data-user],[data-notif],[data-nav]");if(!el)return;
   const d=el.dataset;
   try{
-  if(d.tab){view.tab=d.tab;render(true)}
+  if(d.seek!==undefined&&d.seek!==""){seekTo(d.seek)}
+  else if(d.markhere){if(requireName())markSheet()}
+  else if(d.rv){const [c,v]=d.rv.split("|");reviewDraft[c]=reviewDraft[c]===+v?0:+v;
+    el.parentElement.querySelectorAll(".star").forEach((s,i)=>s.classList.toggle("on",i<(reviewDraft[c]||0)))}
+  else if(d.tab){view.tab=d.tab;render(true)}
   else if(d.nav){if(d.nav==="new"){if(!requireName())return;draft={type:"lyrics",split:50,genre:0,lang:lang,challenge:!!d.joinch}}closeSheet();go(d.nav)}
   else if(d.open){closeSheet();go("post",{postId:d.open})}
   else if(d.user){closeSheet();go("profile",{userId:d.user})}
@@ -1065,19 +1284,22 @@ document.addEventListener("change",e=>{
 document.addEventListener("submit",async e=>{
   if(e.target.id==="newForm"){
     e.preventDefault();const f=new FormData(e.target);
+    const isS=draft.type==="song";
     const title=f.get("title").trim(),isL=draft.type==="lyrics",text=(f.get("text")||"").trim();
     if(!title||(isL&&!text)||(!isL&&!draft.file))return toast(t("needFields"));
     const btn=document.getElementById("postBtn");btn.disabled=true;btn.textContent=t("uploading");
     try{
       let audio_path=null;if(!isL)audio_path=await uploadFile(draft.file);
       const hash=await sha(isL?text:draft.file);
-      const preview=isL?text.split("\n").filter(Boolean).slice(0,2).join("\n").slice(0,300):null;
+      const preview=(isL||isS)&&text?text.split("\n").filter(Boolean).slice(0,2).join("\n").slice(0,300):null;
       const ch=f.get("challenge")?activeChallenge():null;
       const {data,error}=await sb.from("duetto_posts").insert({type:draft.type,title,genre:T[lang].genres[+f.get("genre")],lang:f.get("lang")||"es",mood:f.get("mood").trim()||null,preview,audio_path,split:draft.split,hash,author_id:me,challenge_id:ch?ch.id:null}).select("id").single();
       if(error)throw error;
-      if(isL){const r=await sb.from("duetto_post_content").insert({post_id:data.id,text});if(r.error)throw r.error}
+      if(text&&(isL||isS)){const r=await sb.from("duetto_post_content").insert({post_id:data.id,text});if(r.error)throw r.error}
       toast(t("posted"));draft={type:"lyrics",split:50,genre:0,lang:lang,challenge:false};go("post",{postId:data.id});
     }catch(err){btn.disabled=false;btn.textContent=t("post");fail(err)}
+  } else if(e.target.id==="revForm"){
+    e.preventDefault();if(requireName())submitReview(e.target);
   } else if(e.target.dataset.comment){
     e.preventDefault();const c=new FormData(e.target).get("c").trim();if(!c)return;if(!requireName())return;
     const {error}=await sb.from("duetto_comments").insert({proposal_id:e.target.dataset.comment,body:c,user_id:me});if(error)return fail(error);
@@ -1106,7 +1328,7 @@ window.addEventListener("hashchange",()=>{const before=hashFor();fromHash();if(h
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&me)refreshUnread()});
 setInterval(()=>{if(me&&!document.hidden)refreshUnread()},60000);
 const _render=render;
-render=function(k){_render(k);if(view.page==="challenge")fillWinner()};
+render=function(k){_render(k);if(view.page==="challenge")fillWinner();if(view.page==="post"&&detail?.type==="song")setupSongPlayer()};
 
 /* ======================= boot ======================= */
 (async()=>{

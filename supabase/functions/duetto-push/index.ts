@@ -19,6 +19,8 @@ const TEXT: Record<string, [string, string]> = {
   comment: ["💬 Nuevo comentario / New comment", "{a}: {e}"],
   message: ["💬 Mensaje de tu coautor / Message", "{a}: {e}"],
   tip: ["💸 ¡Recibiste una propina! / You got a tip!", "{a} te envió {e}"],
+  review: ["⭐ Nueva crítica / New review", "{a} criticó \"{t}\": {e}"],
+  mark: ["📍 Comentario en tu canción / Timestamp comment", "{a} en {e}"],
 };
 
 Deno.serve(async (req) => {
