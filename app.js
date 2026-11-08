@@ -127,6 +127,13 @@ Object.assign(T.es,{
   biggestDrop:"Donde más se van:", changeLbl:"Cambiaría", bestLbl:"Lo mejor", noReviews:"Todavía no hay críticas. ¡Sé el primero!", ownSongHint:"Así verán tu canción. Las críticas y comentarios te llegarán como avisos.",
   demo:"Beta: comparte tus obras, firma acuerdos con tu wallet y regístralos en Solana.",
   search:"Buscar título, tema o autor…", allGenres:"Todos los géneros", allLangs:"Todos los idiomas",
+  wHero:"Tú pones la letra.<br>Alguien pone la música.", wSub:"Sube tu letra, tu música o tu canción terminada. Otros compositores le ponen su voz, su melodía o su opinión.",
+  wHow:"Cómo funciona", w1t:"Sube", w1:"tu letra, tu pista o tu canción.", w2t:"Recibe propuestas", w2:"grabadas con voz real, no con IA.", w3t:"Escoge y firma", w3:"un acuerdo de coautoría que queda registrado.",
+  wWhy:"Por qué Duetto", wb1t:"Voces reales, cero IA", wb1:"Cada propuesta la graba una persona.",
+  wb2t:"Tu obra protegida", wb2:"Solo ve tu letra completa quien acepta las reglas, y queda la huella de cuándo la subiste.",
+  wb3t:"Acuerdo justo", wb3:"Desde el inicio se sabe quién lleva qué porcentaje, registrado en Solana con prueba pública.",
+  wb4t:"Críticas que sirven", wb4:"Te dicen qué cambiarías, en qué segundo y hasta dónde escuchan tu canción.",
+  wNow:"Ahora en Duetto", wStart:"Empezar gratis", wBrowse:"Ver canciones primero", wFoot:"Gratis · Sin contraseñas",
   ownMenu:"Opciones de tu publicación", makePrivate:"🔒 Hacer privada (solo yo la veo)", makePublic:"🌐 Volver a publicar",
   delPost:"🗑 Borrar de Duetto", delTitle:"¿Borrar \"{t}\"?", delText:"Se borra para siempre, con sus críticas, comentarios y escuchas. No se puede deshacer.",
   delYes:"Sí, borrar", deleted:"Borrada.", nowPrivate:"Ahora es privada: solo tú la ves.", nowPublic:"Publicada otra vez.",
@@ -191,6 +198,13 @@ Object.assign(T.en,{
   biggestDrop:"Biggest drop-off:", changeLbl:"Would change", bestLbl:"Best part", noReviews:"No reviews yet. Be the first!", ownSongHint:"This is how others see your song. Reviews and comments will reach you as notifications.",
   demo:"Beta: share your works, sign agreements with your wallet and record them on Solana.",
   search:"Search title, theme or author…", allGenres:"All genres", allLangs:"All languages",
+  wHero:"You write the lyrics.<br>Someone brings the music.", wSub:"Upload your lyrics, your music or your finished song. Other songwriters add their voice, their melody or their opinion.",
+  wHow:"How it works", w1t:"Upload", w1:"your lyrics, your track or your song.", w2t:"Get proposals", w2:"recorded with real voices, not AI.", w3t:"Choose and sign", w3:"a co-writing agreement that gets recorded.",
+  wWhy:"Why Duetto", wb1t:"Real voices, zero AI", wb1:"Every proposal is recorded by a person.",
+  wb2t:"Your work protected", wb2:"Only people who accept the rules see your full lyrics, with proof of when you uploaded them.",
+  wb3t:"A fair deal", wb3:"Everyone knows the split from the start, recorded on Solana with public proof.",
+  wb4t:"Feedback that helps", wb4:"People tell you what they'd change, at which second, and how far they listen.",
+  wNow:"Now on Duetto", wStart:"Start for free", wBrowse:"Browse songs first", wFoot:"Free · No passwords",
   ownMenu:"Your post options", makePrivate:"🔒 Make private (only me)", makePublic:"🌐 Publish again",
   delPost:"🗑 Delete from Duetto", delTitle:"Delete \"{t}\"?", delText:"It's deleted forever, with its reviews, comments and listens. This can't be undone.",
   delYes:"Yes, delete", deleted:"Deleted.", nowPrivate:"It's private now: only you can see it.", nowPublic:"Published again.",
@@ -242,7 +256,7 @@ Object.assign(T.en,{
   close:"Close", cancel2:"Cancel"
 });
 
-let lang = load("duetto_lang","es");
+let lang = load("duetto_lang",((navigator.language||"es").toLowerCase().startsWith("es")?"es":"en"));
 const t = k => T[lang][k] ?? k;
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -610,7 +624,6 @@ function nameSheet(first){
   ${first?`<div class="sect" style="text-align:center;margin-top:18px">${t("haveAcc")}</div>
   <button class="btn sec full" data-email="login">✉️ ${t("emailIn")}</button>
   <div style="text-align:center;margin-top:8px"><button class="btn ghost" style="font-size:13px" data-restore="1">◎ ${t("orWallet")}</button></div>`:""}`);
-  if(first){document.getElementById("ov").onclick=null}
   document.getElementById("nameForm").onsubmit=async e=>{e.preventDefault();const n=new FormData(e.target).get("n").trim();if(!n)return;
     const {error}=myProfile?await sb.from("duetto_profiles").update({name:n}).eq("id",me):await sb.from("duetto_profiles").insert({id:me,name:n});
     if(error)return fail(error);
@@ -715,6 +728,35 @@ function codeSheet(email,kind,protect){
       if(!meName)nameSheet(true);
       pushFlush();
     }catch(err){fail(err)}
+  };
+}
+
+/* ======================= welcome (first visit) ======================= */
+function showWelcome(){
+  const live=feed.filter(p=>!p.hidden).slice(0,2);
+  const d=document.createElement("div");d.id="welcome";
+  d.innerHTML=`<div class="wwrap">
+    <div class="row between"><div class="logo"><span>Duetto</span></div><button class="wlang" id="wLang">${lang==="es"?"EN":"ES"}</button></div>
+    <h1 class="whero">${t("wHero")}</h1><p class="wsub">${t("wSub")}</p>
+    <button class="btn pri full big" data-wstart="1">${t("wStart")}</button>
+    <button class="btn ghost full" data-wbrowse="1" style="margin-top:6px">${t("wBrowse")} →</button>
+    <div class="sect">${t("wHow")}</div>
+    <div class="wsteps">${[["✎","w1"],["🎤","w2"],["🤝","w3"]].map(([i,k],n)=>`<div class="wstep"><div class="wnum">${i}</div><div><b>${n+1}. ${t(k+"t")}</b> ${t(k)}</div></div>`).join("")}</div>
+    <div class="sect">${t("wWhy")}</div>
+    <div class="wgrid">${[["🎙️","wb1"],["🔒","wb2"],["📜","wb3"],["🎧","wb4"]].map(([i,k])=>`<div class="wcard"><div class="wico">${i}</div><b>${t(k+"t")}</b><p>${t(k)}</p></div>`).join("")}</div>
+    ${live.length?`<div class="sect">${t("wNow")}</div>${live.map(postCard).join("")}`:""}
+    <button class="btn pri full big" data-wstart="1" style="margin-top:18px">${t("wStart")}</button>
+    <div style="text-align:center;margin-top:10px"><button class="btn ghost" data-wlogin="1">✉️ ${t("haveAcc")} ${t("emailIn")}</button></div>
+    <div class="wfoot">${t("wFoot")}</div>
+  </div>`;
+  document.body.appendChild(d);document.body.style.overflow="hidden";hydrateImages?.(d);
+  const close=()=>{try{localStorage.setItem("duetto_welcomed","1")}catch(e){}d.remove();document.body.style.overflow=""};
+  d.onclick=e=>{const b=e.target.closest("button,[data-open]");if(!b)return;
+    if(b.id==="wLang"){lang=lang==="es"?"en":"es";try{localStorage.setItem("duetto_lang",JSON.stringify(lang))}catch(e){}d.remove();render(true);showWelcome();return}
+    if(b.dataset.wstart){close();nameSheet(true)}
+    else if(b.dataset.wbrowse){close()}
+    else if(b.dataset.wlogin){close();emailSheet("login")}
+    else if(b.dataset.open){close();go("post",{postId:b.dataset.open})}
   };
 }
 
@@ -1460,7 +1502,8 @@ render=function(k){_render(k);if(view.page==="challenge")fillWinner();if(view.pa
     fromHash();
     if(view.page==="new"&&!meName)view.page="explore";
     await go(view.page);
-    if(!meName)nameSheet(true);
+    let welcomed=false;try{welcomed=!!localStorage.getItem("duetto_welcomed")}catch(e){}
+    if(!meName&&!welcomed)showWelcome();
     pushFlush();
   }catch(err){loading=false;document.getElementById("main").innerHTML=`<div class="empty">⚠️ ${t("authErr")}<br><br><span class="hash">${esc(err?.message||err)}</span></div>`}
 })();
