@@ -401,7 +401,7 @@ function renderExplore(){
   const list=filteredFeed();
   const filtering=view.q||view.genre||view.lang;
   return `
-  ${filtering?"":challengeBanner()}
+  
   ${list.length?list.map(postCard).join(""):`<div class="empty">${filtering?t("noResults"):t("emptyList")}<br><br><button class="btn pri" data-nav="new">＋ ${t("publish")}</button></div>`}
   <div class="meta" style="text-align:center;margin:22px 0 6px"><a href="terms.html" style="color:inherit">${lang==="es"?"Términos":"Terms"}</a> · <a href="privacy.html" style="color:inherit">${lang==="es"?"Privacidad":"Privacy"}</a> · soporte@duettosongs.com</div>`;
 }
