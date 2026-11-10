@@ -142,6 +142,9 @@ Object.assign(T.es,{
   shShare:"Compartir", shInvite:"Invitar a colaborar", shTitle:"Comparte «{t}»", shWa:"WhatsApp", shCopy:"Copiar enlace", shCopied:"Enlace copiado ✓", shMore:"Más opciones…",
   shMsgL:"Escribí la letra de «{t}» y busco quién le ponga música 🎶 ¿Te animas? Mírala en Duetto:", shMsgM:"Tengo esta pista, «{t}», y busco quién le escriba la letra y la cante 🎤 Escúchala en Duetto:",
   shMsgS:"Terminé mi canción «{t}» 🎧 Dame tu opinión sincera en Duetto:", shMsgO:"Mira «{t}» de {a} en Duetto 🎶", shApp:"Duetto: tú pones la letra, alguien pone la música 🎶 Únete:", shAppBtn:"Invitar amigos a Duetto",
+  obTitle:"¡Bienvenido, {n}! 🎶", obText:"¿Qué tienes hoy?", obL:"Una letra sin música", obLs:"Alguien le pone melodía y voz", obM:"Una pista sin letra", obMs:"Alguien le escribe y le canta", obS:"Una canción terminada", obSs:"Recibe críticas honestas",
+  obListen:"👂 Solo quiero escuchar y opinar", obListenHint:"Abre cualquier canción y deja tu opinión. ¡A los compositores les encanta!", obMail:"✉️ Protege tu cuenta con tu correo y te avisamos cuando alguien responda.",
+  emNotif:"Avisos por correo", emNotifOn:"Activados", emNotifOff:"Desactivados", emNotifOnT:"Te avisaremos por correo de propuestas, críticas y firmas.", emNotifOffT:"Ya no recibirás avisos por correo.",
   ownMenu:"Opciones de tu publicación", makePrivate:"🔒 Hacer privada (solo yo la veo)", makePublic:"🌐 Volver a publicar",
   delPost:"🗑 Borrar de Duetto", delTitle:"¿Borrar \"{t}\"?", delText:"Se borra para siempre, con sus críticas, comentarios y escuchas. No se puede deshacer.",
   delYes:"Sí, borrar", deleted:"Borrada.", nowPrivate:"Ahora es privada: solo tú la ves.", nowPublic:"Publicada otra vez.",
@@ -221,6 +224,9 @@ Object.assign(T.en,{
   shShare:"Share", shInvite:"Invite to collaborate", shTitle:"Share “{t}”", shWa:"WhatsApp", shCopy:"Copy link", shCopied:"Link copied ✓", shMore:"More options…",
   shMsgL:"I wrote the lyrics for “{t}” and I'm looking for someone to put music to them 🎶 Up for it? See it on Duetto:", shMsgM:"I've got this track, “{t}”, and I'm looking for someone to write lyrics and sing it 🎤 Listen on Duetto:",
   shMsgS:"I finished my song “{t}” 🎧 Give me your honest opinion on Duetto:", shMsgO:"Check out “{t}” by {a} on Duetto 🎶", shApp:"Duetto: you write the lyrics, someone brings the music 🎶 Join:", shAppBtn:"Invite friends to Duetto",
+  obTitle:"Welcome, {n}! 🎶", obText:"What do you have today?", obL:"Lyrics without music", obLs:"Someone adds melody and voice", obM:"A track without lyrics", obMs:"Someone writes and sings it", obS:"A finished song", obSs:"Get honest feedback",
+  obListen:"👂 I just want to listen and give feedback", obListenHint:"Open any song and leave your opinion. Songwriters love it!", obMail:"✉️ Protect your account with your email and we'll let you know when someone replies.",
+  emNotif:"Email notifications", emNotifOn:"On", emNotifOff:"Off", emNotifOnT:"We'll email you about proposals, reviews and signatures.", emNotifOffT:"You won't get email notifications anymore.",
   ownMenu:"Your post options", makePrivate:"🔒 Make private (only me)", makePublic:"🌐 Publish again",
   delPost:"🗑 Delete from Duetto", delTitle:"Delete \"{t}\"?", delText:"It's deleted forever, with its reviews, comments and listens. This can't be undone.",
   delYes:"Yes, delete", deleted:"Deleted.", nowPrivate:"It's private now: only you can see it.", nowPublic:"Published again.",
@@ -338,6 +344,7 @@ async function callWalletFn(body){
 }
 
 async function loadMe(){
+  Promise.resolve(sb.from("duetto_email_prefs").select("enabled").eq("user_id",me).maybeSingle()).then(r=>{emailNotifs=r?.data?.enabled??true},()=>{});
   const [prof,adm,blk,cfg]=await Promise.all([
     sb.from("duetto_profiles").select("*").eq("id",me).maybeSingle(),
     sb.rpc("duetto_am_i_admin"),
@@ -603,7 +610,8 @@ function renderMine(){
   return `<div class="card click" data-user="${me}"><div class="row between"><div class="row">${av(meName||"?",myProfile?.avatar_path,46)}<div><b style="font-size:18px">${esc(meName)}</b><div class="meta">${t("seeProfile")} →</div></div></div></div></div>
   <div class="row" style="gap:8px;margin-bottom:12px"><button class="btn sec" style="flex:1" data-nav="notifs">🔔 ${t("notifs")}${unread?` (${unread})`:""}</button>${isAdmin?`<button class="btn sec" style="flex:1" data-nav="admin">🛠 Admin</button>`:""}</div>
   <div class="card"><b>🔐 ${t("account")}</b>
-    ${myEmail?`<div class="meta" style="margin-top:6px">✉️ ${t("emLinked")}: ${esc(myEmail)} ✓</div>`
+    ${myEmail?`<div class="meta" style="margin-top:6px">✉️ ${t("emLinked")}: ${esc(myEmail)} ✓</div>
+      <div class="row between" style="margin-top:8px"><span class="meta">📧 ${t("emNotif")}</span><button class="btn ${emailNotifs?"pri":"sec"}" style="padding:6px 12px;font-size:13px" data-emailnotif="1">${emailNotifs?t("emNotifOn"):t("emNotifOff")}</button></div>`
       :`<p class="meta" style="margin-top:6px">${t("emProtText")}</p><button class="btn pri full" style="margin-top:10px" data-email="protect">✉️ ${t("emProtTitle")}</button>`}
     ${w?`<div class="meta" style="margin-top:6px">${t("walletLinked")}: <a href="https://solscan.io/account/${esc(w)}" target="_blank" rel="noopener" style="color:inherit">◎ ${esc(short(w))}</a> ✓</div>`
       :`<button class="btn sec full" style="margin-top:10px" data-link="1">◎ ${t("protect")}</button>`}
@@ -636,7 +644,7 @@ function unlockSheet(id){
   ${splitBar(p)}`}
   <div class="row" style="margin-top:18px;flex-wrap:nowrap"><button class="btn sec" style="flex:1" data-close>${t("cancel")}</button><button class="btn pri" style="flex:2" data-dounlock="${id}">${t("accept")}</button></div>`);
 }
-function nameSheet(first){
+function nameSheet(first,onboard){
   sheet(`<h3>${t("nameTitle")}</h3><p>${t("nameText")}</p>
   <form id="nameForm"><input name="n" maxlength="24" value="${esc(meName||"")}" placeholder="${t("namePh")}" autocomplete="nickname">
   <button class="btn pri full" style="margin-top:14px">${t("save")}</button></form>
@@ -644,9 +652,20 @@ function nameSheet(first){
   <button class="btn sec full" data-email="login">✉️ ${t("emailIn")}</button>
   <div style="text-align:center;margin-top:8px"><button class="btn ghost" style="font-size:13px" data-restore="1">◎ ${t("orWallet")}</button></div>`:""}`);
   document.getElementById("nameForm").onsubmit=async e=>{e.preventDefault();const n=new FormData(e.target).get("n").trim();if(!n)return;
+    const wasNew=!myProfile;
     const {error}=myProfile?await sb.from("duetto_profiles").update({name:n}).eq("id",me):await sb.from("duetto_profiles").insert({id:me,name:n});
     if(error)return fail(error);
-    await loadMe();closeSheet();render(true)};
+    await loadMe();closeSheet();render(true);if(onboard&&wasNew)startSheet()};
+}
+function startSheet(){
+  sheet(`<h3>${esc(t("obTitle").replace("{n}",meName||""))}</h3><p>${t("obText")}</p>
+  <div class="obgrid">
+    <button class="tp l" data-obstart="lyrics"><b>✎ ${t("obL")}</b><span>${t("obLs")}</span></button>
+    <button class="tp m" data-obstart="music"><b>♪ ${t("obM")}</b><span>${t("obMs")}</span></button>
+    <button class="tp s" data-obstart="song"><b>🎧 ${t("obS")}</b><span>${t("obSs")}</span></button>
+  </div>
+  <button class="btn ghost full" style="margin-top:10px" data-obstart="listen">${t("obListen")}</button>
+  ${myEmail?"":`<button class="btn sec full" style="margin-top:12px;font-size:13px;white-space:normal" data-email="protect">${t("obMail")}</button>`}`);
 }
 function requireName(){if(!meName){nameSheet(true);return false}return true}
 
@@ -692,7 +711,7 @@ function linkSheet(restore){
 }
 
 /* ======================= email sign-in / protect ======================= */
-let myEmail="";
+let myEmail="",emailNotifs=true;
 function emailSheet(mode){
   const protect=mode==="protect"&&!!myProfile;
   sheet(`<h3>✉️ ${protect?t("emProtTitle"):t("emTitle")}</h3><p>${protect?t("emProtText"):t("emText")}</p>
@@ -772,7 +791,7 @@ function showWelcome(){
   const close=()=>{try{localStorage.setItem("duetto_welcomed","1")}catch(e){}d.remove();document.body.style.overflow=""};
   d.onclick=e=>{const b=e.target.closest("button,[data-open]");if(!b)return;
     if(b.id==="wLang"){lang=lang==="es"?"en":"es";try{localStorage.setItem("duetto_lang",JSON.stringify(lang))}catch(e){}d.remove();render(true);showWelcome();return}
-    if(b.dataset.wstart){close();nameSheet(true)}
+    if(b.dataset.wstart){close();nameSheet(true,true)}
     else if(b.dataset.wbrowse){close()}
     else if(b.dataset.wlogin){close();emailSheet("login")}
     else if(b.dataset.open){close();go("post",{postId:b.dataset.open})}
@@ -1580,6 +1599,8 @@ document.addEventListener("click",async e=>{
   else if(d.ownmenu){ownMenu(d.ownmenu)}
   else if(d.delacc){delAccSheet()}
   else if(d.share){sharePost(d.share)}
+  else if(d.obstart){closeSheet();if(d.obstart==="listen"){await go("explore");toast(t("obListenHint"))}else{draft.type=d.obstart;draft.fileName=null;draft.file=null;await go("new")}}
+  else if(d.emailnotif){const v=!emailNotifs;const {error}=await sb.rpc("duetto_set_email_notifs",{p_enabled:v});if(error)return fail(error);emailNotifs=v;toast(v?t("emNotifOnT"):t("emNotifOffT"));render(true)}
   else if(d.shareapp){shareSheet(t("shApp"),location.origin+"/")}
   else if(d.setpriv){const [id,v]=d.setpriv.split("|");setPriv(id,v==="1")}
   else if(d.delask){delAsk(d.delask)}
