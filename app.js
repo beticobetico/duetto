@@ -1024,7 +1024,7 @@ async function loadProfile(uid){
   const [p,posts,ags,tips,chosen,priv]=await Promise.all([
     sb.from("duetto_profiles").select("*").eq("id",uid).maybeSingle(),
     sb.from("duetto_posts").select(POST_SELECT).eq("author_id",uid).order("created_at",{ascending:false}).limit(50),
-    sb.from("duetto_agreements").select("id",{count:"exact",head:true}).contains("parties",[{id:uid}]),
+    sb.from("duetto_agreements").select("id",{count:"exact",head:true}).contains("parties",JSON.stringify([{id:uid}])),
     sb.from("duetto_payments").select("symbol,amount").eq("recipient_id",uid).eq("status","confirmed").eq("kind","tip"),
     sb.from("duetto_agreements").select("proposal:duetto_proposals!inner(author_id)",{count:"exact",head:true}).eq("proposal.author_id",uid),
     uid===me?sb.from("duetto_private_profiles").select("*").eq("id",me).maybeSingle():Promise.resolve({data:null})
