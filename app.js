@@ -128,8 +128,8 @@ Object.assign(T.es,{
   demo:"Beta: comparte tus obras, firma acuerdos con tu wallet y regístralos en Solana.",
   search:"Buscar título, tema o autor…", allGenres:"Todos los géneros", allLangs:"Todos los idiomas",
   wHero:"Tú pones la letra.<br>Alguien pone la música.", wSub:"Sube tu letra, tu música o tu canción terminada. Otros compositores le ponen su voz, su melodía o su opinión.",
-  wHow:"Cómo funciona", w1t:"Sube", w1:"tu letra, tu pista o tu canción.", w2t:"Recibe propuestas", w2:"grabadas con voz real, no con IA.", w3t:"Escoge y firma", w3:"un acuerdo de coautoría que queda registrado.",
-  wWhy:"Por qué Duetto", wb1t:"Voces reales, cero IA", wb1:"Cada propuesta la graba una persona.",
+  wHow:"Cómo funciona", w1t:"Sube", w1:"tu letra, tu pista o tu canción.", w2t:"Recibe propuestas", w2:"con su voz, su melodía o su producción.", w3t:"Escoge y firma", w3:"un acuerdo de coautoría que queda registrado.",
+  wWhy:"Por qué Duetto", wb1t:"Abierto a todos", wb1:"Canta tú, usa tu estudio o tus herramientas favoritas: todas las propuestas son bienvenidas.",
   wb2t:"Tu obra protegida", wb2:"Solo ve tu letra completa quien acepta las reglas, y queda la huella de cuándo la subiste.",
   wb3t:"Acuerdo justo", wb3:"Desde el inicio se sabe quién lleva qué porcentaje, registrado en Solana con prueba pública.",
   wb4t:"Críticas que sirven", wb4:"Te dicen qué cambiarías, en qué segundo y hasta dónde escuchan tu canción.",
@@ -207,8 +207,8 @@ Object.assign(T.en,{
   demo:"Beta: share your works, sign agreements with your wallet and record them on Solana.",
   search:"Search title, theme or author…", allGenres:"All genres", allLangs:"All languages",
   wHero:"You write the lyrics.<br>Someone brings the music.", wSub:"Upload your lyrics, your music or your finished song. Other songwriters add their voice, their melody or their opinion.",
-  wHow:"How it works", w1t:"Upload", w1:"your lyrics, your track or your song.", w2t:"Get proposals", w2:"recorded with real voices, not AI.", w3t:"Choose and sign", w3:"a co-writing agreement that gets recorded.",
-  wWhy:"Why Duetto", wb1t:"Real voices, zero AI", wb1:"Every proposal is recorded by a person.",
+  wHow:"How it works", w1t:"Upload", w1:"your lyrics, your track or your song.", w2t:"Get proposals", w2:"with their voice, melody or production.", w3t:"Choose and sign", w3:"a co-writing agreement that gets recorded.",
+  wWhy:"Why Duetto", wb1t:"Open to everyone", wb1:"Sing it yourself, use your studio or your favorite tools: every proposal is welcome.",
   wb2t:"Your work protected", wb2:"Only people who accept the rules see your full lyrics, with proof of when you uploaded them.",
   wb3t:"A fair deal", wb3:"Everyone knows the split from the start, recorded on Solana with public proof.",
   wb4t:"Feedback that helps", wb4:"People tell you what they'd change, at which second, and how far they listen.",
@@ -762,7 +762,7 @@ function showWelcome(){
     <div class="sect">${t("wHow")}</div>
     <div class="wsteps">${[["✎","w1"],["🎤","w2"],["🤝","w3"]].map(([i,k],n)=>`<div class="wstep"><div class="wnum">${i}</div><div><b>${n+1}. ${t(k+"t")}</b> ${t(k)}</div></div>`).join("")}</div>
     <div class="sect">${t("wWhy")}</div>
-    <div class="wgrid">${[["🎙️","wb1"],["🔒","wb2"],["📜","wb3"],["🎧","wb4"]].map(([i,k])=>`<div class="wcard"><div class="wico">${i}</div><b>${t(k+"t")}</b><p>${t(k)}</p></div>`).join("")}</div>
+    <div class="wgrid">${[["🌍","wb1"],["🔒","wb2"],["📜","wb3"],["🎧","wb4"]].map(([i,k])=>`<div class="wcard"><div class="wico">${i}</div><b>${t(k+"t")}</b><p>${t(k)}</p></div>`).join("")}</div>
     ${live.length?`<div class="sect">${t("wNow")}</div>${live.map(postCard).join("")}`:""}
     <button class="btn pri full big" data-wstart="1" style="margin-top:18px">${t("wStart")}</button>
     <div style="text-align:center;margin-top:10px"><button class="btn ghost" data-wlogin="1">✉️ ${t("haveAcc")} ${t("emailIn")}</button></div>
