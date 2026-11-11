@@ -49,7 +49,7 @@ const T = {
     err:"Algo falló: ", loading:"Cargando…", uploading:"Subiendo…", nameTitle:"¿Cómo te llamas?", nameText:"Así te verán los demás compositores.", namePh:"Tu nombre artístico", save:"Guardar", editName:"Cambiar nombre",
     authErr:"No se pudo iniciar sesión. Revisa tu conexión e intenta de nuevo.", noAudio:"No se pudo cargar el audio",
     wSign:"Firmar con wallet", wSignAcct:"Firmar sin wallet", wSignEmail:"✉️ Firmar con mi correo", wSignedEmail:"Firmado con correo", wNeedEmail:"Para firmar sin wallet, primero protege tu cuenta con tu correo.", wOld:"Firma simple (sin verificar)", wAdd:"Añadir firma con wallet", wSigned:"Firmado con wallet", wSignedAcct:"Firmado",
-    wPick:"Escoge tu wallet", wWillSign:"Vas a firmar este texto. Firmar es gratis, no mueve fondos:", wNone:"No encontré ninguna wallet de Solana en este navegador.",
+    wPick:"Escoge tu wallet", wWillSign:"Vas a firmar este texto. Firmar es gratis, no mueve fondos:", wNone:"No encontré ninguna wallet de Solana en este navegador.", wNoNeed:"No necesitas wallet para usar Duetto: también puedes entrar con tu correo.", wNewAcc:"¡Listo! Creamos tu cuenta con esta wallet. Ponte un nombre artístico:",
     wOpenIn:"Abre Duetto dentro de tu wallet:", wAnchor:"Registrar en Solana", wAnchorCost:"Guarda la huella del acuerdo en Solana como prueba pública. Duetto paga la comisión; no necesitas SOL.", wWorking2:"Registrando en Solana…",
     wAnchored:"Registrado en Solana", wView:"Ver en Solscan", wWorking:"Esperando a la wallet…", wNeedAllWallet:"Cuando todos firmen (con wallet o con correo verificado), Duetto lo registra en Solana automáticamente.",
     wDone:"Firma verificada ✓", wAnchorDone:"¡Registrado en Solana!", wLoading:"Cargando wallets…",
@@ -104,7 +104,7 @@ const T = {
     err:"Something failed: ", loading:"Loading…", uploading:"Uploading…", nameTitle:"What's your name?", nameText:"This is how other songwriters will see you.", namePh:"Your artist name", save:"Save", editName:"Change name",
     authErr:"Couldn't sign in. Check your connection and try again.", noAudio:"Couldn't load the audio",
     wSign:"Sign with wallet", wSignAcct:"Sign without wallet", wSignEmail:"✉️ Sign with my email", wSignedEmail:"Signed with email", wNeedEmail:"To sign without a wallet, first protect your account with your email.", wOld:"Simple signature (unverified)", wAdd:"Add wallet signature", wSigned:"Signed with wallet", wSignedAcct:"Signed",
-    wPick:"Choose your wallet", wWillSign:"You're about to sign this text. Signing is free and moves no funds:", wNone:"I couldn't find a Solana wallet in this browser.",
+    wPick:"Choose your wallet", wWillSign:"You're about to sign this text. Signing is free and moves no funds:", wNone:"I couldn't find a Solana wallet in this browser.", wNoNeed:"You don't need a wallet to use Duetto: you can also sign in with your email.", wNewAcc:"Done! We created your account with this wallet. Choose your artist name:",
     wOpenIn:"Open Duetto inside your wallet:", wAnchor:"Record on Solana", wAnchorCost:"Stores the agreement fingerprint on Solana as public proof. Duetto pays the fee; you don't need SOL.", wWorking2:"Recording on Solana…",
     wAnchored:"Recorded on Solana", wView:"View on Solscan", wWorking:"Waiting for the wallet…", wNeedAllWallet:"Once everyone signs (with a wallet or a verified email), Duetto records it on Solana automatically.",
     wDone:"Signature verified ✓", wAnchorDone:"Recorded on Solana!", wLoading:"Loading wallets…",
@@ -655,7 +655,7 @@ function nameSheet(first,onboard){
     const wasNew=!myProfile;
     const {error}=myProfile?await sb.from("duetto_profiles").update({name:n}).eq("id",me):await sb.from("duetto_profiles").insert({id:me,name:n});
     if(error)return fail(error);
-    await loadMe();closeSheet();render(true);if(onboard&&wasNew)startSheet()};
+    await loadMe();closeSheet();render(true);if(onboard&&(wasNew||onboard==="force"))startSheet()};
 }
 function startSheet(){
   sheet(`<h3>${esc(t("obTitle").replace("{n}",meName||""))}</h3><p>${t("obText")}</p>
@@ -679,13 +679,18 @@ function pickWallet(title,desc,preview,onPick){
       <div class="sect" style="margin-top:14px">${t("wPick")}</div>
       <div class="userlist">${!W?`<div class="meta">${t("wLoading")}</div>`:ws.length?ws.map((w,i)=>`<button data-wpick="${i}"><img src="${esc(w.icon)}" alt="" style="width:28px;height:28px;border-radius:8px"> ${esc(w.name)}</button>`).join("")
         :`<p>${t("wNone")}</p><p>${t("wOpenIn")}</p>
-          <div class="row"><a class="btn sec" href="https://phantom.app/ul/browse/${here}?ref=${ref}">Phantom</a><a class="btn sec" href="https://solflare.com/ul/v1/browse/${here}?ref=${ref}">Solflare</a></div>`}</div>
+          <div class="row"><a class="btn sec" href="https://phantom.app/ul/browse/${here}?ref=${ref}">Phantom</a><a class="btn sec" href="https://solflare.com/ul/v1/browse/${here}?ref=${ref}">Solflare</a><a class="btn sec" href="https://backpack.app/ul/v1/browse/${here}?ref=${ref}">Backpack</a></div>
+          <p class="meta" style="margin-top:12px">${t("wNoNeed")}</p><button class="btn pri full" data-email="${myProfile?"protect":"login"}">✉️ ${t("emailIn")}</button>`}</div>
       <div class="meta" id="wStatus" style="margin-top:10px"></div>`);
     document.querySelectorAll("[data-wpick]").forEach(b=>b.onclick=async()=>{
       const st=document.getElementById("wStatus");const busy=on=>{document.querySelectorAll("[data-wpick]").forEach(x=>x.disabled=on);if(st)st.textContent=on?t("wWorking"):""};
       busy(true);try{await onPick(ws[+b.dataset.wpick])}catch(err){busy(false);fail(err)}});
   };
   draw();
+  const logNone=()=>{const W=window.DuettoWallet;if(!W||W.list().length||sessionStorage.getItem("dw_log"))return;
+    setTimeout(()=>{if(W.list().length)return;try{sessionStorage.setItem("dw_log","1")}catch(e){}
+      Promise.resolve(sb.from("duetto_debug").insert({kind:"no_wallet",info:W.diag()})).catch(()=>{})},1500)};
+  logNone();window.addEventListener("duetto-wallet-ready",logNone,{once:true});
   if(!window.DuettoWallet)window.addEventListener("duetto-wallet-ready",draw,{once:true});
   else window.DuettoWallet.onChange(()=>{if(document.querySelector(".userlist"))draw()});
 }
@@ -705,6 +710,7 @@ function linkSheet(restore){
     const res=await callWalletFn({action:"link",ts,...r});
     closeSheet();
     await loadMe();
+    if(res.created){await go(view.page==="post"?"explore":view.page);toast(t("wNewAcc"));nameSheet(false,"force");return}
     toast(res.restored?t("restored").replace("{n}",res.name||meName):t("linked"));
     go(view.page==="post"?"explore":view.page);
   });

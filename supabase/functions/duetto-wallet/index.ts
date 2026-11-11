@@ -127,7 +127,13 @@ async function handle(req: Request) {
       if (error) return json({ error: error.message }, 500);
       return json({ ok: true, restored: true, name: owner.name });
     }
-    if (!me) return json({ error: "No hay ninguna cuenta con esta wallet. Crea tu nombre primero / No account uses this wallet. Create your name first" }, 404);
+    if (!me) {
+      // first time with this wallet: create the account right away
+      const name = `Wallet ${wallet.slice(0, 4)}…${wallet.slice(-4)}`;
+      const { error } = await admin.from("duetto_profiles").insert({ id: user.id, name, wallet });
+      if (error) return json({ error: error.message }, 500);
+      return json({ ok: true, linked: true, created: true });
+    }
     if (me.wallet) return json({ error: "Esta cuenta ya tiene otra wallet / This account already has another wallet" }, 409);
     const { error } = await admin.from("duetto_profiles").update({ wallet }).eq("id", user.id);
     if (error) return json({ error: error.message }, 500);
