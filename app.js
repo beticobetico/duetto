@@ -145,6 +145,11 @@ Object.assign(T.es,{
   obTitle:"¡Bienvenido, {n}! 🎶", obText:"¿Qué tienes hoy?", obL:"Una letra sin música", obLs:"Alguien le pone melodía y voz", obM:"Una pista sin letra", obMs:"Alguien le escribe y le canta", obS:"Una canción terminada", obSs:"Recibe críticas honestas",
   obListen:"👂 Solo quiero escuchar y opinar", obListenHint:"Abre cualquier canción y deja tu opinión. ¡A los compositores les encanta!", obMail:"✉️ Protege tu cuenta con tu correo y te avisamos cuando alguien responda.",
   emNotif:"Avisos por correo", emNotifOn:"Activados", emNotifOff:"Desactivados", emNotifOnT:"Te avisaremos por correo de propuestas, críticas y firmas.", emNotifOffT:"Ya no recibirás avisos por correo.",
+  community:"Comunidad", commTitle:"Comunidad Duetto", commSub:"Músicos, letristas, cantantes y productores. Toca a alguien para ver su música.", commSearch:"Buscar por nombre o descripción…",
+  allRoles:"Todos", roles:{lyricist:"✎ Letrista",musician:"♪ Músico",singer:"🎤 Cantante",producer:"🎛 Productor"}, openCollab:"🤝 Abierto a colaborar",
+  works:"publicaciones", work1:"publicación", collabsN:"colaboraciones", collab1:"colaboración", commEmpty:"No encontré a nadie con esos filtros.", commMore:"Ver más",
+  rolesLbl:"¿Qué haces?", openLbl:"🤝 Estoy abierto a colaborar", hideLbl:"No mostrarme en la lista de la Comunidad", commNudge:"Completa tu perfil (qué haces y una descripción) para aparecer en la Comunidad.",
+  tabCollabs:"🤝 Colaboraciones", noCollabs:"Todavía no tiene colaboraciones.", withX:"con {n}",
   ownMenu:"Opciones de tu publicación", makePrivate:"🔒 Hacer privada (solo yo la veo)", makePublic:"🌐 Volver a publicar",
   delPost:"🗑 Borrar de Duetto", delTitle:"¿Borrar \"{t}\"?", delText:"Se borra para siempre, con sus críticas, comentarios y escuchas. No se puede deshacer.",
   delYes:"Sí, borrar", deleted:"Borrada.", nowPrivate:"Ahora es privada: solo tú la ves.", nowPublic:"Publicada otra vez.",
@@ -227,6 +232,11 @@ Object.assign(T.en,{
   obTitle:"Welcome, {n}! 🎶", obText:"What do you have today?", obL:"Lyrics without music", obLs:"Someone adds melody and voice", obM:"A track without lyrics", obMs:"Someone writes and sings it", obS:"A finished song", obSs:"Get honest feedback",
   obListen:"👂 I just want to listen and give feedback", obListenHint:"Open any song and leave your opinion. Songwriters love it!", obMail:"✉️ Protect your account with your email and we'll let you know when someone replies.",
   emNotif:"Email notifications", emNotifOn:"On", emNotifOff:"Off", emNotifOnT:"We'll email you about proposals, reviews and signatures.", emNotifOffT:"You won't get email notifications anymore.",
+  community:"Community", commTitle:"Duetto Community", commSub:"Musicians, lyricists, singers and producers. Tap someone to see their music.", commSearch:"Search by name or bio…",
+  allRoles:"All", roles:{lyricist:"✎ Lyricist",musician:"♪ Musician",singer:"🎤 Singer",producer:"🎛 Producer"}, openCollab:"🤝 Open to collaborate",
+  works:"posts", work1:"post", collabsN:"collaborations", collab1:"collaboration", commEmpty:"Nobody matches those filters.", commMore:"Show more",
+  rolesLbl:"What do you do?", openLbl:"🤝 I'm open to collaborate", hideLbl:"Don't show me in the Community list", commNudge:"Complete your profile (what you do and a bio) to appear in the Community.",
+  tabCollabs:"🤝 Collaborations", noCollabs:"No collaborations yet.", withX:"with {n}",
   ownMenu:"Your post options", makePrivate:"🔒 Make private (only me)", makePublic:"🌐 Publish again",
   delPost:"🗑 Delete from Duetto", delTitle:"Delete \"{t}\"?", delText:"It's deleted forever, with its reviews, comments and listens. This can't be undone.",
   delYes:"Yes, delete", deleted:"Deleted.", nowPrivate:"It's private now: only you can see it.", nowPublic:"Published again.",
@@ -406,6 +416,7 @@ const ICON={
   explore:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>',
   mine:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17" cy="9" r="2.8"/><path d="M16.5 14.6c2.6.2 4.4 2 5 5"/></svg>',
   bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>',
   dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>'
 };
@@ -421,7 +432,8 @@ function render(keepScroll){
     <select id="fGenre"><option value="">${t("allGenres")}</option>${T[lang].genres.map((g,i)=>`<option value="${esc(T.es.genres[i])}" ${view.genre===T.es.genres[i]?"selected":""}>${esc(g)}</option>`).join("")}</select>
     <select id="fLang"><option value="">${t("allLangs")}</option>${Object.entries(T[lang].langNames).map(([k,v])=>`<option value="${k}" ${view.lang===k?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`;
   document.getElementById("nav").innerHTML=`
-    <button data-nav="explore" class="${["explore","post","challenge","profile"].includes(view.page)?"on":""}">${ICON.explore}${t("explore")}</button>
+    <button data-nav="explore" class="${["explore","post","challenge"].includes(view.page)?"on":""}">${ICON.explore}${t("explore")}</button>
+    <button data-nav="community" class="${["community","profile"].includes(view.page)?"on":""}">${ICON.users}${t("community")}</button>
     <button data-nav="new"><span class="plus">${ICON.plus}</span></button>
     <button data-nav="mine" class="${["mine","notifs","admin"].includes(view.page)?"on":""}">${ICON.mine}${t("mine")}</button>`;
   const m=document.getElementById("main");const y=window.scrollY;
@@ -434,10 +446,11 @@ function render(keepScroll){
   else if(view.page==="notifs")m.innerHTML=renderNotifs();
   else if(view.page==="challenge")m.innerHTML=renderChallenge();
   else if(view.page==="admin")m.innerHTML=renderAdmin();
+  else if(view.page==="community")m.innerHTML=renderCommunity();
   hydrateAudio();hydrateImages(m);refreshUnread();
   window.scrollTo(0,keepScroll?y:0);
 }
-function hashFor(){return view.page==="post"?"post-"+view.postId:view.page==="profile"?"perfil-"+view.userId:view.page==="explore"?"":view.page==="challenge"?"reto":view.page==="notifs"?"avisos":view.page}
+function hashFor(){return view.page==="post"?"post-"+view.postId:view.page==="profile"?"perfil-"+view.userId:view.page==="explore"?"":view.page==="challenge"?"reto":view.page==="notifs"?"avisos":view.page==="community"?"comunidad":view.page}
 async function go(page,extra={}){
   Object.assign(view,{page},extra);
   const h=hashFor();try{if(location.hash.slice(1)!==h)history.replaceState(null,"",h?"#"+h:location.pathname)}catch(e){}
@@ -447,6 +460,7 @@ async function go(page,extra={}){
     else if(page==="profile")await loadProfile(view.userId);
     else if(page==="notifs")await loadNotifs();
     else if(page==="admin")await loadAdmin();
+    else if(page==="community")await loadCommunity();
     else if(page==="challenge"||page==="explore"||page==="mine")await loadFeed();
   }catch(e){fail(e)}
   loading=false;render();
@@ -1055,18 +1069,24 @@ async function loadProfile(uid){
     uid===me?sb.from("duetto_private_profiles").select("*").eq("id",me).maybeSingle():Promise.resolve({data:null})
   ]);
   const tp={};(tips.data||[]).forEach(x=>tp[x.symbol]=(tp[x.symbol]||0)+Number(x.amount));
-  profileView={p:p.data,posts:(posts.data||[]).map(mapPost).filter(x=>visible(x.hidden,x.authorId)),agreements:ags.count||0,chosen:chosen.count||0,tips:tp,priv:priv.data};
+  const cl=await sb.from("duetto_agreements").select("id,created_at,anchor_tx,parties,post:duetto_posts(id,title,type)").contains("parties",JSON.stringify([{id:uid}])).order("created_at",{ascending:false}).limit(30);
+  const collabs=(cl.data||[]).filter(a=>a.post).map(a=>{const mine=a.parties.find(x=>x.id===uid)||{};return {postId:a.post.id,title:a.post.title,type:a.post.type,pct:mine.pct??"",at:a.created_at,anchored:!!a.anchor_tx,others:a.parties.filter(x=>x.id!==uid).map(x=>x.name).join(", ")}});
+  profileView={p:p.data,posts:(posts.data||[]).map(mapPost).filter(x=>visible(x.hidden,x.authorId)&&(!x.priv||uid===me)),agreements:ags.count||0,chosen:chosen.count||0,tips:tp,priv:priv.data,collabs};
 }
 function renderProfile(){
   const v=profileView;if(!v||!v.p)return `<button class="back" data-nav="explore">← ${t("back")}</button><div class="empty">—</div>`;
   const p=v.p, own=p.id===me, blocked=myBlocks.has(p.id);
-  return `<button class="back" data-nav="explore">← ${t("back")}</button>
+  const tabsP=[["all",t("all")],["lyrics","✎ "+t("tabLyrics")],["music","♪ "+t("tabMusic")],["song","🎧 "+t("finished")],["collabs",t("tabCollabs")]];
+  const ptab=view.ptab||"all", shown=ptab==="all"?v.posts:v.posts.filter(x=>x.type===ptab);
+  return `<button class="back" data-nav="${view.from==="community"?"community":"explore"}">← ${t("back")}</button>
   <div class="card profile">
     <div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><div class="row">${av(p.name,p.avatar_path,64)}<div><div class="ptitle" style="margin:0">${esc(p.name)}</div>
       <div class="meta">${t("memberSince")} ${fday(Date.parse(p.created_at))}${p.wallet?` · ◎ ${esc(short(p.wallet))}`:""}</div></div></div>
       ${own?"":moreBtn("user",p.id,p.id,p.name)}</div>
     ${p.bio?`<p style="margin-top:12px">${esc(p.bio)}</p>`:""}
-    ${p.genres?.length?`<div class="row" style="margin-top:10px;gap:6px">${p.genres.map(g=>`<span class="badge l">${esc(g)}</span>`).join("")}</div>`:""}
+    ${(p.roles||[]).length||p.open_collab?`<div class="row" style="margin-top:10px;gap:6px">${(p.roles||[]).map(r=>`<span class="badge m">${esc(T[lang].roles[r]||r)}</span>`).join("")}${p.open_collab?`<span class="badge o">${t("openCollab")}</span>`:""}</div>`:""}
+    ${p.genres?.length?`<div class="row" style="margin-top:8px;gap:6px">${p.genres.map(g=>`<span class="badge l">${esc(g)}</span>`).join("")}</div>`:""}
+    ${own&&(!(p.roles||[]).length||!p.bio)?`<p class="meta" style="margin-top:10px">💡 ${t("commNudge")}</p>`:""}
     <div class="statgrid">
       <div><b>${v.posts.length}</b><span>${t("stWorks")}</span></div>
       <div><b>${v.agreements}</b><span>${t("stDone")}</span></div>
@@ -1076,8 +1096,10 @@ function renderProfile(){
     ${own?`<button class="btn sec full" style="margin-top:12px" data-editprofile="1">✎ ${t("editProfile")}</button>`
       :`<div class="row" style="margin-top:12px;gap:8px"><button class="btn sec" style="flex:1" data-blockuser="${p.id}|${esc(p.name)}">${blocked?"✅ "+t("unblock"):"⛔ "+t("block")}</button><button class="btn sec" style="flex:1" data-report="user|${p.id}">🚩 ${t("report")}</button></div>`}
   </div>
-  <div class="sect">${t("theirPosts")}</div>
-  ${v.posts.length?v.posts.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`}`;
+  <div class="row" style="flex-wrap:nowrap;gap:8px;overflow-x:auto;margin:18px 0 10px;padding-bottom:4px">${tabsP.map(([k,l])=>`<button class="tab ${view.ptab===k||(!view.ptab&&k==="all")?"on":""}" data-ptab="${k}">${l}</button>`).join("")}</div>
+  ${ptab==="collabs"?(v.collabs.length?v.collabs.map(c=>`<div class="card click" data-open="${c.postId}"><div class="row between"><span class="badge ${c.type==="lyrics"?"l":c.type==="song"?"s":"m"}">🤝 ${c.pct}%</span>${c.anchored?`<span class="badge c">⛓ Solana</span>`:""}</div>
+      <div class="ptitle">${esc(c.title)}</div><div class="meta">${esc(t("withX").replace("{n}",c.others))} · ${fday(Date.parse(c.at))}</div></div>`).join(""):`<div class="empty" style="padding:14px">${t("noCollabs")}</div>`)
+    :(shown.length?shown.map(postCard).join(""):`<div class="empty" style="padding:14px">${t("nothing")}</div>`)}`;
 }
 function editProfileSheet(){
   const p=profileView.p, pv=profileView.priv||{};
@@ -1087,6 +1109,9 @@ function editProfileSheet(){
     <label>${t("namePh")}</label><input name="name" maxlength="24" value="${esc(p.name)}">
     <label>${t("bio")}</label><textarea name="bio" maxlength="280" placeholder="${t("bioPh")}" style="min-height:80px">${esc(p.bio||"")}</textarea>
     <label>${t("genresLbl")}</label><div class="row" style="gap:6px">${T.es.genres.map((g,i)=>`<label class="chip"><input type="checkbox" name="g" value="${esc(g)}" ${(p.genres||[]).includes(g)?"checked":""}> ${esc(T[lang].genres[i])}</label>`).join("")}</div>
+    <label>${t("rolesLbl")}</label><div class="row" style="gap:6px">${Object.entries(T[lang].roles).map(([k,l])=>`<label class="chip"><input type="checkbox" name="r" value="${k}" ${(p.roles||[]).includes(k)?"checked":""}> ${esc(l)}</label>`).join("")}</div>
+    <label class="chip" style="margin-top:12px;display:flex"><input type="checkbox" name="open" ${p.open_collab?"checked":""}> ${t("openLbl")}</label>
+    <label class="chip" style="margin-top:8px;display:flex"><input type="checkbox" name="hide" ${p.hide_directory?"checked":""}> ${t("hideLbl")}</label>
     <div class="sect" style="margin-top:18px">🔒 ${t("legalTitle")}</div><p class="meta">${t("legalText")}</p>
     <label>${t("legalName")}</label><input name="legal_name" maxlength="100" value="${esc(pv.legal_name||"")}">
     <label>${t("pro")}</label><input name="pro" maxlength="40" value="${esc(pv.pro||"")}">
@@ -1097,7 +1122,7 @@ function editProfileSheet(){
   document.getElementById("avIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;avatarBlob=await resizeImage(f,320);toast("📷 ✓")};
   document.getElementById("profForm").onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target);const btn=document.getElementById("profBtn");btn.disabled=true;
     try{
-      const upd={name:f.get("name").trim()||p.name,bio:f.get("bio").trim()||null,genres:f.getAll("g").slice(0,8)};
+      const upd={name:f.get("name").trim()||p.name,bio:f.get("bio").trim()||null,genres:f.getAll("g").slice(0,8),roles:f.getAll("r").filter(r=>r in T.es.roles),open_collab:!!f.get("open"),hide_directory:!!f.get("hide")};
       if(avatarBlob)upd.avatar_path=await uploadFile(avatarBlob);
       let r=await sb.from("duetto_profiles").update(upd).eq("id",me);if(r.error)throw r.error;
       r=await sb.from("duetto_private_profiles").upsert({id:me,legal_name:f.get("legal_name").trim()||null,pro:f.get("pro").trim()||null,ipi:f.get("ipi").trim()||null,updated_at:new Date().toISOString()});if(r.error)throw r.error;
@@ -1106,6 +1131,36 @@ function editProfileSheet(){
 }
 function resizeImage(file,max){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const s=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
   c.getContext("2d").drawImage(img,0,0,c.width,c.height);c.toBlob(b=>b?res(b):rej(new Error("imagen")),"image/jpeg",.85)};img.onerror=()=>rej(new Error("imagen"));img.src=URL.createObjectURL(file)})}
+
+/* ======================= community directory ======================= */
+const comm={role:"",genre:"",q:"",list:[],more:false};
+async function loadCommunity(append){
+  const {data,error}=await sb.rpc("duetto_directory",{p_role:comm.role||null,p_genre:comm.genre||null,p_q:comm.q.trim()||null,p_limit:30,p_offset:append?comm.list.length:0});
+  if(error)throw error;
+  comm.list=append?comm.list.concat(data||[]):(data||[]);comm.more=(data||[]).length===30;
+}
+function personCard(u){
+  const w=u.works===1?t("work1"):t("works"), c=u.collabs===1?t("collab1"):t("collabsN");
+  return `<div class="card click person" data-user="${u.id}" data-from="community">
+    <div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">${av(u.name,u.avatar_path,52)}
+    <div style="min-width:0;flex:1"><div class="row between" style="flex-wrap:nowrap"><b class="pname">${esc(u.name)}</b>${u.open_collab?`<span class="badge o" style="white-space:nowrap">🤝</span>`:""}</div>
+      ${(u.roles||[]).length?`<div class="meta">${u.roles.map(r=>esc(T[lang].roles[r]||r)).join(" · ")}</div>`:""}
+      ${u.genres?.length?`<div class="meta">${esc(u.genres.slice(0,3).join(", "))}</div>`:""}
+      ${u.bio?`<p class="pbio">${esc(u.bio)}</p>`:""}
+      <div class="meta" style="margin-top:6px">${u.works} ${w} · ${u.collabs} ${c}</div></div></div></div>`;
+}
+function renderCommunity(){
+  return `<div class="ptitle">👥 ${t("commTitle")}</div><p class="meta" style="margin-bottom:12px">${t("commSub")}</p>
+  <div class="row" style="flex-wrap:nowrap;gap:8px;overflow-x:auto;padding-bottom:4px">${[["",t("allRoles")],...Object.entries(T[lang].roles)].map(([k,l])=>`<button class="tab ${comm.role===k?"on":""}" data-crole="${k}">${esc(l)}</button>`).join("")}</div>
+  <div class="filters" style="margin:10px 0 14px"><input id="cq" type="search" placeholder="${t("commSearch")}" value="${esc(comm.q)}">
+    <select id="cGenre"><option value="">${t("allGenres")}</option>${T[lang].genres.map((g,i)=>`<option value="${esc(T.es.genres[i])}" ${comm.genre===T.es.genres[i]?"selected":""}>${esc(g)}</option>`).join("")}</select></div>
+  <div id="clist">${commListHTML()}</div>`;
+}
+function commListHTML(){
+  return comm.list.length?comm.list.map(personCard).join("")+(comm.more?`<button class="btn sec full" data-cmore="1">${t("commMore")}</button>`:"")
+    :`<div class="empty">${t("commEmpty")}</div>`;
+}
+async function commRefresh(){try{await loadCommunity();const el=document.getElementById("clist");if(el){el.innerHTML=commListHTML();hydrateImages(el)}}catch(e){fail(e)}}
 
 /* ======================= split sheet PDF ======================= */
 async function makePdf(agId){
@@ -1578,7 +1633,10 @@ document.addEventListener("click",async e=>{
   else if(d.tab){view.tab=d.tab;render(true)}
   else if(d.nav){if(d.nav==="new"){if(!requireName())return;draft={type:"lyrics",split:50,genre:0,lang:lang,challenge:!!d.joinch}}closeSheet();go(d.nav)}
   else if(d.open){closeSheet();go("post",{postId:d.open})}
-  else if(d.user){closeSheet();go("profile",{userId:d.user})}
+  else if(d.user){closeSheet();go("profile",{userId:d.user,from:d.from||"",ptab:"all"})}
+  else if(d.crole!==undefined&&el.matches("[data-crole]")){comm.role=d.crole;document.querySelectorAll("[data-crole]").forEach(b=>b.classList.toggle("on",b.dataset.crole===comm.role));commRefresh()}
+  else if(d.cmore){el.disabled=true;try{await loadCommunity(true);const c=document.getElementById("clist");c.innerHTML=commListHTML();hydrateImages(c)}catch(err){fail(err)}}
+  else if(d.ptab){view.ptab=d.ptab;render(true)}
   else if(d.notif){const [nid,pid]=d.notif.split("|");await sb.from("duetto_notifications").update({read:true}).eq("id",nid);if(pid)go("post",{postId:pid});else go("notifs")}
   else if(d.readall){await sb.from("duetto_notifications").update({read:true}).eq("read",false).eq("user_id",me);go("notifs")}
   else if(d.unlock){if(requireName())unlockSheet(d.unlock)}
@@ -1633,12 +1691,14 @@ document.addEventListener("click",async e=>{
 });
 let qTimer=null;
 document.addEventListener("input",e=>{
+  if(e.target.id==="cq"){clearTimeout(qTimer);const v=e.target.value;qTimer=setTimeout(()=>{comm.q=v;commRefresh()},300);return}
   if(e.target.id==="q"){clearTimeout(qTimer);const v=e.target.value;qTimer=setTimeout(()=>{view.q=v;const m=document.getElementById("main");m.innerHTML=renderExplore();hydrateAudio();hydrateImages(m)},200);return}
   if(e.target.id==="splitIn"){draft.split=+e.target.value;document.getElementById("sMe").textContent=draft.split+"%";document.getElementById("sOt").textContent=(100-draft.split)+"%"}
   const f=e.target.form;if(f&&f.id==="newForm"&&e.target.name){draft[e.target.name]=e.target.type==="checkbox"?e.target.checked:e.target.value}
 });
 document.addEventListener("change",e=>{
   if(e.target.id==="fGenre"){view.genre=e.target.value;render(true)}
+  if(e.target.id==="cGenre"){comm.genre=e.target.value;commRefresh()}
   if(e.target.id==="fLang"){view.lang=e.target.value;render(true)}
   if(e.target.id==="fileIn"){const f=e.target.files[0];if(f){draft.file=f;draft.fileName=f.name;document.getElementById("fileBox").firstChild.textContent="🎵 "+f.name}}
 });
@@ -1681,6 +1741,7 @@ function fromHash(){
   const h=location.hash.slice(1);
   if(["explore","new","mine","admin"].includes(h))view.page=h;
   else if(h==="avisos")view.page="notifs";
+  else if(h==="comunidad")view.page="community";
   else if(h==="reto")view.page="challenge";
   else if(h.startsWith("post-")){view.page="post";view.postId=h.slice(5)}
   else if(h.startsWith("perfil-")){view.page="profile";view.userId=h.slice(7)}
